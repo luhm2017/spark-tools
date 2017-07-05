@@ -3,7 +3,8 @@ package kaggle
 import org.apache.spark
 import org.apache.spark.ml.feature._
 import org.apache.spark.mllib.linalg.Vectors
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.sql.{DataFrame, SQLContext}
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
@@ -96,26 +97,30 @@ object FeatureEngineering {
   }
 
   //oneHotEncoder处理，哑变量处理
-  def oneHotEncoder(): Unit ={
+  def oneHotEncoder(df:DataFrame): Unit ={
     //创建dataFrame
-    val df = sqlContext.createDataFrame(Seq(
-      (0, "a"),
-      (1, "b"),
-      (2, "c"),
-      (3, "a"),
-      (4, "a"),
-      (5, "c")
-    )).toDF("id", "category")
-    val indexer = new StringIndexer()
-      .setInputCol("category")
-      .setOutputCol("categoryIndex")
-      .fit(df)
+    //val df = sqlContext.createDataFrame(Seq((0, "a"), (1, "b"), (2, "c"), (3, "a"), (4, "a"), (5, "c"))).toDF("id", "category")
+    //索引化dataframe，即统计获取特征的属性类别（a、b、c、d）
+    val indexer = new StringIndexer().setInputCol("category").setOutputCol("categoryIndex").fit(df)
+    //indexer.labels
+    //获取属性类别对应的统计值
     val indexed = indexer.transform(df)
-    val encoder = new OneHotEncoder()
-      .setInputCol("categoryIndex")
-      .setOutputCol("categoryVec")
+    //indexed.show()
+    //获取属性类别对应的稀疏矩阵
+    val encoder = new OneHotEncoder().setInputCol("categoryIndex").setOutputCol("categoryVec")
     val encoded = encoder.transform(indexed)
-    encoded.select("id", "categoryVec").show()
+    //encoded.show()
+    val data = encoded.rdd.map { x =>
+      {
+        //稀疏矩阵转换成稠密矩阵
+        val featureVector = Vectors.dense(x.getAs[org.apache.spark.mllib.linalg.SparseVector]("categoryVec").toArray)
+        //val label = x.getAs[java.lang.Integer]("id").toDouble
+        //LabeledPoint(label, featureVector)
+        featureVector
+      }
+    }
+    //data.collect()
+    //var result = sqlContext.createDataFrame(data)
   }
 
   //StringIndexer 标签索引处理
@@ -130,6 +135,22 @@ object FeatureEngineering {
     val indexed = indexer.fit(df).transform(df)
     indexed.show()
   }
+
+  //归一化处理
+  def minMaxScaler(): Unit ={
+      val assembler = new VectorAssembler()
+      assembler.setInputCols(Array("Pclass","Sex","Age","SibSp","Parch","Fare","Embarked"))
+        .setOutputCol("features")
+    val df = sqlContext.createDataFrame(
+      Seq((0, "a"), (1, "b"), (2, "c"), (3, "a"), (4, "a"), (5, "c")
+      ) )
+      .toDF("id", "category")
+      val tmp5 = assembler.transform(df)
+      val scaler = new MinMaxScaler()
+      scaler.setInputCol("features").setOutputCol("scaledFeatures").setMin(0).setMax(1)
+      val tmp6 = scaler.fit(tmp5).transform(tmp5)
+  }
+
   //IndexToString
   //VectorIndexer
 }
