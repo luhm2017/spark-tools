@@ -1,8 +1,10 @@
 package lakala.models
 
+import org.apache.spark.mllib.classification.LogisticRegressionModel
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.mllib.tree.configuration.BoostingStrategy
+import org.apache.spark.mllib.tree.model.{GradientBoostedTreesModel, RandomForestModel}
 import org.apache.spark.mllib.tree.{DecisionTree, GradientBoostedTrees, RandomForest}
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkConf, SparkContext}
@@ -31,7 +33,7 @@ object LakalaCardScore {
     val savePath = args(2)
 
     //提取数据集 RDD[LabeledPoint]
-    val data = hc.sql(s"select * from $database.$table").map{
+    val data = hc.sql(s"select * from lkl_card_score.phone_variable_yfq_creditcardrepayments_train_tc_result_new").map{
       row =>
         val arr = new ArrayBuffer[Double]()
         //剔除处理label、contact字段
@@ -62,6 +64,7 @@ object LakalaCardScore {
     val trainData = data.map(row => row._3)
     val model = RandomForest.trainRegressor(trainData, categoricalFeaturesInfo,
       numTrees, featureSubsetStrategy, impurity, maxDepth, maxBins)
+    model.save(sc,"hdfs://ns1/user/luhuamin/yfq/rf/model")
 
     // 全量数据预测打分
     val predictionAndLabels = data.map { point =>
@@ -69,14 +72,15 @@ object LakalaCardScore {
       (point._1,point._2, prediction)
     }
     //保存
-    predictionAndLabels.saveAsTextFile(s"hdfs://ns1/tmp/$savePath/predictionAndLabels")
+    predictionAndLabels.saveAsTextFile(s"hdfs://ns1/user/luhuamin/yfq/rf/predictionAndLabels")
 
-    //--======================================================================
+    //--==============================================================================================================
     //gbdt94
     val boostingStrategy = BoostingStrategy.defaultParams("Regression")
     boostingStrategy.setNumIterations(9) // Note: Use more iterations in practice.
     boostingStrategy.treeStrategy.setMaxDepth(4)
     val gdbt94_model = GradientBoostedTrees.train(trainData, boostingStrategy)
+    gdbt94_model.save(sc,"hdfs://ns1/user/luhuamin/yfq/gdbt94/model")
 
     // 全量数据预测打分
     val gbdt94_predictionAndLabels = data.map { point =>
@@ -84,10 +88,10 @@ object LakalaCardScore {
       (point._1,point._2, prediction)
     }
     //保存
-    gbdt94_predictionAndLabels.saveAsTextFile(s"hdfs://ns1/tmp/$savePath/predictionAndLabels")
+    gbdt94_predictionAndLabels.saveAsTextFile(s"hdfs://ns1/user/luhuamin/yfq/gbdt94/predictionAndLabels")
 
-    //--==========================================================================
-    //--dt
+    //--==============================================================================================================
+    /*//--dt
     val dt_categoricalFeaturesInfo = Map[Int, Int]()
     val dt_impurity = "variance"
     val dt_maxDepth = 5
@@ -101,7 +105,44 @@ object LakalaCardScore {
       (point._1,point._2, prediction)
     }
     //保存
-    dt_predictionAndLabels.saveAsTextFile(s"hdfs://ns1/tmp/$savePath/predictionAndLabels")
+    dt_predictionAndLabels.saveAsTextFile(s"hdfs://ns1/user/luhuamin/tnh/dt/predictionAndLabels")*/
 
+    //全量客户数据打分
+    val data_all = hc.sql(s"select * from lkl_card_score.phone_variable_yfq_all_score").map{
+      row =>
+        val arr = new ArrayBuffer[Double]()
+        //剔除contact字段
+        for(i <- 1 until row.size){
+          if(row.isNullAt(i)){
+            arr += 0.0
+          }else if(row.get(i).isInstanceOf[Double])
+            arr += row.getDouble(i)
+          else if(row.get(i).isInstanceOf[Long])
+            arr += row.getLong(i).toDouble
+        }
+        //contact数据单独处理
+        (row.getString(0),Vectors.dense(arr.toArray))
+    }
+
+
+   //TNH
+    val rfModel = RandomForestModel.load(sc,"hdfs://ns1/user/luhuamin/yfq/rf/model")
+    // 全量数据预测打分
+    val preditData = data_all.map { point =>
+      val prediction = rfModel.predict(point._2)
+      (point._1, prediction)
+    }
+    //preditData保存
+    preditData.saveAsTextFile("hdfs://ns1/user/luhuamin/yfq_all/rf/predictionAndLabels")
+
+    //--=================================================
+    val gbdt94Model = GradientBoostedTreesModel.load(sc,"hdfs://ns1/user/luhuamin/yfq/gdbt94/model")
+    // 全量数据预测打分
+    val preditDataGbdt94 = data_all.map { point =>
+      val prediction = gbdt94Model.predict(point._2)
+      (point._1, prediction)
+    }
+    //preditData保存
+    preditDataGbdt94.saveAsTextFile("hdfs://ns1/user/luhuamin/yfq_all/gbdt94/predictionAndLabels")
   }
 }
