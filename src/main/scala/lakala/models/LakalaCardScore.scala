@@ -52,7 +52,7 @@ object LakalaCardScore {
     //--===============================================================================
     // Train a RandomForest model.
     // Empty categoricalFeaturesInfo indicates all features are continuous.
-    val numClasses = 2
+    //val numClasses = 2
     val categoricalFeaturesInfo = Map[Int, Int]()
     val numTrees = 6 // Use more in practice.
     val featureSubsetStrategy = "auto" // Let the algorithm choose.
@@ -77,8 +77,8 @@ object LakalaCardScore {
     //--==============================================================================================================
     //gbdt94
     val boostingStrategy = BoostingStrategy.defaultParams("Regression")
-    boostingStrategy.setNumIterations(9) // Note: Use more iterations in practice.
-    boostingStrategy.treeStrategy.setMaxDepth(4)
+    boostingStrategy.setNumIterations(30) // Note: Use more iterations in practice.
+    boostingStrategy.treeStrategy.setMaxDepth(6)
     val gdbt94_model = GradientBoostedTrees.train(trainData, boostingStrategy)
     gdbt94_model.save(sc,"hdfs://ns1/user/luhuamin/yfq/gdbt94/model")
 
