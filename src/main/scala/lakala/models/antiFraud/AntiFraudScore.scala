@@ -22,14 +22,14 @@ import scala.util.control.Exception
   * Created by Administrator on 2017/7/14
   * 反欺诈风险评分
   */
-object AntiFraudScore extends Logging{
+object AntiFraudScore /*extends Logging*/{
   val sparkConf = new SparkConf().setAppName("AntiFraudScore")
   val sc = new SparkContext(sparkConf)
   val hc = new HiveContext(sc)
 
   def main(args: Array[String]): Unit = {
-    if(args.length!=9){
-      println("请输入参数：database、table以及mysql相关参数")
+    if(args.length!=10){
+      //println("请输入参数：database、table以及mysql相关参数")
       System.exit(0)
     }
 
@@ -42,14 +42,18 @@ object AntiFraudScore extends Logging{
     val password = args(5)
     val port = args(6)
     val mysqlDB = args(7)
+    //结果表
     val mysqlTable = args(8)
+    //变量表
+    val mysqlTableNew = args(9)
 
-    logWarning("start calculate ....")
+    //logWarning("start calculate ....")
+    //println("start calculate ....")
     //批量打分
     try{
-      predictScore(database,table,path,host,user,password, port,mysqlDB,mysqlTable)
+      predictScore(database,table,path,host,user,password, port,mysqlDB,mysqlTable,mysqlTableNew)
     }catch {
-      case ex: Exception => logError(ex.getMessage)
+      case ex: Exception => /*logError(ex.getMessage)*/ println(ex.getMessage)
       //保存该批次失败的order_id,apply_time
         hc.sql(s"select order_src,apply_time from $database.$table").write
           .mode(SaveMode.Append).saveAsTable("lkl_card_score.fqz_score_fail_record")
@@ -90,7 +94,8 @@ object AntiFraudScore extends Logging{
 
   //预测打分,并保存到mysql
   def predictScore(database:String,table:String,path:String,host:String,user:String,
-         password:String, port:String,mysqlDB:String,mysqlTable:String): Unit ={
+         password:String, port:String,mysqlDB:String,mysqlTable:String,mysqlTableNew:String): Unit ={
+    val variable = hc.sql(s"select * from $database.$table")
     //实时数据
     val dataInstance = hc.sql(s"select * from $database.$table").map {
       row =>
@@ -107,7 +112,8 @@ object AntiFraudScore extends Logging{
     }
     //每批次总数
     val batchCnt = dataInstance.count()
-    logWarning("the count of this batch is " + batchCnt)
+    //logWarning("the count of this batch is " + batchCnt)
+    println("the count of this batch is " + batchCnt)
     //加载模型，目前只考虑gbdt
     val model = GradientBoostedTreesModel.load(sc,s"hdfs://ns1/user/luhuamin/$path/model/gbdt")
     //打分数据
@@ -127,11 +133,19 @@ object AntiFraudScore extends Logging{
     )
     //将RDD映射到rowRDD，schema信息应用到rowRDD上
     val scoreDataFrame = hc.createDataFrame(rowRDD,schema)
-    //分别保存至mysql和hive
+    //保存结果至mysql和hiv
+    //logWarning(" load to mysql success! 该批次总数" + batchCnt)
+    println(" load to hive ! 该批次总数" + batchCnt)
+    FS2Hive(scoreDataFrame,"fqz_score_result")
+    println(" load to mysql ! 该批次总数" + batchCnt)
     FS2JDBC(model,scoreDataFrame,host,user,password,port,mysqlDB,mysqlTable)
-    logWarning(" load to mysql success! 该批次总数" + batchCnt)
-    FS2Hive(scoreDataFrame)
-    logWarning(" load to hive success! 该批次总数" + batchCnt)
+    //保存变量至mysql和hive
+    println(" variable load to hive ! 该批次总数" + batchCnt)
+    FS2Hive(variable,"fqz_score_variable")
+    println(" variable load to mysql ! 该批次总数" + batchCnt)
+    FS2JDBC(model,variable,host,user,password,port,mysqlDB,mysqlTableNew)
+    //logWarning(" load to hive success! 该批次总数" + batchCnt)
+
   }
 
   //load to mysql
@@ -142,18 +156,20 @@ object AntiFraudScore extends Logging{
         dataInstance.write.mode(SaveMode.Append).jdbc(url,mysqlTable,new Properties())
         //考虑异常处理
      }catch{
-       case ex: Exception => logError(ex.getMessage)
-       logError("FS2JDBC异常。。。")
+       case ex: Exception => /*logError(ex.getMessage)*/ //println(ex.getMessage)
+       //logError("FS2JDBC异常。。。")
+       println("FS2JDBC异常。。。")
      }
   }
 
   //load to hive
-  def FS2Hive(dataInstance:DataFrame): Unit ={
+  def FS2Hive(dataInstance:DataFrame,hiveTable:String): Unit ={
     try{
-      dataInstance.write.mode(SaveMode.Append).saveAsTable("lkl_card_score.fqz_score_result")
+      dataInstance.write.mode(SaveMode.Append).saveAsTable(s"lkl_card_score.$hiveTable")
     }catch{
-      case ex: Exception => logError(ex.getMessage)
-        logError("FS2Hive异常。。。")
+      case ex: Exception => /*logError(ex.getMessage)*/ println(ex.getMessage)
+        //logError("FS2Hive异常。。。")
+        println("FS2Hive异常。。。")
     }
   }
 

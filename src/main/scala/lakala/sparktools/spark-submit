@@ -16,5 +16,5 @@ nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 \
 --jars /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar \
 --driver-class-path /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar \
 --class lakala.models.antiFraud.AntiFraudScore \
-/home/hadoop/spark-tools-1.0.jar lkl_card_score overdue_result_all_new_woe_instant fqz0720 10.16.65.31 root 123_lakala 3306 antifraud fqz_score_result > ~/log/fqzscore20170724.log  &
+/home/hadoop/spark-tools-1.0.jar lkl_card_score overdue_result_all_new_woe_instant fqz0720 10.16.65.31 root 123_lakala 3306 antifraud fqz_score_result fqz_score_variable > ~/log/fqzscore20170725.log  &
 
