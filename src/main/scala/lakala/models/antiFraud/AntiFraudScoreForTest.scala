@@ -9,8 +9,9 @@ import org.apache.spark.mllib.tree.{GradientBoostedTrees, RandomForest}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.{Row, SQLContext, SaveMode}
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
+import org.apache.spark.{Logging, SparkConf, SparkContext}
+
 import scala.collection.mutable.ArrayBuffer
 import java.util.Properties
 
@@ -18,7 +19,7 @@ import java.util.Properties
   * Created by Administrator on 2017/7/14
   * 反欺诈风险评分
   */
-object AntiFraudScoreForTest {
+object AntiFraudScoreForTest extends  Logging{
   val sparkConf = new SparkConf().setAppName("AntiFraudScore")
   val sc = new SparkContext(sparkConf)
   val hc = new HiveContext(sc)
@@ -108,15 +109,15 @@ object AntiFraudScoreForTest {
             arr += row.getLong(i).toDouble
           else arr += 0.0
         }
-        (row(1), Vectors.dense(arr.toArray))
+        (row(1),row(0), Vectors.dense(arr.toArray))
     }
     //加载模型
     if(modelType.equals("RF")){
       val model = RandomForestModel.load(sc,s"hdfs://ns1/user/luhuamin/fqz0720/model/rf")
       //打分
       val preditDataRF = dataInstance.map { point =>
-        val prediction = model.predict(point._2)
-        (point._1, prediction)
+        val prediction = model.predict(point._3)
+        (point._1,point._2, prediction)
       }
       preditDataRF.collect()
       //preditData保存
@@ -126,8 +127,8 @@ object AntiFraudScoreForTest {
       val model = GradientBoostedTreesModel.load(sc,s"hdfs://ns1/user/luhuamin/fqz0720/model/gbdt")
       //打分
       val preditDataGBDT = dataInstance.map { point =>
-        val prediction = model.predict(point._2)
-        (point._1, prediction)
+        val prediction = model.predict(point._3)
+        (point._1,point._2, prediction)
       }
       //preditData保存
       //preditDataGBDT.saveAsTextFile(s"hdfs://ns1/user/luhuamin/fqz0720/predictionAndLabels/gbdt")
@@ -135,20 +136,20 @@ object AntiFraudScoreForTest {
       val schema = StructType(
         List(
           StructField("order_id", StringType, true),
+          StructField("apply_time", StringType, true),
           StructField("score", StringType, true)
         )
       )
       //将RDD映射到rowRDD
-      val rowRDD = preditDataGBDT.map(row => Row(row._1.toString,row._2.toString))
-      val sqlContext = new SQLContext(sc)
+      val rowRDD = preditDataGBDT.map(row => Row(row._1.toString,row._2.toString,row._3.toString))
       //将schema信息应用到rowRDD上
-      val personDataFrame = sqlContext.createDataFrame(rowRDD,schema)
+      val personDataFrame = hc.createDataFrame(rowRDD,schema)
       val host = "10.16.65.31"
       val user = "root"
       val password = "123_lakala"
       val port = "3306"
-      val db = "anti_fraud"
-      val table = "fqz_result"
+      val db = "antifraud"
+      val table = "fqz_score_result"
       val url = s"jdbc:mysql://$host:$port/$db?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false"
       personDataFrame.write.mode(SaveMode.Append).jdbc(url,table,new Properties())
     }
@@ -161,7 +162,7 @@ object AntiFraudScoreForTest {
     val password = "123_lakala"
     val port = "3306"
     val db = "anti_fraud"
-    val table = "fqz_result"
+    val table = "fqz_score_result"
     val url = s"jdbc:mysql://$host:$port/$db?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false"
     //val sc = new SparkContext(sparkConf)
     val sqlContext = new SQLContext(sc)
@@ -171,9 +172,27 @@ object AntiFraudScoreForTest {
     //异常处理
   }
 
-  //load to hive
-  def FS2Hive(): Unit ={
+  //load to mysql
+  def FS2JDBC(model:GradientBoostedTreesModel,dataInstance:DataFrame,host:String,user:String,password:String,
+              port:String,mysqlDB:String,mysqlTable:String): Unit ={
+    try{
+      val url = s"jdbc:mysql://$host:$port/$mysqlDB?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false"
+      dataInstance.write.mode(SaveMode.Append).jdbc(url,mysqlTable,new Properties())
+      //考虑异常处理
+    }catch{
+      case ex: Exception => logError(ex.getMessage)
+        logError("FS2JDBC")
+    }
+  }
 
+  //load to hive
+  def FS2Hive(personDataFrame:DataFrame): Unit ={
+    try{
+      personDataFrame.write.mode(SaveMode.Append).saveAsTable("lkl_card_score.fqz_score_result")
+    }catch{
+      case ex: Exception => logError(ex.getMessage)
+        logError("FS2Hive")
+    }
   }
 
 }

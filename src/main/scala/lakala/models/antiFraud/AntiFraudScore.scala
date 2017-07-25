@@ -11,7 +11,9 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.{Logging, SparkConf, SparkContext}
+import org.apache.spark.storage.StorageLevel
+import tachyon.util.CommonUtils
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Exception
@@ -20,13 +22,13 @@ import scala.util.control.Exception
   * Created by Administrator on 2017/7/14
   * 反欺诈风险评分
   */
-object AntiFraudScore {
+object AntiFraudScore extends Logging{
   val sparkConf = new SparkConf().setAppName("AntiFraudScore")
   val sc = new SparkContext(sparkConf)
   val hc = new HiveContext(sc)
 
   def main(args: Array[String]): Unit = {
-    if(args.length!=8){
+    if(args.length!=9){
       println("请输入参数：database、table以及mysql相关参数")
       System.exit(0)
     }
@@ -40,25 +42,18 @@ object AntiFraudScore {
     val password = args(5)
     val port = args(6)
     val mysqlDB = args(7)
+    val mysqlTable = args(8)
 
-    //val numTrees = args(3)
-    //val maxDepth = args(4)
-
-    //提取数据集 RDD[LabeledPoint]
-    /*val data = hc.sql(s"select * from $database.$table where label <> 2").map {
-      row =>
-        val arr = new ArrayBuffer[Double]()
-        //剔除label、phone字段
-        for (i <- 3 until row.size) {
-          if (row.get(i).isInstanceOf[Double])
-            arr += row.getDouble(i)
-          else if (row.get(i).isInstanceOf[Long])
-            arr += row.getLong(i).toDouble
-          else
-            arr += 0.0
-        }
-       LabeledPoint(row.getDouble(0), Vectors.dense(arr.toArray))
-    }*/
+    logWarning("start calculate ....")
+    //批量打分
+    try{
+      predictScore(database,table,path,host,user,password, port,mysqlDB,mysqlTable)
+    }catch {
+      case ex: Exception => logError(ex.getMessage)
+      //保存该批次失败的order_id,apply_time
+        hc.sql(s"select order_src,apply_time from $database.$table").write
+          .mode(SaveMode.Append).saveAsTable("lkl_card_score.fqz_score_fail_record")
+    }
   }
 
   //训练模型
@@ -108,44 +103,58 @@ object AntiFraudScore {
             arr += row.getLong(i).toDouble
           else arr += 0.0
         }
-        (row(1), Vectors.dense(arr.toArray))
+        (row(1),row(0), Vectors.dense(arr.toArray))
     }
+    //每批次总数
+    val batchCnt = dataInstance.count()
+    logWarning("the count of this batch is " + batchCnt)
     //加载模型，目前只考虑gbdt
     val model = GradientBoostedTreesModel.load(sc,s"hdfs://ns1/user/luhuamin/$path/model/gbdt")
     //打分数据
     val preditDataGBDT = dataInstance.map { point =>
-      val prediction = model.predict(point._2)
-      (point._1, prediction)
+      val prediction = model.predict(point._3)
+      //order_id,apply_time,score
+      (point._1,point._2, prediction)
     }
     //rdd转dataFrame
-    val rowRDD = preditDataGBDT.map(row => Row(row._1.toString,row._2.toString))
+    val rowRDD = preditDataGBDT.map(row => Row(row._1.toString,row._2.toString,row._3.toString))
     val schema = StructType(
       List(
         StructField("order_id", StringType, true),
+        StructField("apply_time", StringType, true),
         StructField("score", StringType, true)
       )
     )
-    //将RDD映射到rowRDD
-    val sqlContext = new SQLContext(sc)
-    //将schema信息应用到rowRDD上
-    val scoreDataFrame = sqlContext.createDataFrame(rowRDD,schema)
+    //将RDD映射到rowRDD，schema信息应用到rowRDD上
+    val scoreDataFrame = hc.createDataFrame(rowRDD,schema)
     //分别保存至mysql和hive
     FS2JDBC(model,scoreDataFrame,host,user,password,port,mysqlDB,mysqlTable)
+    logWarning(" load to mysql success! 该批次总数" + batchCnt)
     FS2Hive(scoreDataFrame)
+    logWarning(" load to hive success! 该批次总数" + batchCnt)
   }
 
   //load to mysql
   def FS2JDBC(model:GradientBoostedTreesModel,dataInstance:DataFrame,host:String,user:String,password:String,
               port:String,mysqlDB:String,mysqlTable:String): Unit ={
-
-      val url = s"jdbc:mysql://$host:$port/$mysqlDB?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false"
-      dataInstance.write.mode(SaveMode.Append).jdbc(url,mysqlTable,new Properties())
-      //考虑异常处理
+     try{
+        val url = s"jdbc:mysql://$host:$port/$mysqlDB?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false"
+        dataInstance.write.mode(SaveMode.Append).jdbc(url,mysqlTable,new Properties())
+        //考虑异常处理
+     }catch{
+       case ex: Exception => logError(ex.getMessage)
+       logError("FS2JDBC异常。。。")
+     }
   }
 
   //load to hive
   def FS2Hive(dataInstance:DataFrame): Unit ={
-    dataInstance.write.mode(SaveMode.Append).saveAsTable("lkl_card_score.fqz_score_result")
+    try{
+      dataInstance.write.mode(SaveMode.Append).saveAsTable("lkl_card_score.fqz_score_result")
+    }catch{
+      case ex: Exception => logError(ex.getMessage)
+        logError("FS2Hive异常。。。")
+    }
   }
 
 }
