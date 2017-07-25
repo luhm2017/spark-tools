@@ -1,3 +1,5 @@
+import java.util.Date;
+
 /**
  * Created by Administrator on 2017/5/25.
  */
@@ -7,5 +9,6 @@ public class Test {
         Integer i3 = 102, i4 = 102;
         System.out.print(i1 == i2);
         System.out.print(i3 == i4);
+        System.out.println(new Date());
     }
 }

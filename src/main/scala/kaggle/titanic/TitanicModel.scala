@@ -3,9 +3,10 @@ package kaggle.titanic;
 import breeze.linalg.max
 import org.apache.spark.ml.feature.{OneHotEncoder, StringIndexer}
 import org.apache.spark.mllib.linalg.{Vector, Vectors}
+import org.apache.spark.mllib.stat.{MultivariateStatisticalSummary, Statistics}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.hive.HiveContext
-import org.apache.spark.sql.{DataFrame, SaveMode}
+import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ArrayBuffer
@@ -16,32 +17,45 @@ import scala.collection.mutable.ArrayBuffer
   */
 object TitanicModel {
 
-  val sparkConf = new SparkConf().setAppName("kaggle.Titanic")
+  val sparkConf = new SparkConf().setAppName("kaggle.Titanic.LogisticRegressionForTitanic")
   val sc = new SparkContext(sparkConf)
   val hc = new HiveContext(sc)
 
   def main(args: Array[String]): Unit = {
-    sparkConf.setAppName("kaggle.titanic.LogisticRegressionForTitanic")
+    val sparkConf = new SparkConf().setAppName("kaggle.Titanic.LogisticRegressionForTitanic")
+    val sc = new SparkContext(sparkConf)
+    val hc = new HiveContext(sc)
 
-    if(args.length!=1){
-      println("请输入参数：文件加载路径filePath")
-      System.exit(0)
-    }
-    //文件路径
-    //val filePath = args(0)
-    //load csv
-    //val rawData = loadCsvData(filePath)
     //--==============================================================================================
     val filePath = "file:///home/hadoop/exportdata/train_titanic.csv"
     val rawData = hc.read.format("com.databricks.spark.csv").option("header", "true").load(filePath)
-    rawData.registerTempTable("training_data")
-    //数据勘探
+    //step1.数据勘探(有值率、分位数)
+    rawData.registerTempTable("train_data")
+    hc.sql("select Age from train_data where age <> ''")
+    hc.sql("select \nsum(case when Pclass <> '' then 1 else 0 end) as pclass ," +
+      "\nsum(case when Name <> '' then 1 else 0 end) as name," +
+      "\nsum(case when Sex <> '' then 1 else 0 end) as sex," +
+      "\nsum(case when Age <> '' then 1 else 0 end) as age," +
+      "\nsum(case when SibSp <> '' then 1 else 0 end) as sibsp," +
+      "\nsum(case when Parch <> '' then 1 else 0 end) as parch," +
+      "\nsum(case when Ticket <> '' then 1 else 0 end) as ticket," +
+      "\nsum(case when Fare <> '' then 1 else 0 end) as fare," +
+      "\nsum(case when Cabin <> '' then 1 else 0 end) as cabin," +
+      "\nsum(case when Embarked <> '' then 1 else 0 end) as embarked" +
+      "\nfrom train_data").show()
+    //columns desc
     rawData.printSchema()
+    //statistics.colstats功能，统计列式的最大值，最小值，均值，方差等
+    //MultivariateStatisticalSummary
+    //val summary  = Statistics.colStats()
+
+    //===============================================================================================
     //最大值、最小值、中位数、平均值、总数
-    rawData.describe("Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked").show()
+    //rawData.describe("Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked").show()
     //数据分布勘探
     //rawData.groupBy("Survived").agg("Age" -> "max", "salary" -> "avg")
     //rawData.agg("Fare" -> "max", "Age" -> "min", "Age" -> "avg", "Age" -> "count", "Age" -> "sum")
+    //===============================================================================================
 
     //数据特征处理
     //船舱等级
@@ -57,6 +71,8 @@ object TitanicModel {
       val passengerId = d(0).toString
       //获取label数据，Survived
       val label = d(1).toString.toDouble
+      val name = d(3).toString
+      
       //Sex处理
       val sex = d(4) match {
         case "male" => 0.0

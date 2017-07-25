@@ -1,3 +1,5 @@
+import java.util.Date
+
 import org.apache.spark.mllib.linalg.Vectors
 
 /**
@@ -13,7 +15,7 @@ object TestExample {
         val totalRounds = 3
         val m = Map(srcId -> totalRounds)
         print(m.get(12))
-
+        println(new Date)
 
     }
 }
