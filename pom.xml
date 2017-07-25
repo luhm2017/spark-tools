@@ -174,8 +174,12 @@
 
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>
-    <sourceDirectory>src/main/conf</sourceDirectory>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <!-- see http://davidb.github.com/scala-maven-plugin -->
