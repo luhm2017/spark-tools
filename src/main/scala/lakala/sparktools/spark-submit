@@ -3,5 +3,18 @@ scp spark-csv_2.10-1.5.0.jar graphdb@10.16.65.15:~
 
 
 nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 8 --num-executors 2 --executor-memory 4g --class lakala.models.LogisticRegressionForLK /home/hadoop/spark-tools-1.0.jar lkl_card_score phone_variable_yfq_creditcardrepayments_train_result 20170523creditcardLogisticRegressionForLK > ~/log/20170523creditcardLogisticRegressionForLK.log  &
-./spark-shell -- master spark://datacenter17:7077,datacenter18:7077 --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g
-./spark-shell –master local[4] --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g
+./spark-shell -- master spark://datacenter17:7077,datacenter18:7077 --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g --jars /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar --driver-class-path /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar
+./spark-shell –master local[4]  --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g
+
+--files /home/hadoop/hadoop1/spark-1.6.3-bin-hadoop2.6/hive-site.xml
+
+
+##fqz跑数命令
+nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 \
+--conf spark.locality.wait=1 --conf spark.driver.memory=1g \
+--conf spark.executor.cores=4 --total-executor-cores 8 --num-executors 2 --executor-memory 4g \
+--jars /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar \
+--driver-class-path /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar \
+--class lakala.models.antiFraud.AntiFraudScore \
+/home/hadoop/spark-tools-1.0.jar lkl_card_score overdue_result_all_new_woe_instant fqz0720 10.16.65.31 root 123_lakala 3306 antifraud fqz_score_result > ~/log/fqzscore20170724.log  &
+
