@@ -9,7 +9,7 @@ nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 --conf
 --files /home/hadoop/hadoop1/spark-1.6.3-bin-hadoop2.6/hive-site.xml
 
 
-##fqz跑数命令
+##fqz跑数命 令
 nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 \
 --conf spark.locality.wait=1 --conf spark.driver.memory=1g \
 --conf spark.executor.cores=4 --total-executor-cores 8 --num-executors 2 --executor-memory 4g \
