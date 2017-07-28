@@ -29,7 +29,7 @@ object AntiFraudScore /*extends Logging*/{
 
   def main(args: Array[String]): Unit = {
     if(args.length!=10){
-      //println("请输入参数：database、table以及mysql相关参数")
+      println("请输入参数：database、table以及mysql相关参数")
       System.exit(0)
     }
 
@@ -152,11 +152,11 @@ object AntiFraudScore /*extends Logging*/{
   def FS2JDBC(model:GradientBoostedTreesModel,dataInstance:DataFrame,host:String,user:String,password:String,
               port:String,mysqlDB:String,mysqlTable:String): Unit ={
      try{
-        val url = s"jdbc:mysql://$host:$port/$mysqlDB?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false"
+        val url = s"jdbc:mysql://$host:$port/$mysqlDB?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false"
         dataInstance.write.mode(SaveMode.Append).jdbc(url,mysqlTable,new Properties())
         //考虑异常处理
      }catch{
-       case ex: Exception => /*logError(ex.getMessage)*/ //println(ex.getMessage)
+       case ex: Exception => /*logError(ex.getMessage)*/ println(ex.getMessage)
        //logError("FS2JDBC异常。。。")
        println("FS2JDBC异常。。。")
      }
