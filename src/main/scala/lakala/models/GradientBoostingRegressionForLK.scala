@@ -162,4 +162,33 @@ object GradientBoostingRegressionForLK {
     //preditData保存
     preditDataGBDT.saveAsTextFile(s"hdfs://ns1/user/luhuamin/20170718/tnh/predictionAndLabels")
   }
+
+  //全量打分
+  def predictScore(): Unit ={
+    val data = hc.sql(s"select * from lkl_card_score.phone_variable_tnh_creditcardrepayments_20170724_result").map{
+      row =>
+        val arr = new ArrayBuffer[Double]()
+        //剔除处理label、contact字段
+        for(i <- 1 until row.size){
+          if(row.isNullAt(i)){
+            arr += 0.0
+          }else if(row.get(i).isInstanceOf[Double])
+            arr += row.getDouble(i)
+          else if(row.get(i).isInstanceOf[Long])
+            arr += row.getLong(i).toDouble
+          else arr += 0.0
+        }
+        //label、contact数据单独处理
+        (row.getString(0),Vectors.dense(arr.toArray))
+    }
+    //全量打分
+    val modelGBDT = GradientBoostedTreesModel.load(sc,"hdfs://ns1/user/luhuamin/20170718/tnh/model")
+    //打分
+    val preditDataGBDT = data.map { point =>
+      val prediction = modelGBDT.predict(point._2)
+      (point._1, prediction)
+    }
+    //preditData保存
+    preditDataGBDT.saveAsTextFile(s"hdfs://ns1/user/luhuamin/20170724/tnh/predictionAndLabels")
+  }
 }

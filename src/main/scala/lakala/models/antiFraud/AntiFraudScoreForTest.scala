@@ -195,4 +195,21 @@ object AntiFraudScoreForTest extends  Logging{
     }
   }
 
+  //test数据库
+  def testDatabase(): Unit ={
+    val host = "10.16.65.31"
+    val user = "root"
+    val password = "123_lakala"
+    val port = "3306"
+    val mysqlDB = "antifraud"
+    val mysqlTable = "fqz_score_result"
+    //构造
+    case class resultset(order_id:String, apply_time:String,score:String)
+    //val data = List(resultset("1","1","1"))
+    //val dataInstance = hc.createDataFrame(data)
+    //将schema信息应用到rowRDD上
+    val url = s"jdbc:mysql://$host:$port/$mysqlDB?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false"
+    //dataInstance.write.mode(SaveMode.Append).jdbc(url,mysqlTable,new Properties())
+  }
+
 }
