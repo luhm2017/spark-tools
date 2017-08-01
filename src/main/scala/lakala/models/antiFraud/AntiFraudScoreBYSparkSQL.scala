@@ -25,7 +25,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
   val hc = new HiveContext(sc)
 
   def main(args: Array[String]): Unit = {
-    if(args.length!=10){
+    if(args.length!=13){
       println("请输入参数：database、table以及mysql相关参数")
       System.exit(0)
     }
@@ -179,7 +179,9 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
   }
 
   //spark sql加工变量
+  //异常处理
   def processVariable(year:String,month:String,day:String): Unit ={
+    hc.sql("use lkl_card_score")
     //01_0a_fqz_order_related_graph.sql
     hc.sql(s"insert overwrite table fqz_order_related_graph_current partition(year='${year}', month='${month}',day='${day}')\n" +
       s"select\n'1' as degree_type,\na.c0 as order_src,\na.c6 as cert_no_src,\n" +
@@ -205,19 +207,19 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"where a.year = ${year} and a.month = ${month} and a.day = ${day}")
 
     //01_0b_fqz_order_related_graph.sql
-    hc.sql(s"drop table fqz_order_data_inc; \n" +
-      s"create table fqz_order_data_inc as\n" +
+    hc.sql(s"drop table fqz_order_data_inc \n")
+    hc.sql(s"create table fqz_order_data_inc as\n" +
       s"select a.* from fqz_order_related_graph_current a\n" +
       s"left join fqz_order_related_graph_current_history b on a.order_src = b.order_src\n" +
       s"where b.order_src is null \n" +
-      s"and a.year = ${year} and a.month = ${month} and a.day = ${day};\n" +
-      s"insert overwrite table fqz_order_related_graph_current_history\n" +
+      s"and a.year = ${year} and a.month = ${month} and a.day = ${day}\n")
+    hc.sql(s"insert overwrite table fqz_order_related_graph_current_history\n" +
       s"select a.* from fqz_order_related_graph_current a \n" +
       s"where a.year = ${year} and a.month = ${month} and a.day = ${day}")
 
     //02_0a_overdue_data.sql
-    hc.sql(s"drop table overdue_cnt_self_instant;\n" +
-      s"create table overdue_cnt_self_instant as \n-- 一度关联自身_订单数量     \n" +
+    hc.sql(s"drop table overdue_cnt_self_instant\n")
+    hc.sql(s"create table overdue_cnt_self_instant as \n-- 一度关联自身_订单数量     \n" +
       s"SELECT a.order_src,'order_cnt' title, \ncount(distinct a.order1) cnt \n" +
       s"FROM fqz_order_data_inc a     --order订单表现\n" +
       s"where a.degree_type='1' \nand a.apply_time_src>a.apply_time1\n" +
@@ -242,10 +244,10 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"SELECT a.order_src,'pass_cnt' title,count(distinct a.order1) cnt " +
       s"FROM fqz_order_data_inc a     --order订单表现\n" +
       s"where a.type1='pass'  and a.degree_type='1' and a.apply_time_src>a.apply_time1\n" +
-      s"and a.cert_no_src = a.cert_no1\ngroup by a.order_src ;\n" +
-      s"--合并数据  一度关联自身\n" +
-      s"drop table  lkl_card_score.overdue_cnt_self_sum_instant;\n" +
-      s"create table  lkl_card_score.overdue_cnt_self_sum_instant  as\n" +
+      s"and a.cert_no_src = a.cert_no1\ngroup by a.order_src \n" +
+      s"--合并数据  一度关联自身\n" )
+      hc.sql(s"drop table  lkl_card_score.overdue_cnt_self_sum_instant\n" )
+      hc.sql(s"create table  lkl_card_score.overdue_cnt_self_sum_instant  as\n" +
       s"select order_src,\nsum(case when title= 'order_cnt' then cnt else 0 end ) order_cnt_self , \n" +
       s"sum(case when title= 'id_cnt' then cnt else 0 end ) id_cnt_self ,   \n" +
       s"sum(case when title= 'black_cnt' then cnt else 0 end ) black_cnt_self , \n" +
@@ -254,8 +256,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"from  overdue_cnt_self_instant\ngroup by order_src")
 
     //02_0b_overdue_data.sql
-    hc.sql(s"drop table overdue_cnt_2_self_tmp_instant;\n" +
-      s"create table overdue_cnt_2_self_tmp_instant as \n" +
+    hc.sql(s"drop table overdue_cnt_2_self_tmp_instant\n" )
+      hc.sql(s"create table overdue_cnt_2_self_tmp_instant as \n" +
       s"select c.order_src,\n        'overdue0' title\n       ,count(distinct c.order1) cnt \n " +
       s"      from \n   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n " +
       s"  and c.current_due_day1<=0  --当前\n   and c.degree_type='1' and c.apply_time_src>c.apply_time1\n" +
@@ -281,21 +283,21 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"      ,count(distinct c.order1) cnt \n       from \n   fqz_order_data_inc c \n" +
       s" where c.type1='pass'       --通过 \n   and c.history_due_day1>30  --历史\n " +
       s"  and c.degree_type='1' and c.apply_time_src>c.apply_time1  \n   --一度关联自身\n " +
-      s"  and c.cert_no_src = c.cert_no1\n   group by c.order_src;\n" +
-      s"--合并一度关联 逾期数据(关联自身)\n" +
-      s"drop table  lkl_card_score.overdue_cnt_2_self_instant;\n" +
-      s"create table  lkl_card_score.overdue_cnt_2_self_instant  as\n" +
+      s"  and c.cert_no_src = c.cert_no1\n   group by c.order_src\n" +
+      s"--合并一度关联 逾期数据(关联自身)\n" )
+     hc.sql(s"drop table  lkl_card_score.overdue_cnt_2_self_instant\n" )
+      hc.sql(s"create table  lkl_card_score.overdue_cnt_2_self_instant  as\n" +
       s"select order_src,\nsum(case when title= 'overdue0' then cnt else 0 end ) overdue0 ,           \n" +
       s"sum(case when title= 'overdue3' then cnt else 0 end ) overdue3 ,   \n" +
       s"sum(case when title= 'overdue30' then cnt else 0 end ) overdue30 ,  \n" +
       s"sum(case when title= 'overdue0_ls' then cnt else 0 end ) overdue0_ls, \n" +
       s"sum(case when title= 'overdue3_ls' then cnt else 0 end ) overdue3_ls  ,\n" +
       s"sum(case when title= 'overdue30_ls' then cnt else 0 end ) overdue30_ls \n" +
-      s"from  overdue_cnt_2_self_tmp_instant\ngroup by order_src;")
+      s"from  overdue_cnt_2_self_tmp_instant\ngroup by order_src")
 
     //02_0c_overdue_data.sql
-    hc.sql(s"--一度关联排除自身   \ndrop table overdue_cnt_1_instant;\n" +
-      s"create table overdue_cnt_1_instant as \n-- 一度_订单数量  4  \n" +
+    hc.sql(s"--一度关联排除自身   \ndrop table overdue_cnt_1_instant\n" )
+     hc.sql(s"create table overdue_cnt_1_instant as \n-- 一度_订单数量  4  \n" +
       s"SELECT a.order_src,'order_cnt' title, \ncount(distinct a.order1) cnt \n" +
       s"FROM fqz_order_data_inc a     --order订单表现\nwhere a.degree_type='1' \n" +
       s"and a.apply_time_src>a.apply_time1\n--一度关联排除自身\nand a.cert_no_src <> a.cert_no1\n" +
@@ -317,8 +319,9 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"SELECT a.order_src,'pass_cnt' title,count(distinct a.order1) cnt FROM fqz_order_data_inc a" +
       s"     --order订单表现\nwhere a.type1='pass'  and a.degree_type='1' " +
       s"and a.apply_time_src>a.apply_time1\n--一度关联排除自身\nand a.cert_no_src <> a.cert_no1\n" +
-      s"group by a.order_src ;\ndrop table  lkl_card_score.overdue_cnt_1_sum_instant;\n" +
-      s"create table  lkl_card_score.overdue_cnt_1_sum_instant  as\nselect order_src,\n" +
+      s"group by a.order_src " )
+     hc.sql(s"\ndrop table  lkl_card_score.overdue_cnt_1_sum_instant\n" )
+     hc.sql(s"create table  lkl_card_score.overdue_cnt_1_sum_instant  as\nselect order_src,\n" +
       s"sum(case when title= 'order_cnt' then cnt else 0 end ) order_cnt ,           \n" +
       s"sum(case when title= 'id_cnt' then cnt else 0 end ) id_cnt ,\n" +
       s"sum(case when title= 'black_cnt' then cnt else 0 end ) black_cnt ,    \n" +
@@ -327,8 +330,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"group by order_src")
 
     //02_0d_overdue_data.sql
-    hc.sql(s"drop table overdue_cnt_2_tmp_instant;\n" +
-      s"create table overdue_cnt_2_tmp_instant as \nselect c.order_src,\n" +
+    hc.sql(s"drop table overdue_cnt_2_tmp_instant\n" )
+    hc.sql(s"create table overdue_cnt_2_tmp_instant as \nselect c.order_src,\n" +
       s"        'overdue0' title\n       ,count(distinct c.order1) cnt \n       " +
       s"from \n   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n   " +
       s"and c.current_due_day1<=0  --当前\n   and c.degree_type='1' " +
@@ -354,10 +357,10 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"       'overdue30_ls' title\n       ,count(distinct c.order1) cnt \n       from \n" +
       s"   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n " +
       s"  and c.history_due_day1>30  --历史\n   and c.degree_type='1' and c.apply_time_src>c.apply_time1  \n" +
-      s"   --一度关联排除自身\n   and c.cert_no_src <> c.cert_no1\n   group by c.order_src;\n " +
-      s"  \n--合并一度关联 逾期数据(排除自身)\n" +
-      s"drop table  lkl_card_score.overdue_cnt_2_instant;\n" +
-      s"create table  lkl_card_score.overdue_cnt_2_instant  as\nselect order_src,\n" +
+      s"   --一度关联排除自身\n   and c.cert_no_src <> c.cert_no1\n   group by c.order_src\n " +
+      s"  \n--合并一度关联 逾期数据(排除自身)\n" )
+    hc.sql(s"drop table  lkl_card_score.overdue_cnt_2_instant\n" )
+    hc.sql(s"create table  lkl_card_score.overdue_cnt_2_instant  as\nselect order_src,\n" +
       s"sum(case when title= 'overdue0' then cnt else 0 end ) overdue0 ,           \n" +
       s"sum(case when title= 'overdue3' then cnt else 0 end ) overdue3 ,   \n" +
       s"sum(case when title= 'overdue30' then cnt else 0 end ) overdue30 ,  \n" +
@@ -368,9 +371,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"group by order_src")
 
     //02_0e_overdue_data.sql
-    hc.sql(s"-- 2度关联数据\n" +
-      s"drop table overdue_cnt_1_2_instant;\n" +
-      s"create table overdue_cnt_1_2_instant as \n-- 2度_订单数量     \n" +
+      hc.sql(s"drop table overdue_cnt_1_2_instant\n" )
+      hc.sql(s"create table overdue_cnt_1_2_instant as \n-- 2度_订单数量     \n" +
       s"SELECT a.order_src,'order_cnt' title, \ncount(distinct a.order2) cnt \n" +
       s"FROM fqz_order_data_inc a     --order订单表现\nwhere a.degree_type='2' \n" +
       s"and a.apply_time_src>a.apply_time2 --关图的时间都必须在当前进件时间之前\n" +
@@ -394,9 +396,10 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"count(distinct a.order2) cnt \nFROM fqz_order_data_inc a     --order订单表现\n" +
       s"where a.type2='pass'  \nand a.degree_type='2' \n" +
       s"and a.apply_time_src>a.apply_time2 --关图的时间都必须在当前进件时间之前\n" +
-      s"and a.apply_time_src>a.apply_time1\ngroup by a.order_src ;" +
-      s"\n--合并二度关联数据 \ndrop table overdue_cnt_2_sum_instant;\n" +
-      s"create table  lkl_card_score.overdue_cnt_2_sum_instant  as\n" +
+      s"and a.apply_time_src>a.apply_time1\ngroup by a.order_src " +
+      s"\n--合并二度关联数据 \n" )
+        hc.sql(s"drop table overdue_cnt_2_sum_instant\n" )
+        hc.sql(s"create table  lkl_card_score.overdue_cnt_2_sum_instant  as\n" +
       s"select order_src,\nsum(case when title= 'order_cnt' then cnt else 0 end ) order_cnt ,           \n" +
       s"sum(case when title= 'id_cnt' then cnt else 0 end ) id_cnt ,   \n" +
       s"sum(case when title= 'black_cnt' then cnt else 0 end ) black_cnt , \n" +
@@ -405,8 +408,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"group by order_src")
 
     //02_0f_overdue_data.sql
-    hc.sql(s"\ndrop table overdue_cnt_2_2_tmp_instant;\n" +
-      s"create table overdue_cnt_2_2_tmp_instant as \nselect c.order_src,\n" +
+    hc.sql(s"\ndrop table overdue_cnt_2_2_tmp_instant\n" )
+      hc.sql(s"create table overdue_cnt_2_2_tmp_instant as \nselect c.order_src,\n" +
       s"        'overdue0' title\n       ,count(distinct c.order2) cnt \n       from \n" +
       s"   fqz_order_data_inc c \n where c.type2='pass'       --通过 \n" +
       s"   and c.current_due_day2<=0  --当前\n   and c.degree_type='2' \n" +
@@ -431,9 +434,10 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"        'overdue30_ls' title\n       ,count(distinct c.order2) cnt \n       from \n" +
       s"   fqz_order_data_inc c \n where c.type2='pass'       --通过 \n " +
       s"  and c.history_due_day2> 30 --历史\n   and c.degree_type='2' and c.apply_time_src>c.apply_time1 \n" +
-      s"   and c.apply_time_src>c.apply_time2    \n   group by c.order_src\n   ;\n" +
-      s"--合并二度关联 逾期数据\ndrop table  lkl_card_score.overdue_cnt_2_2_instant;\n" +
-      s"create table  lkl_card_score.overdue_cnt_2_2_instant  as\nselect order_src,\n" +
+      s"   and c.apply_time_src>c.apply_time2    \n   group by c.order_src\n   \n" +
+      s"--合并二度关联 逾期数据\n" )
+        hc.sql(s"drop table  lkl_card_score.overdue_cnt_2_2_instant\n" )
+        hc.sql(s"create table  lkl_card_score.overdue_cnt_2_2_instant  as\nselect order_src,\n" +
       s"sum(case when title= 'overdue0' then cnt else 0 end ) overdue0 ,           \n" +
       s"sum(case when title= 'overdue3' then cnt else 0 end ) overdue3 ,   \n" +
       s"sum(case when title= 'overdue30' then cnt else 0 end ) overdue30 ,  \n" +
@@ -444,10 +448,11 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"group by order_src")
 
     //03_overdue_result_all.sql
-    hc.sql(s"drop table order_src_group_instant;\n" +
-      s"create table order_src_group_instant as  \nselect trim(order_src) order_src   \n" +
-      s"from fqz_order_data_inc\ngroup by order_src; \n--宽表合并\n" +
-      s"drop table overdue_result_all_instant;\ncreate table overdue_result_all_instant as \n" +
+    hc.sql(s"drop table order_src_group_instant\n" )
+      hc.sql(s"create table order_src_group_instant as  \nselect trim(order_src) order_src   \n" +
+      s"from fqz_order_data_inc\ngroup by order_src \n--宽表合并\n" )
+        hc.sql(s"drop table overdue_result_all_instant\n" )
+        hc.sql(s"create table overdue_result_all_instant as \n" +
       s"select \na.order_src,\nnvl(b.order_cnt_self,0) as order_cnt_self,\n" +
       s"nvl(b.id_cnt_self,0) as id_cnt_self,\nnvl(b.black_cnt_self,0) as black_cnt_self,\n" +
       s"nvl(b.q_refuse_cnt_self,0) as q_refuse_cnt_self,\nnvl(b.pass_cnt_self,0) as pass_cnt_self,\n" +
@@ -474,10 +479,9 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"left join overdue_cnt_2_instant  e on a.order_src = e.order_src        " +
       s"-- 一度关联 逾期数据(排除自身)\nleft join overdue_cnt_2_sum_instant f on a.order_src = f.order_src" +
       s"     -- 二度关联数据 （订单数量、ID数量、黑合同数量、Q标拒绝数量 ）\n" +
-      s"left join overdue_cnt_2_2_instant g on a.order_src = g.order_src;      " +
-      s"-- 二度关联 逾期数据\n--数据处理，过滤全0值，是否过滤\n" +
-      s"--=====================================================================\n" +
-      s"insert overwrite table overdue_result_all_instant \n" +
+      s"left join overdue_cnt_2_2_instant g on a.order_src = g.order_src      " +
+      s"-- 二度关联 逾期数据\n--数据处理，过滤全0值，是否过滤\n" )
+        hc.sql(s"insert overwrite table overdue_result_all_instant \n" +
       s"select * from overdue_result_all_instant\nwhere !(\n  order_cnt_self         = 0 and \n" +
       s"  id_cnt_self           = 0 and \n  black_cnt_self       = 0 and\n  q_refuse_cnt_self     = 0 " +
       s"and \n  pass_cnt_self         = 0 and \n  overdue0_self         = 0 and \n  " +
@@ -495,20 +499,22 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s" overdue30_ls_2         = 0\n)")
 
     //04_overdue_result_all.sql
-    hc.sql(s"drop table order_src_bian_tmp_instant;\n" +
-      s"create table order_src_bian_tmp_instant as \nselect \na.order_src,\n" +
+    hc.sql(s"drop table order_src_bian_tmp_instant\n" )
+      hc.sql(s"create table order_src_bian_tmp_instant as \nselect \na.order_src,\n" +
       s"concat(a.c1,'|',a.c3) as ljmx,\n1 as depth \nfrom fqz_order_data_inc a\n" +
       s"where a.degree_type = '1' \nand a.apply_time_src>a.apply_time1 \n--一度关联进件为黑\n" +
       s"and a.label1 = 1 \nunion all \nselect \na.order_src,\n" +
       s"concat(a.c1,'|',a.c3,'|',a.c5,'|',a.c7) as ljmx,\n2 as depth \n" +
       s"from fqz_order_data_inc a\nwhere a.degree_type = '2' \nand a.apply_time_src>a.apply_time1 \n" +
-      s"and a.apply_time_src>a.apply_time2    \n--二度关联进件为黑\nand a.label2 = 1;\n" +
-      s"--===========聚合关联边\ndrop table order_src_bian_instant;   \n" +
-      s"create table order_src_bian_instant as \nselect c.order_src," +
+      s"and a.apply_time_src>a.apply_time2    \n--二度关联进件为黑\nand a.label2 = 1\n" +
+      s"--===========聚合关联边\n" )
+        hc.sql(s"drop table order_src_bian_instant   \n" )
+        hc.sql(s"create table order_src_bian_instant as \nselect c.order_src," +
       s"concat_ws(',',collect_set(ljmx)) as ljmx           \n" +
-      s"from  order_src_bian_tmp_instant  c\ngroup by c.order_src;\n\n" +
-      s"--边字段 关联到结果表 \ndrop table overdue_result_all_new_instant;\n" +
-      s"create table overdue_result_all_new_instant as \nselect \n--c.label,\n" +
+      s"from  order_src_bian_tmp_instant  c\ngroup by c.order_src\n\n" +
+      s"--边字段 关联到结果表 \n" )
+        hc.sql(s"drop table overdue_result_all_new_instant\n" )
+        hc.sql(s"create table overdue_result_all_new_instant as \nselect \n--c.label,\n" +
       s"tab.c5 as apply_time,\na.*,b.ljmx\nfrom overdue_result_all_instant a\n" +
       s"left join order_src_bian_instant b on a.order_src=b.order_src\njoin \n" +
       s"(select c0,c5 from one_degree_data c \nwhere year = ${year} " +
@@ -516,17 +522,18 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"on a.order_src = tab.c0")
 
     //05_overdue_result_all_new_woe.sql
-    hc.sql(s"drop table fqz_edge_depth_instant;\n" +
-      s"create table fqz_edge_depth_instant as\n" +
+    hc.sql(s"drop table fqz_edge_depth_instant\n" )
+      hc.sql(s"create table fqz_edge_depth_instant as\n" +
       s"select order_src,max(depth) as depth from order_src_bian_tmp_instant \n" +
-      s"group by order_src;\n\n--统计每个订单边权重 , 每个边woe依赖全量统计\n" +
-      s"drop table fqz_order_edge_woe_instant;\ncreate table fqz_order_edge_woe_instant as \n" +
+      s"group by order_src\n\n--统计每个订单边权重 , 每个边woe依赖全量统计\n" )
+     hc.sql(s"drop table fqz_order_edge_woe_instant\n" )
+     hc.sql(s"create table fqz_order_edge_woe_instant as \n" +
       s"select \na.order_src,\nsum(b.woe) as edge_woe_sum,\nmax(woe) as edge_woe_max,\n" +
       s"min(woe) as edge_woe_min\nfrom \nfqz_edge_data_total_instant a \n" +
       s"join fqz_edge_woe b on a.edge = b.edge   --每个边woe值依赖全局统计\n" +
-      s"group by a.order_src;\n\n--合并最总结果\n" +
-      s"drop table overdue_result_all_new_woe_instant;\n" +
-      s"create table overdue_result_all_new_woe_instant as\n" +
+      s"group by a.order_src\n\n--合并最总结果\n" )
+        hc.sql(s"drop table overdue_result_all_new_woe_instant\n" )
+          hc.sql(s"create table overdue_result_all_new_woe_instant as\n" +
       s"select a.*,\nb.edge_woe_sum,\nb.edge_woe_max,\nb.edge_woe_min,\n" +
       s"c.depth\nfrom overdue_result_all_new_instant a \n" +
       s"left join fqz_order_edge_woe_instant b on a.order_src = b.order_src\n" +
