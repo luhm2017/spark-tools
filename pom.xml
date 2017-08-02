@@ -2,7 +2,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>lakala</groupId>
   <artifactId>spark-tools</artifactId>
+  <packaging>pom</packaging>
   <version>1.0</version>
+  <modules>
+    <module>python</module>
+  </modules>
 
   <properties>
     <maven.compiler.source>1.6</maven.compiler.source>
@@ -10,7 +14,7 @@
     <encoding>UTF-8</encoding>
     <scala.tools.version>2.10</scala.tools.version>
     <scala.version>2.10.4</scala.version>
-    <spark.version>1.6.3</spark.version>
+    <spark.version>1.6.0</spark.version>
     <hadoop.version>2.6.4</hadoop.version>
     <hbase.version>1.2.1</hbase.version>
   </properties>
