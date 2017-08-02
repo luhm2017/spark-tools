@@ -18,10 +18,12 @@ nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 \
 --class lakala.models.antiFraud.AntiFraudScore \
 /home/hadoop/spark-tools-1.0.jar lkl_card_score overdue_result_all_new_woe_instant fqz0720 10.16.65.31 graphdb lkl_123 3306 anti_fraud fqz_score_result fqz_score_variable > ~/log/fqzscore20170727.log  &
 
-
+--executor-memory 50g --num-executors 10 --executor-cores 14
 
 ##fqz hdfs集群提交任务
 --jars hdfs://ns1/user/luhuamin/fqz_script/jars/mysql-connector-java-5.1.37.jar
 
 ##资源配置
 --driver-class-path hdfs://ns1/user/luhuamin/fqz_script/jars/mysql-connector-java-5.1.37.jar --queue szbigdata --executor-memory 120g --num-executors 10 --executor-cores 10 --driver-memory 2g --conf spark.yarn.executor.memoryOverhead=8192 --conf spark.shuffle.io --conf spark.executor.extraJavaOptions="-XX:PermSize=5120M -XX:MaxPermSize=10240M -XX:SurvivorRatio=4 -XX:NewRatio=4 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=15 -XX:CMSInitiatingOccupancyFraction=70 -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps" --conf spark.core.connection.ack.wait.timeout=120 --conf spark.storage.memoryFraction=0.3
+
+cup:150  内存：550G
