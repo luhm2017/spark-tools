@@ -201,7 +201,7 @@ object AntiFraudScoreForTest extends  Logging{
     val user = "root"
     val password = "123_lakala"
     val port = "3306"
-    val mysqlDB = "antifraud"
+    val mysqlDB = "anti_fraud"
     val mysqlTable = "fqz_score_result"
     //构造
     case class resultset(order_id:String, apply_time:String,score:String)

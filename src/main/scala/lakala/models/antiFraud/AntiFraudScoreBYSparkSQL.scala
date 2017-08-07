@@ -194,6 +194,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"oin fqz_order_performance_data_new c on a.c4 = c.order_id\n" +
       s"join graphx_tansported_ordernos d on a.c0 = d.c0\n" +
       s"where a.year = ${year} and a.month = ${month} and a.day = ${day}\n" +
+      s"and c.year = ${year} and c.month = ${month} and c.day = ${day}\n" +
+      s"and d.year = ${year} and d.month = ${month} and d.day = ${day} \n" +
       s"union all\nselect \n'2' as degree_type,\na.c0 as order_src,\na.c10 as cert_no_src,\n" +
       s"a.c9 as apply_time_src,\na.c1,a.c2,a.c3,\na.c4 as order1,\nc.performance as performance1,\n" +
       s"c.apply_time as apply_time1,\nc.type as type1,\nc.history_due_day as history_due_day1,\n" +
@@ -204,7 +206,10 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"join fqz_order_performance_data_new c on a.c4 = c.order_id\n" +
       s"join fqz_order_performance_data_new d on a.c8 = d.order_id\n" +
       s"join graphx_tansported_ordernos e on a.c0 = e.c0\n" +
-      s"where a.year = ${year} and a.month = ${month} and a.day = ${day}")
+      s"where a.year = ${year} and a.month = ${month} and a.day = ${day}\n"+
+      s"and c.year = ${year} and c.month = ${month} and c.day = ${day}\n" +
+      s"and d.year = ${year} and d.month = ${month} and d.day = ${day}\n" +
+      s"and e.year = ${year} and e.month = ${month} and e.day = ${day}\n")
 
     //01_0b_fqz_order_related_graph.sql
     hc.sql(s"drop table fqz_order_data_inc \n")
@@ -432,7 +437,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"  and c.history_due_day2> 3 --历史\n   and c.degree_type='2' and c.apply_time_src>c.apply_time1  \n" +
       s"   and c.apply_time_src>c.apply_time2 \n  group by c.order_src\nunion all\nselect c.order_src,\n" +
       s"        'overdue30_ls' title\n       ,count(distinct c.order2) cnt \n       from \n" +
-      s"   fqz_order_data_inc c \n where c.type2='pass'       --通过 \n " +
+      s"   fqz_order_data_inc c \n where c.type2='pass'       --通过  \n " +
       s"  and c.history_due_day2> 30 --历史\n   and c.degree_type='2' and c.apply_time_src>c.apply_time1 \n" +
       s"   and c.apply_time_src>c.apply_time2    \n   group by c.order_src\n   \n" +
       s"--合并二度关联 逾期数据\n" )
@@ -481,7 +486,9 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"     -- 二度关联数据 （订单数量、ID数量、黑合同数量、Q标拒绝数量 ）\n" +
       s"left join overdue_cnt_2_2_instant g on a.order_src = g.order_src      " +
       s"-- 二度关联 逾期数据\n--数据处理，过滤全0值，是否过滤\n" )
-        hc.sql(s"insert overwrite table overdue_result_all_instant \n" +
+
+    //保留变量值为0的情况，便于反馈统计
+    hc.sql(s"insert overwrite table overdue_result_all_instant \n" +
       s"select * from overdue_result_all_instant\nwhere !(\n  order_cnt_self         = 0 and \n" +
       s"  id_cnt_self           = 0 and \n  black_cnt_self       = 0 and\n  q_refuse_cnt_self     = 0 " +
       s"and \n  pass_cnt_self         = 0 and \n  overdue0_self         = 0 and \n  " +
