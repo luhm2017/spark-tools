@@ -24,6 +24,13 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
   val sc = new SparkContext(sparkConf)
   val hc = new HiveContext(sc)
 
+  sparkConf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+  sparkConf.set("spark.rdd.compress","true")
+  sparkConf.set("spark.hadoop.mapred.output.compress","true")
+  sparkConf.set("spark.hadoop.mapred.output.compression.codec","true")
+  sparkConf.set("spark.hadoop.mapred.output.compression.codec", "org.apache.hadoop.io.compress.GzipCodec")
+  sparkConf.set("spark.hadoop.mapred.output.compression.type", "BLOCK")
+
   def main(args: Array[String]): Unit = {
     if(args.length!=13){
       println("请输入参数：database、table以及mysql相关参数")
@@ -183,7 +190,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
   def processVariable(year:String,month:String,day:String): Unit ={
     hc.sql("use lkl_card_score")
     //01_0a_fqz_order_related_graph.sql
-    hc.sql(s"insert overwrite table fqz_order_related_graph_current partition(year='${year}', month='${month}',day='${day}')\n" +
+    /*hc.sql(s"insert overwrite table fqz_order_related_graph_current partition(year='${year}', month='${month}',day='${day}')\n" +
       s"select\n'1' as degree_type,\na.c0 as order_src,\na.c6 as cert_no_src,\n" +
       s"a.c5 as apply_time_src,\na.c1,a.c2,a.c3,\na.c4 as order1,\nc.performance as performance1,\n" +
       s"c.apply_time as apply_time1,\nc.type as type1,\nc.history_due_day as history_due_day1,\n" +
@@ -220,7 +227,52 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"and a.year = ${year} and a.month = ${month} and a.day = ${day}\n")
     hc.sql(s"insert overwrite table fqz_order_related_graph_current_history\n" +
       s"select a.* from fqz_order_related_graph_current a \n" +
+      s"where a.year = ${year} and a.month = ${month} and a.day = ${day}")*/
+
+    //调整逻辑，提前过滤增量子图
+    //01_0a_fqz_order_related_graph.sql
+    hc.sql(s"drop table graphx_tansported_ordernos_current\n")
+    hc.sql(s"create table graphx_tansported_ordernos_current as\n" +
+      s"select * from graphx_tansported_ordernos a\n" +
       s"where a.year = ${year} and a.month = ${month} and a.day = ${day}")
+    hc.sql("drop table graphx_tansported_ordernos_inc")
+    hc.sql(s"create table graphx_tansported_ordernos_inc as\n" +
+      s"select a.* from graphx_tansported_ordernos_current a\n" +
+      s"left join graphx_tansported_ordernos_history b on a.c0 = b.c0\n" +
+      s"where b.c0 is null")
+    hc.sql("drop table graphx_tansported_ordernos_history")
+    hc.sql("create table graphx_tansported_ordernos_history as \n" +
+      "select * from graphx_tansported_ordernos_current")
+
+    //01_0b_fqz_order_related_graph_20170808.sql
+    hc.sql("drop table fqz_order_data_inc")
+    hc.sql(s"create table fqz_order_data_inc as \n" +
+      s"select\n'1' as degree_type,\na.c0 as order_src,\na.c6 as cert_no_src,\n" +
+      s"a.c5 as apply_time_src,\na.c1,a.c2,a.c3,\na.c4 as order1,\nc.performance as performance1,\n" +
+      s"c.apply_time as apply_time1,\nc.type as type1,\nc.history_due_day as history_due_day1,\n" +
+      s"c.current_due_day as current_due_day1,\nc.cert_no as cert_no1,\nc.label as label1,\n" +
+      s"'null' as c5,\n'null' as c6,\n'null' as c7,\n'null' as order2,\n'null' as performance2,\n" +
+      s"'null' as apply_time2,\n'null' as type2,\n0 as history_due_day2,\n0 as current_due_day2,\n" +
+      s"'null' as cert_no2,\n0 as label2\nfrom one_degree_data a   \nj" +
+      s"oin fqz_order_performance_data_new c on a.c4 = c.order_id\n" +
+      s"join graphx_tansported_ordernos_inc d on a.c0 = d.c0\n" +
+      s"where a.year = ${year} and a.month = ${month} and a.day = ${day}\n" +
+      s"and c.year = ${year} and c.month = ${month} and c.day = ${day}\n" +
+      s"and d.year = ${year} and d.month = ${month} and d.day = ${day} \n" +
+      s"union all\nselect \n'2' as degree_type,\na.c0 as order_src,\na.c10 as cert_no_src,\n" +
+      s"a.c9 as apply_time_src,\na.c1,a.c2,a.c3,\na.c4 as order1,\nc.performance as performance1,\n" +
+      s"c.apply_time as apply_time1,\nc.type as type1,\nc.history_due_day as history_due_day1,\n" +
+      s"c.current_due_day as current_due_day1,\nc.cert_no as cert_no1,\nc.label as label1,\n" +
+      s"a.c5,a.c6,a.c7,\na.c8 as order2,\nd.performance as performance2,\nd.apply_time as apply_time2,\n" +
+      s"d.type as type2,\nd.history_due_day as history_due_day2,\nd.current_due_day as current_due_day2,\n" +
+      s"d.cert_no as cert_no2,\nd.label as label2\nfrom two_degree_data a  \n" +
+      s"join fqz_order_performance_data_new c on a.c4 = c.order_id\n" +
+      s"join fqz_order_performance_data_new d on a.c8 = d.order_id\n" +
+      s"join graphx_tansported_ordernos_inc e on a.c0 = e.c0\n" +
+      s"where a.year = ${year} and a.month = ${month} and a.day = ${day}\n"+
+      s"and c.year = ${year} and c.month = ${month} and c.day = ${day}\n" +
+      s"and d.year = ${year} and d.month = ${month} and d.day = ${day}\n" +
+      s"and e.year = ${year} and e.month = ${month} and e.day = ${day}\n")
 
     //02_0a_overdue_data.sql
     hc.sql(s"drop table overdue_cnt_self_instant\n")
