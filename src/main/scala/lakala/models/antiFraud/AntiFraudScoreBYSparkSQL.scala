@@ -75,6 +75,9 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
         hc.sql(s"select order_src,apply_time from $database.$table").write
           .mode(SaveMode.Append).saveAsTable("lkl_card_score.fqz_score_fail_record")
     }
+
+    //备份当前已处理数据，用于增量计算
+    incrementCalculateBackup
   }
 
   //训练模型
@@ -167,7 +170,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
     //logWarning(" load to hive success! 该批次总数" + batchCnt)
 
     //发送评分结果到redis
-    sendMsg2Redis(scoreDataFrame,channel,envType)
+    println("start send scoreRsult to redis!!")
+    //sendMsg2Redis(scoreDataFrame,channel,envType)
   }
 
   //send msg to redis
@@ -264,12 +268,11 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"select a.* from graphx_tansported_ordernos_current a\n" +
       s"left join graphx_tansported_ordernos_history b on a.c0 = b.c0\n" +
       s"where b.c0 is null")
-    hc.sql("drop table graphx_tansported_ordernos_history")
+    //避免增量计算缺失数据，数据备份在任务结束后进行
+    /*hc.sql("drop table graphx_tansported_ordernos_history")
     hc.sql("create table graphx_tansported_ordernos_history as \n" +
-      "select * from graphx_tansported_ordernos_current")
+      "select * from graphx_tansported_ordernos_current")*/
 
-    //缓存数据
-    hc.sql("catch table one_degree_data")
     //01_0b_fqz_order_related_graph_20170808.sql
     hc.sql("drop table fqz_order_data_inc")
     hc.sql(s"create table fqz_order_data_inc as \n" +
@@ -532,8 +535,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
 
     //03_overdue_result_all.sql
     hc.sql(s"drop table order_src_group_instant\n" )
-      hc.sql(s"create table order_src_group_instant as  \nselect trim(order_src) order_src   \n" +
-      s"from fqz_order_data_inc\ngroup by order_src \n--宽表合并\n" )
+      hc.sql(s"create table order_src_group_instant as  \nselect trim(c0) order_src   \n" +
+      s"from graphx_tansported_ordernos_inc\ngroup by c0 \n--宽表合并\n" )
         hc.sql(s"drop table overdue_result_all_instant\n" )
         hc.sql(s"create table overdue_result_all_instant as \n" +
       s"select \na.order_src,\nnvl(b.order_cnt_self,0) as order_cnt_self,\n" +
@@ -566,7 +569,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"-- 二度关联 逾期数据\n--数据处理，过滤全0值，是否过滤\n" )
 
     //保留变量值为0的情况，便于反馈统计
-    hc.sql(s"insert overwrite table overdue_result_all_instant \n" +
+    /*hc.sql(s"insert overwrite table overdue_result_all_instant \n" +
       s"select * from overdue_result_all_instant\nwhere !(\n  order_cnt_self         = 0 and \n" +
       s"  id_cnt_self           = 0 and \n  black_cnt_self       = 0 and\n  q_refuse_cnt_self     = 0 " +
       s"and \n  pass_cnt_self         = 0 and \n  overdue0_self         = 0 and \n  " +
@@ -581,7 +584,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"  q_refuse_cnt_2         = 0 and \n  pass_cnt_2           = 0 and \n " +
       s" overdue0_2           = 0 and \n  overdue3_2           = 0 and \n  overdue30_2           = 0 and \n" +
       s"  overdue0_ls_2         = 0 and \n  overdue3_ls_2         = 0 and \n " +
-      s" overdue30_ls_2         = 0\n)")
+      s" overdue30_ls_2         = 0\n)")*/
 
     //04_overdue_result_all.sql
     hc.sql(s"drop table order_src_bian_tmp_instant\n" )
@@ -600,10 +603,10 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"--边字段 关联到结果表 \n" )
         hc.sql(s"drop table overdue_result_all_new_instant\n" )
         hc.sql(s"create table overdue_result_all_new_instant as \nselect \n--c.label,\n" +
-      s"tab.c5 as apply_time,\na.*,b.ljmx\nfrom overdue_result_all_instant a\n" +
+      s"tab.c1 as apply_time,\na.*,b.ljmx\nfrom overdue_result_all_instant a\n" +
       s"left join order_src_bian_instant b on a.order_src=b.order_src\njoin \n" +
-      s"(select c0,c5 from one_degree_data c \nwhere year = ${year} " +
-      s"and month = ${month} and day = ${day}\ngroup by c0,c5) tab " +
+      s"(select c0,c1 from graphx_tansported_ordernos_inc c \nwhere year = ${year} " +
+      s"and month = ${month} and day = ${day}\ngroup by c0,c1) tab " +
       s"on a.order_src = tab.c0")
 
     //05_overdue_result_all_new_woe.sql
@@ -960,4 +963,10 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"left join fqz_edge_depth_instant c on a.order_src = c.order_src").registerTempTable("overdue_result_all_new_woe_instant")
   }
 
+  //备份当前已处理数据，用于增量计算
+  def incrementCalculateBackup(): Unit ={
+    hc.sql("drop table graphx_tansported_ordernos_history")
+    hc.sql("create table graphx_tansported_ordernos_history as \n" +
+      "select * from graphx_tansported_ordernos_current")
+  }
 }
