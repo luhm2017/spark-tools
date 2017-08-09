@@ -11,7 +11,7 @@ import org.apache.spark.mllib.tree.{GradientBoostedTrees, RandomForest}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
-import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
+import org.apache.spark.sql.{DataFrame, Row, SaveMode}
 import org.apache.spark.{SparkConf, SparkContext}
 import redis.clients.jedis.JedisCluster
 
@@ -211,7 +211,6 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
   }
 
   //spark sql加工变量
-  //异常处理
   def processVariable(year:String,month:String,day:String): Unit ={
     hc.sql("use lkl_card_score")
     //01_0a_fqz_order_related_graph.sql
@@ -269,6 +268,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
     hc.sql("create table graphx_tansported_ordernos_history as \n" +
       "select * from graphx_tansported_ordernos_current")
 
+    //缓存数据
+    hc.sql("catch table one_degree_data")
     //01_0b_fqz_order_related_graph_20170808.sql
     hc.sql("drop table fqz_order_data_inc")
     hc.sql(s"create table fqz_order_data_inc as \n" +
@@ -622,6 +623,341 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       s"c.depth\nfrom overdue_result_all_new_instant a \n" +
       s"left join fqz_order_edge_woe_instant b on a.order_src = b.order_src\n" +
       s"left join fqz_edge_depth_instant c on a.order_src = c.order_src")
+  }
+
+  //spark sql计算变量，使用registerTempTable方式
+  def processVariableByTempTable(year:String,month:String,day:String): Unit ={
+    hc.sql("use lkl_card_score")
+    //调整逻辑，提前过滤增量子图
+    //01_0a_fqz_order_related_graph.sql
+    hc.sql(s"select * from graphx_tansported_ordernos a\n" +
+      s"where a.year = ${year} and a.month = ${month} and a.day = ${day}")
+      .registerTempTable("graphx_tansported_ordernos_current")
+    hc.sql(s"select a.* from graphx_tansported_ordernos_current a\n" +
+      s"left join graphx_tansported_ordernos_history b on a.c0 = b.c0\n" +
+      s"where b.c0 is null").registerTempTable("graphx_tansported_ordernos_inc")
+    hc.sql("select * from graphx_tansported_ordernos_current").registerTempTable("graphx_tansported_ordernos_history")
+
+    //缓存数据
+    hc.sql("catch table one_degree_data")
+    //01_0b_fqz_order_related_graph_20170808.sql
+    hc.sql(s"select\n'1' as degree_type,\na.c0 as order_src,\na.c6 as cert_no_src,\n" +
+      s"a.c5 as apply_time_src,\na.c1,a.c2,a.c3,\na.c4 as order1,\nc.performance as performance1,\n" +
+      s"c.apply_time as apply_time1,\nc.type as type1,\nc.history_due_day as history_due_day1,\n" +
+      s"c.current_due_day as current_due_day1,\nc.cert_no as cert_no1,\nc.label as label1,\n" +
+      s"'null' as c5,\n'null' as c6,\n'null' as c7,\n'null' as order2,\n'null' as performance2,\n" +
+      s"'null' as apply_time2,\n'null' as type2,\n0 as history_due_day2,\n0 as current_due_day2,\n" +
+      s"'null' as cert_no2,\n0 as label2\nfrom one_degree_data a   \nj" +
+      s"oin fqz_order_performance_data_new c on a.c4 = c.order_id\n" +
+      s"join graphx_tansported_ordernos_inc d on a.c0 = d.c0\n" +
+      s"where a.year = ${year} and a.month = ${month} and a.day = ${day}\n" +
+      s"and c.year = ${year} and c.month = ${month} and c.day = ${day}\n" +
+      s"and d.year = ${year} and d.month = ${month} and d.day = ${day} \n" +
+      s"union all\nselect \n'2' as degree_type,\na.c0 as order_src,\na.c10 as cert_no_src,\n" +
+      s"a.c9 as apply_time_src,\na.c1,a.c2,a.c3,\na.c4 as order1,\nc.performance as performance1,\n" +
+      s"c.apply_time as apply_time1,\nc.type as type1,\nc.history_due_day as history_due_day1,\n" +
+      s"c.current_due_day as current_due_day1,\nc.cert_no as cert_no1,\nc.label as label1,\n" +
+      s"a.c5,a.c6,a.c7,\na.c8 as order2,\nd.performance as performance2,\nd.apply_time as apply_time2,\n" +
+      s"d.type as type2,\nd.history_due_day as history_due_day2,\nd.current_due_day as current_due_day2,\n" +
+      s"d.cert_no as cert_no2,\nd.label as label2\nfrom two_degree_data a  \n" +
+      s"join fqz_order_performance_data_new c on a.c4 = c.order_id\n" +
+      s"join fqz_order_performance_data_new d on a.c8 = d.order_id\n" +
+      s"join graphx_tansported_ordernos_inc e on a.c0 = e.c0\n" +
+      s"where a.year = ${year} and a.month = ${month} and a.day = ${day}\n"+
+      s"and c.year = ${year} and c.month = ${month} and c.day = ${day}\n" +
+      s"and d.year = ${year} and d.month = ${month} and d.day = ${day}\n" +
+      s"and e.year = ${year} and e.month = ${month} and e.day = ${day}\n").registerTempTable("fqz_order_data_inc")
+
+    //02_0a_overdue_data.sql
+    hc.sql(s"SELECT a.order_src,'order_cnt' title, \ncount(distinct a.order1) cnt \n" +
+      s"FROM fqz_order_data_inc a     --order订单表现\n" +
+      s"where a.degree_type='1' \nand a.apply_time_src>a.apply_time1\n" +
+      s"and a.cert_no_src = a.cert_no1\ngroup by  a.order_src    \n" +
+      s"union all \n-- 一度关联自身_ID数量  \n" +
+      s"SELECT a.order_src,'id_cnt' title,count(distinct a.cert_no1) cnt " +
+      s"FROM fqz_order_data_inc a     --order订单表现\n" +
+      s"where a.degree_type='1' and a.apply_time_src>a.apply_time1\n" +
+      s"and a.cert_no_src = a.cert_no1\ngroup by a.order_src \n" +
+      s"union all\n-- 一度关联自身_黑合同数量\n" +
+      s"SELECT a.order_src,'black_cnt' title,count(distinct a.order1) cnt " +
+      s"FROM fqz_order_data_inc a     --order订单表现\n" +
+      s"where a.degree_type='1' and a.apply_time_src>a.apply_time1\n" +
+      s"and a.cert_no_src = a.cert_no1 and a.label1 = 1\n" +
+      s"group by a.order_src\n-- 一度关联自身_Q标拒绝数量  1  \n" +
+      s"union all \n" +
+      s"SELECT a.order_src,'q_refuse_cnt' title,count(distinct a.order1) cnt " +
+      s"FROM fqz_order_data_inc a     --order订单表现  \n" +
+      s"where performance1='q_refuse' and a.degree_type='1' and a.apply_time_src>a.apply_time1\n" +
+      s"and a.cert_no_src = a.cert_no1\ngroup by a.order_src \n" +
+      s"union all\n-- 一度关联自身_通过合同数量 \n" +
+      s"SELECT a.order_src,'pass_cnt' title,count(distinct a.order1) cnt " +
+      s"FROM fqz_order_data_inc a     --order订单表现\n" +
+      s"where a.type1='pass'  and a.degree_type='1' and a.apply_time_src>a.apply_time1\n" +
+      s"and a.cert_no_src = a.cert_no1\ngroup by a.order_src \n" +
+      s"--合并数据  一度关联自身\n" ).registerTempTable("overdue_cnt_self_instant")
+    hc.sql(s"select order_src,\nsum(case when title= 'order_cnt' then cnt else 0 end ) order_cnt_self , \n" +
+      s"sum(case when title= 'id_cnt' then cnt else 0 end ) id_cnt_self ,   \n" +
+      s"sum(case when title= 'black_cnt' then cnt else 0 end ) black_cnt_self , \n" +
+      s"sum(case when title= 'q_refuse_cnt' then cnt else 0 end ) q_refuse_cnt_self,    \n" +
+      s"sum(case when title= 'pass_cnt' then cnt else 0 end ) pass_cnt_self \n" +
+      s"from  overdue_cnt_self_instant\ngroup by order_src").registerTempTable("overdue_cnt_self_sum_instant")
+
+    //02_0b_overdue_data.sql
+    hc.sql(s"select c.order_src,\n        'overdue0' title\n       ,count(distinct c.order1) cnt \n " +
+      s"      from \n   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n " +
+      s"  and c.current_due_day1<=0  --当前\n   and c.degree_type='1' and c.apply_time_src>c.apply_time1\n" +
+      s"   --一度关联自身\n   and c.cert_no_src = c.cert_no1\n   group by c.order_src\n" +
+      s"union all\nselect c.order_src,\n        'overdue3' title\n       ,count(distinct c.order1) cnt \n " +
+      s"      from \n   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n" +
+      s"   and c.current_due_day1>3  --当前\n   and c.degree_type='1' and c.apply_time_src>c.apply_time1  \n" +
+      s"   --一度关联自身\n   and c.cert_no_src = c.cert_no1\n  group by c.order_src\n" +
+      s"union all\nselect c.order_src,\n        'overdue30' title\n       ,count(distinct c.order1) cnt \n " +
+      s"      from \n   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n" +
+      s"   and c.current_due_day1>30 --当前\n   and c.degree_type='1' and c.apply_time_src>c.apply_time1\n" +
+      s"   --一度关联自身\n   and c.cert_no_src = c.cert_no1\n  group by c.order_src \n" +
+      s"union all\n--历史逾期\nselect c.order_src,\n        'overdue0_ls' title\n" +
+      s"       ,count(distinct c.order1) cnt \n       from \n   fqz_order_data_inc c \n" +
+      s" where c.type1='pass'       --通过 \n   and c.history_due_day1<=0  --历史\n " +
+      s"  and c.degree_type='1' and c.apply_time_src>c.apply_time1\n   --一度关联自身\n " +
+      s"  and c.cert_no_src = c.cert_no1   \n  group by c.order_src\nunion all\n" +
+      s"select c.order_src,\n        'overdue3_ls' title\n       ,count(distinct c.order1) cnt \n" +
+      s"       from \n   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n" +
+      s"   and c.history_due_day1>3 --历史\n   and c.degree_type='1' and c.apply_time_src>c.apply_time1\n " +
+      s"  --一度关联自身\n   and c.cert_no_src = c.cert_no1   \n  group by c.order_src\n" +
+      s"union all\nselect c.order_src,\n        'overdue30_ls' title\n " +
+      s"      ,count(distinct c.order1) cnt \n       from \n   fqz_order_data_inc c \n" +
+      s" where c.type1='pass'       --通过 \n   and c.history_due_day1>30  --历史\n " +
+      s"  and c.degree_type='1' and c.apply_time_src>c.apply_time1  \n   --一度关联自身\n " +
+      s"  and c.cert_no_src = c.cert_no1\n   group by c.order_src\n" +
+      s"--合并一度关联 逾期数据(关联自身)\n" ).registerTempTable("overdue_cnt_2_self_tmp_instant")
+    hc.sql(s"select order_src,\nsum(case when title= 'overdue0' then cnt else 0 end ) overdue0 ,           \n" +
+      s"sum(case when title= 'overdue3' then cnt else 0 end ) overdue3 ,   \n" +
+      s"sum(case when title= 'overdue30' then cnt else 0 end ) overdue30 ,  \n" +
+      s"sum(case when title= 'overdue0_ls' then cnt else 0 end ) overdue0_ls, \n" +
+      s"sum(case when title= 'overdue3_ls' then cnt else 0 end ) overdue3_ls  ,\n" +
+      s"sum(case when title= 'overdue30_ls' then cnt else 0 end ) overdue30_ls \n" +
+      s"from  overdue_cnt_2_self_tmp_instant\ngroup by order_src").registerTempTable("overdue_cnt_2_self_instant")
+
+    //02_0c_overdue_data.sql
+    hc.sql(s"SELECT a.order_src,'order_cnt' title, \ncount(distinct a.order1) cnt \n" +
+      s"FROM fqz_order_data_inc a     --order订单表现\nwhere a.degree_type='1' \n" +
+      s"and a.apply_time_src>a.apply_time1\n--一度关联排除自身\nand a.cert_no_src <> a.cert_no1\n" +
+      s"group by  a.order_src    \nunion all \n-- 一度_ID数量    \n" +
+      s"SELECT a.order_src,'id_cnt' title,count(distinct a.cert_no1) cnt " +
+      s"FROM fqz_order_data_inc a     --order订单表现\n" +
+      s"where a.degree_type='1' and a.apply_time_src>a.apply_time1\n" +
+      s"--一度关联排除自身\nand a.cert_no_src <> a.cert_no1\n" +
+      s"group by a.order_src \nunion all\n-- 一度关联自身_黑合同数量\n" +
+      s"SELECT a.order_src,'black_cnt' title,count(distinct a.order1) cnt " +
+      s"FROM fqz_order_data_inc a     --order订单表现\nwhere a.degree_type='1' " +
+      s"and a.apply_time_src>a.apply_time1\nand a.cert_no_src <> a.cert_no1 and a.label1 = 1\n" +
+      s"group by a.order_src\n-- 一度_Q标拒绝数量  1  \nunion all \n" +
+      s"SELECT a.order_src,'q_refuse_cnt' title,count(distinct a.order1) cnt " +
+      s"FROM fqz_order_data_inc a     --order订单表现  \n" +
+      s"where performance1='q_refuse' and a.degree_type='1' and a.apply_time_src>a.apply_time1\n" +
+      s"--一度关联排除自身\nand a.cert_no_src <> a.cert_no1\ngroup by a.order_src \n" +
+      s"union all\n-- 一度_通过合同数量  2  \n" +
+      s"SELECT a.order_src,'pass_cnt' title,count(distinct a.order1) cnt FROM fqz_order_data_inc a" +
+      s"     --order订单表现\nwhere a.type1='pass'  and a.degree_type='1' " +
+      s"and a.apply_time_src>a.apply_time1\n--一度关联排除自身\nand a.cert_no_src <> a.cert_no1\n" +
+      s"group by a.order_src " ).registerTempTable("overdue_cnt_1_instant")
+    hc.sql(s"select order_src,\n" +
+      s"sum(case when title= 'order_cnt' then cnt else 0 end ) order_cnt ,           \n" +
+      s"sum(case when title= 'id_cnt' then cnt else 0 end ) id_cnt ,\n" +
+      s"sum(case when title= 'black_cnt' then cnt else 0 end ) black_cnt ,    \n" +
+      s"sum(case when title= 'q_refuse_cnt' then cnt else 0 end ) q_refuse_cnt ,    \n" +
+      s"sum(case when title= 'pass_cnt' then cnt else 0 end ) pass_cnt \nfrom  overdue_cnt_1_instant\n" +
+      s"group by order_src").registerTempTable("overdue_cnt_1_sum_instant")
+
+    //02_0d_overdue_data.sql
+    hc.sql(s"select c.order_src,\n" +
+      s"        'overdue0' title\n       ,count(distinct c.order1) cnt \n       " +
+      s"from \n   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n   " +
+      s"and c.current_due_day1<=0  --当前\n   and c.degree_type='1' " +
+      s"and c.apply_time_src>c.apply_time1\n   --一度关联排除自身\n   " +
+      s"and c.cert_no_src <> c.cert_no1\n   group by c.order_src\n" +
+      s"union all\nselect c.order_src,\n        'overdue3' title\n       ,count(distinct c.order1) cnt \n" +
+      s"       from \n   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n   " +
+      s"and c.current_due_day1>3 --当前 \n   and c.degree_type='1' and c.apply_time_src>c.apply_time1  \n" +
+      s"   --一度关联排除自身\n   and c.cert_no_src <> c.cert_no1\n  group by c.order_src\nunion all\n" +
+      s"select c.order_src,\n        'overdue30' title\n       ,count(distinct c.order1) cnt \n" +
+      s"       from \n   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n" +
+      s"   and c.current_due_day1>30 --当前\n   and c.degree_type='1' and c.apply_time_src>c.apply_time1\n" +
+      s"   --一度关联排除自身\n   and c.cert_no_src <> c.cert_no1\n  group by c.order_src \n" +
+      s"union all\n--历史逾期\nselect c.order_src,\n        'overdue0_ls' title\n" +
+      s"       ,count(distinct c.order1) cnt \n       from \n   fqz_order_data_inc c \n" +
+      s" where c.type1='pass'       --通过 \n   and c.history_due_day1<=0  --历史\n" +
+      s"   and c.degree_type='1' and c.apply_time_src>c.apply_time1\n   --一度关联排除自身\n" +
+      s"   and c.cert_no_src <> c.cert_no1   \n  group by c.order_src\nunion all\nselect c.order_src,\n" +
+      s"        'overdue3_ls' title\n       ,count(distinct c.order1) cnt \n       from \n" +
+      s"   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n   and c.history_due_day1>3 --历史\n " +
+      s"  and c.degree_type='1' and c.apply_time_src>c.apply_time1\n   --一度关联排除自身\n" +
+      s"   and c.cert_no_src <> c.cert_no1   \n  group by c.order_src\nunion all\nselect c.order_src,\n " +
+      s"       'overdue30_ls' title\n       ,count(distinct c.order1) cnt \n       from \n" +
+      s"   fqz_order_data_inc c \n where c.type1='pass'       --通过 \n " +
+      s"  and c.history_due_day1>30  --历史\n   and c.degree_type='1' and c.apply_time_src>c.apply_time1  \n" +
+      s"   --一度关联排除自身\n   and c.cert_no_src <> c.cert_no1\n   group by c.order_src\n " +
+      s"  \n--合并一度关联 逾期数据(排除自身)\n" ).registerTempTable("overdue_cnt_2_tmp_instant")
+    hc.sql(s"select order_src,\n" +
+      s"sum(case when title= 'overdue0' then cnt else 0 end ) overdue0 ,           \n" +
+      s"sum(case when title= 'overdue3' then cnt else 0 end ) overdue3 ,   \n" +
+      s"sum(case when title= 'overdue30' then cnt else 0 end ) overdue30 ,  \n" +
+      s"sum(case when title= 'overdue0_ls' then cnt else 0 end ) overdue0_ls, \n" +
+      s"sum(case when title= 'overdue3_ls' then cnt else 0 end ) overdue3_ls  ,\n" +
+      s"sum(case when title= 'overdue30_ls' then cnt else 0 end ) overdue30_ls \n" +
+      s"from  overdue_cnt_2_tmp_instant\n" +
+      s"group by order_src").registerTempTable("overdue_cnt_2_instant")
+
+    //02_0e_overdue_data.sql
+    hc.sql(s"SELECT a.order_src,'order_cnt' title, \ncount(distinct a.order2) cnt \n" +
+      s"FROM fqz_order_data_inc a     --order订单表现\nwhere a.degree_type='2' \n" +
+      s"and a.apply_time_src>a.apply_time2 --关图的时间都必须在当前进件时间之前\n" +
+      s"and a.apply_time_src>a.apply_time1\ngroup by  a.order_src    \n" +
+      s"union all \n-- 2度_ID数量     \nSELECT a.order_src,'id_cnt' title,\n" +
+      s"count(distinct a.cert_no2) cnt \nFROM fqz_order_data_inc a     --order订单表现\n" +
+      s"where a.degree_type='2' \n" +
+      s"and a.apply_time_src>a.apply_time2 --关图的时间都必须在当前进件时间之前\n" +
+      s"and a.apply_time_src>a.apply_time1\ngroup by a.order_src \n" +
+      s"union all\n-- 2度_黑合同数量\n" +
+      s"SELECT a.order_src,'black_cnt' title,count(distinct a.order2) cnt " +
+      s"FROM fqz_order_data_inc a     --order订单表现\nwhere a.degree_type='2' \n" +
+      s"and a.apply_time_src>a.apply_time2 --关图的时间都必须在当前进件时间之前 \n" +
+      s"and a.apply_time_src>a.apply_time1\nand a.label2 = 1\ngroup by a.order_src\n" +
+      s"-- 2度_Q标拒绝数量  2  \nunion all \nSELECT a.order_src,'q_refuse_cnt' title,\n" +
+      s"count(distinct a.order2) cnt \nFROM fqz_order_data_inc a     --order订单表现  \n" +
+      s"where performance2='q_refuse' \nand a.degree_type='2' \n" +
+      s"and a.apply_time_src>a.apply_time2 --关图的时间都必须在当前进件时间之前 \n" +
+      s"and a.apply_time_src>a.apply_time1\ngroup by a.order_src \nunion all\n" +
+      s"-- 2度_通过合同数量  2  \nSELECT a.order_src,'pass_cnt' title,\n" +
+      s"count(distinct a.order2) cnt \nFROM fqz_order_data_inc a     --order订单表现\n" +
+      s"where a.type2='pass'  \nand a.degree_type='2' \n" +
+      s"and a.apply_time_src>a.apply_time2 --关图的时间都必须在当前进件时间之前\n" +
+      s"and a.apply_time_src>a.apply_time1\ngroup by a.order_src " +
+      s"\n--合并二度关联数据 \n" ).registerTempTable("overdue_cnt_1_2_instant")
+    hc.sql(s"select order_src,\nsum(case when title= 'order_cnt' then cnt else 0 end ) order_cnt ,           \n" +
+      s"sum(case when title= 'id_cnt' then cnt else 0 end ) id_cnt ,   \n" +
+      s"sum(case when title= 'black_cnt' then cnt else 0 end ) black_cnt , \n" +
+      s"sum(case when title= 'q_refuse_cnt' then cnt else 0 end ) q_refuse_cnt ,    \n" +
+      s"sum(case when title= 'pass_cnt' then cnt else 0 end ) pass_cnt \nfrom  overdue_cnt_1_2_instant\n" +
+      s"group by order_src").registerTempTable("overdue_cnt_2_sum_instant")
+
+    //02_0f_overdue_data.sql
+    hc.sql(s"select c.order_src,\n" +
+      s"        'overdue0' title\n       ,count(distinct c.order2) cnt \n       from \n" +
+      s"   fqz_order_data_inc c \n where c.type2='pass'       --通过 \n" +
+      s"   and c.current_due_day2<=0  --当前\n   and c.degree_type='2' \n" +
+      s"   and c.apply_time_src>c.apply_time1  \n   and c.apply_time_src>c.apply_time2 \n" +
+      s"   group by c.order_src\nunion all\nselect c.order_src,\n        'overdue3' title\n " +
+      s"      ,count(distinct c.order2) cnt \n       from \n   fqz_order_data_inc c \n" +
+      s" where c.type2='pass'       --通过 \n   and c.current_due_day2>3 --当前 \n" +
+      s"   and c.degree_type='2' and c.apply_time_src>c.apply_time1 \n" +
+      s"   and c.apply_time_src>c.apply_time2    \n  group by c.order_src\nunion all\n" +
+      s"select c.order_src,\n        'overdue30' title\n       ,count(distinct c.order2) cnt \n" +
+      s"       from \n   fqz_order_data_inc c \n where c.type2='pass'       --通过 \n" +
+      s"   and c.current_due_day2>30  --当前\n   and c.degree_type='2' and c.apply_time_src>c.apply_time1 \n" +
+      s"   and c.apply_time_src>c.apply_time2 \n  group by c.order_src \nunion all\nselect c.order_src,\n" +
+      s"        'overdue0_ls' title\n       ,count(distinct c.order2) cnt \n       from \n" +
+      s"   fqz_order_data_inc c \n where c.type2='pass'       --通过 \n " +
+      s"  and c.history_due_day2<=0 --历史\n   and c.degree_type='2' and c.apply_time_src>c.apply_time1 \n" +
+      s"   and c.apply_time_src>c.apply_time2    \n  group by c.order_src\nunion all\nselect c.order_src,\n" +
+      s"        'overdue3_ls' title\n       ,count(distinct c.order2) cnt \n       from \n" +
+      s"   fqz_order_data_inc c \n where c.type2='pass'       --通过 \n " +
+      s"  and c.history_due_day2> 3 --历史\n   and c.degree_type='2' and c.apply_time_src>c.apply_time1  \n" +
+      s"   and c.apply_time_src>c.apply_time2 \n  group by c.order_src\nunion all\nselect c.order_src,\n" +
+      s"        'overdue30_ls' title\n       ,count(distinct c.order2) cnt \n       from \n" +
+      s"   fqz_order_data_inc c \n where c.type2='pass'       --通过  \n " +
+      s"  and c.history_due_day2> 30 --历史\n   and c.degree_type='2' and c.apply_time_src>c.apply_time1 \n" +
+      s"   and c.apply_time_src>c.apply_time2    \n   group by c.order_src\n   \n" +
+      s"--合并二度关联 逾期数据\n" ).registerTempTable("overdue_cnt_2_2_tmp_instant")
+    hc.sql(s"select order_src,\n" +
+      s"sum(case when title= 'overdue0' then cnt else 0 end ) overdue0 ,           \n" +
+      s"sum(case when title= 'overdue3' then cnt else 0 end ) overdue3 ,   \n" +
+      s"sum(case when title= 'overdue30' then cnt else 0 end ) overdue30 ,  \n" +
+      s"sum(case when title= 'overdue0_ls' then cnt else 0 end ) overdue0_ls, \n" +
+      s"sum(case when title= 'overdue3_ls' then cnt else 0 end ) overdue3_ls  ,\n" +
+      s"sum(case when title= 'overdue30_ls' then cnt else 0 end ) overdue30_ls \n" +
+      s"from  overdue_cnt_2_2_tmp_instant\n" +
+      s"group by order_src").registerTempTable("overdue_cnt_2_2_instant")
+
+    //03_overdue_result_all.sql
+    hc.sql(s"select trim(order_src) order_src   \n" +
+      s"from fqz_order_data_inc\ngroup by order_src \n--宽表合并\n" ).registerTempTable("order_src_group_instant")
+    hc.sql(s"select \na.order_src,\nnvl(b.order_cnt_self,0) as order_cnt_self,\n" +
+      s"nvl(b.id_cnt_self,0) as id_cnt_self,\nnvl(b.black_cnt_self,0) as black_cnt_self,\n" +
+      s"nvl(b.q_refuse_cnt_self,0) as q_refuse_cnt_self,\nnvl(b.pass_cnt_self,0) as pass_cnt_self,\n" +
+      s"nvl(c.overdue0,0) as overdue0_self,\nnvl(c.overdue3,0) as overdue3_self,\n" +
+      s"nvl(c.overdue30,0) as overdue30_self,\nnvl(c.overdue0_ls,0) as overdue0_ls_self,\n" +
+      s"nvl(c.overdue3_ls,0) as overdue3_ls_self,\nnvl(c.overdue30_ls,0) as overdue30_ls_self,\n" +
+      s"nvl(d.order_cnt,0) as order_cnt,\nnvl(d.id_cnt,0) as id_cnt,\n" +
+      s"nvl(d.black_cnt,0) as black_cnt,\nnvl(d.q_refuse_cnt,0) as q_refuse_cnt,\n" +
+      s"nvl(d.pass_cnt,0) as pass_cnt,\nnvl(e.overdue0,0) as overdue0,\nnvl(e.overdue3,0) as overdue3,\n" +
+      s"nvl(e.overdue30,0) as overdue30,\nnvl(e.overdue0_ls,0) as overdue0_ls ,\n" +
+      s"nvl(e.overdue3_ls,0) as overdue3_ls,\nnvl(e.overdue30_ls,0) as overdue30_ls, \n" +
+      s"nvl(f.order_cnt,0) as order_cnt_2,\nnvl(f.id_cnt,0)       as id_cnt_2,\n" +
+      s"nvl(f.black_cnt,0)       as black_cnt_2,\nnvl(f.q_refuse_cnt,0) as q_refuse_cnt_2,\n" +
+      s"nvl(f.pass_cnt,0)    as pass_cnt_2,\nnvl(g.overdue0,0)    as overdue0_2,\n" +
+      s"nvl(g.overdue3,0)    as overdue3_2,\nnvl(g.overdue30,0)   as overdue30_2,\n" +
+      s"nvl(g.overdue0_ls,0) as overdue0_ls_2,\nnvl(g.overdue3_ls,0) as overdue3_ls_2,\n" +
+      s"nvl(g.overdue30_ls,0) as overdue30_ls_2\nfrom order_src_group_instant a   --256441\n" +
+      s"left join overdue_cnt_self_sum_instant b on a.order_src = b.order_src  " +
+      s"-- 一度关联自身（订单数量、ID数量、黑合同数量、Q标拒绝数量 ）\n" +
+      s"left join overdue_cnt_2_self_instant c on a.order_src = c.order_src    " +
+      s"-- 合并一度关联 逾期数据(关联自身)\n" +
+      s"left join overdue_cnt_1_sum_instant d on a.order_src = d.order_src     " +
+      s"-- 一度关联排除自身（订单数量、ID数量、黑合同数量、Q标拒绝数量 ）\n" +
+      s"left join overdue_cnt_2_instant  e on a.order_src = e.order_src        " +
+      s"-- 一度关联 逾期数据(排除自身)\nleft join overdue_cnt_2_sum_instant f on a.order_src = f.order_src" +
+      s"     -- 二度关联数据 （订单数量、ID数量、黑合同数量、Q标拒绝数量 ）\n" +
+      s"left join overdue_cnt_2_2_instant g on a.order_src = g.order_src      " +
+      s"-- 二度关联 逾期数据\n--数据处理，过滤全0值，是否过滤\n" ).registerTempTable("overdue_result_all_instant")
+
+    //保留变量值为0的情况，便于反馈统计
+    hc.sql(s"select * from overdue_result_all_instant\nwhere !(\n  order_cnt_self         = 0 and \n" +
+      s"  id_cnt_self           = 0 and \n  black_cnt_self       = 0 and\n  q_refuse_cnt_self     = 0 " +
+      s"and \n  pass_cnt_self         = 0 and \n  overdue0_self         = 0 and \n  " +
+      s"overdue3_self         = 0 and \n  overdue30_self         = 0 and \n  " +
+      s"overdue0_ls_self      = 0 and \n  overdue3_ls_self      = 0 and \n " +
+      s" overdue30_ls_self     = 0 and \n  order_cnt           = 0 and \n  " +
+      s"id_cnt               = 0 and \n  black_cnt            = 0 and\n  q_refuse_cnt         = 0 and \n" +
+      s"  pass_cnt           = 0 and \n  overdue0           = 0 and \n  overdue3           = 0 and \n" +
+      s"  overdue30           = 0 and \n  overdue0_ls           = 0 and \n " +
+      s" overdue3_ls           = 0 and \n  overdue30_ls         = 0 and \n  " +
+      s"order_cnt_2           = 0 and \n  id_cnt_2           = 0 and\n  black_cnt_2            = 0 and \n" +
+      s"  q_refuse_cnt_2         = 0 and \n  pass_cnt_2           = 0 and \n " +
+      s" overdue0_2           = 0 and \n  overdue3_2           = 0 and \n  overdue30_2           = 0 and \n" +
+      s"  overdue0_ls_2         = 0 and \n  overdue3_ls_2         = 0 and \n " +
+      s" overdue30_ls_2         = 0\n)").registerTempTable("overdue_result_all_instant")
+
+    //04_overdue_result_all.sql
+    hc.sql(s"concat(a.c1,'|',a.c3) as ljmx,\n1 as depth \nfrom fqz_order_data_inc a\n" +
+      s"where a.degree_type = '1' \nand a.apply_time_src>a.apply_time1 \n--一度关联进件为黑\n" +
+      s"and a.label1 = 1 \nunion all \nselect \na.order_src,\n" +
+      s"concat(a.c1,'|',a.c3,'|',a.c5,'|',a.c7) as ljmx,\n2 as depth \n" +
+      s"from fqz_order_data_inc a\nwhere a.degree_type = '2' \nand a.apply_time_src>a.apply_time1 \n" +
+      s"and a.apply_time_src>a.apply_time2    \n--二度关联进件为黑\nand a.label2 = 1\n" +
+      s"--===========聚合关联边\n" ).registerTempTable("order_src_bian_tmp_instant")
+    hc.sql(s"select c.order_src," +
+      s"concat_ws(',',collect_set(ljmx)) as ljmx           \n" +
+      s"from  order_src_bian_tmp_instant  c\ngroup by c.order_src\n\n" +
+      s"--边字段 关联到结果表 \n" ).registerTempTable("order_src_bian_instant")
+    hc.sql(s"select \n--c.label,\n" +
+      s"tab.c5 as apply_time,\na.*,b.ljmx\nfrom overdue_result_all_instant a\n" +
+      s"left join order_src_bian_instant b on a.order_src=b.order_src\njoin \n" +
+      s"(select c0,c5 from one_degree_data c \nwhere year = ${year} " +
+      s"and month = ${month} and day = ${day}\ngroup by c0,c5) tab " +
+      s"on a.order_src = tab.c0").registerTempTable("overdue_result_all_new_instant")
+
+    //05_overdue_result_all_new_woe.sql
+    hc.sql(s"select order_src,max(depth) as depth from order_src_bian_tmp_instant \n" +
+      s"group by order_src\n\n--统计每个订单边权重 , 每个边woe依赖全量统计\n" ).registerTempTable("fqz_edge_depth_instant")
+    hc.sql(s"select \na.order_src,\nsum(b.woe) as edge_woe_sum,\nmax(woe) as edge_woe_max,\n" +
+      s"min(woe) as edge_woe_min\nfrom \nfqz_edge_data_total_instant a \n" +
+      s"join fqz_edge_woe b on a.edge = b.edge   --每个边woe值依赖全局统计\n" +
+      s"group by a.order_src\n\n--合并最总结果\n" ).registerTempTable("fqz_order_edge_woe_instant")
+    hc.sql(s"select a.*,\nb.edge_woe_sum,\nb.edge_woe_max,\nb.edge_woe_min,\n" +
+      s"c.depth\nfrom overdue_result_all_new_instant a \n" +
+      s"left join fqz_order_edge_woe_instant b on a.order_src = b.order_src\n" +
+      s"left join fqz_edge_depth_instant c on a.order_src = c.order_src").registerTempTable("overdue_result_all_new_woe_instant")
   }
 
 }
