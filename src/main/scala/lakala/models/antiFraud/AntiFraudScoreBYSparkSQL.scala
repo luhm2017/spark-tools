@@ -171,7 +171,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
 
     //发送评分结果到redis
     println("start send scoreRsult to redis!!")
-    //sendMsg2Redis(scoreDataFrame,channel,envType)
+    sendMsg2Redis(scoreDataFrame,channel,envType)
   }
 
   //send msg to redis
@@ -180,8 +180,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
       //create jedis
       val jedis: JedisCluster = EnvUtil.jedisCluster(envType)
       println("start send msg to redis")
-      jedis.publish(channel,scoreDataFrame.toJSON.toString())
-      println("---------"+scoreDataFrame.toJSON.toString())
+      jedis.publish(channel,scoreDataFrame.toJSON.collect.mkString("[", "," , "]" ))
+      println("---------"+scoreDataFrame.toJSON.collect.mkString("[", "," , "]" ))
       println("send msg to redis success !!")
     }catch{  case ex: Exception => /*logError(ex.getMessage)*/ println(ex.getMessage)
       //logError("FS2JDBC异常。。。")
