@@ -16,7 +16,9 @@ nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 \
 --jars /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar \
 --driver-class-path /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar \
 --class lakala.models.antiFraud.AntiFraudScore \
-/home/hadoop/spark-tools-1.0.jar lkl_card_score overdue_result_all_new_woe_instant fqz0720 10.16.65.31 graphdb lkl_123 3306 anti_fraud fqz_score_result fqz_score_variable > ~/log/fqzscore20170727.log  &
+/home/hadoop/spark-tools-1.0.jar lkl_card_score overdue_result_all_new_woe_instant fqz0720 10.16.65.31 graphdb lkl_123 3306 anti_fraud fqz_score_result fqz_score_variable creditloan_order_score_result_channel prod  > ~/log/fqzscore20170727.log  &
+
+##新数据
 
 --executor-memory 50g --num-executors 10 --executor-cores 14
 
@@ -25,5 +27,23 @@ nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 \
 
 ##资源配置
 --driver-class-path hdfs://ns1/user/luhuamin/fqz_script/jars/mysql-connector-java-5.1.37.jar --queue szbigdata --executor-memory 120g --num-executors 10 --executor-cores 10 --driver-memory 2g --conf spark.yarn.executor.memoryOverhead=8192 --conf spark.shuffle.io --conf spark.executor.extraJavaOptions="-XX:PermSize=5120M -XX:MaxPermSize=10240M -XX:SurvivorRatio=4 -XX:NewRatio=4 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=15 -XX:CMSInitiatingOccupancyFraction=70 -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps" --conf spark.core.connection.ack.wait.timeout=120 --conf spark.storage.memoryFraction=0.3
-
+--queue szbigdata --driver-class-path hdfs://ns1/user/luhuamin/fqz_script/jars/mysql-connector-java-5.1.37.jar:hdfs://ns1/user/luhuamin/fqz_script/jars/jedis-2.9.0jedis-2.9.0.jar:hdfs://ns1/user/luhuamin/fqz_script/jars/fastjson-1.2.29.jar --jars hdfs://ns1/user/luhuamin/fqz_script/jars/mysql-connector-java-5.1.37.jar:hdfs://ns1/user/luhuamin/fqz_script/jars/jedis-2.9.0jedis-2.9.0.jar:hdfs://ns1/user/luhuamin/fqz_script/jars/fastjson-1.2.29.jar  --executor-memory 50g --num-executors 10 --executor-cores 14 --driver-memory 2g
 cup:150  内存：550G
+
+######################################################
+##fqz变量
+lkl_card_score
+overdue_result_all_new_woe_instant
+fqz0720
+10.19.65.17
+antifraud
+Antifraud$123
+54321
+antifraud
+fqz_score_result
+fqz_variable_result
+${year}
+${month}
+${day}
+creditloan_order_score_result_channel
+prod
