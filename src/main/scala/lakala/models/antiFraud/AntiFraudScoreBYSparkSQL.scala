@@ -5,13 +5,13 @@ import java.util.Properties
 import lakala.utils.EnvUtil
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.mllib.tree.{GradientBoostedTrees, RandomForest}
 import org.apache.spark.mllib.tree.configuration.BoostingStrategy
 import org.apache.spark.mllib.tree.model.GradientBoostedTreesModel
-import org.apache.spark.mllib.tree.{GradientBoostedTrees, RandomForest}
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{DataFrame, Row, SaveMode}
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
-import org.apache.spark.sql.{DataFrame, Row, SaveMode}
 import org.apache.spark.{SparkConf, SparkContext}
 import redis.clients.jedis.JedisCluster
 
@@ -34,7 +34,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
   sparkConf.set("spark.hadoop.mapred.output.compression.type", "BLOCK")
 
   def main(args: Array[String]): Unit = {
-    if(args.length!=15){
+    if(args.length!=16){
       println("请输入参数：database、table以及mysql相关参数")
       System.exit(0)
     }
@@ -59,6 +59,8 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
     //channel
     val channel = args(13)
     val envType = args(14)
+    //flag 是否发送redis
+    val flag = args(15)
 
     //spark sql 加工变量
     processVariable(year,month,day)
@@ -67,7 +69,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
     println("start calculate ....")
     //批量打分
     try{
-      predictScore(database,table,path,host,user,password, port,mysqlDB,mysqlTable,mysqlTableNew,channel,envType)
+      predictScore(database,table,path,host,user,password, port,mysqlDB,mysqlTable,mysqlTableNew,channel,envType,flag)
     }catch {
       case ex: Exception => /*logError(ex.getMessage)*/
         println(ex.getMessage)
@@ -115,7 +117,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
   //预测打分,并保存到mysql
   def predictScore(database:String,table:String,path:String,host:String,user:String,
          password:String, port:String,mysqlDB:String,mysqlTable:String,mysqlTableNew:String,
-         channel:String,envType:String): Unit ={
+         channel:String,envType:String,flag:String): Unit ={
     val variable = hc.sql(s"select * from $database.$table")
     //实时数据
     val dataInstance = hc.sql(s"select * from $database.$table").map {
@@ -155,23 +157,26 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
     //将RDD映射到rowRDD，schema信息应用到rowRDD上
     val scoreDataFrame = hc.createDataFrame(rowRDD,schema)
 
-    //保存结果至mysql和hiv
+    //保存评分结果至mysql和hiv
     //logWarning(" load to mysql success! 该批次总数" + batchCnt)
     println(" load to hive ! 该批次总数" + batchCnt)
     FS2Hive(scoreDataFrame,"fqz_score_result")
     println(" load to mysql ! 该批次总数" + batchCnt)
     FS2JDBC(model,scoreDataFrame,host,user,password,port,mysqlDB,mysqlTable)
 
-    //保存变量至mysql和hive
+    //保存SQL变量至mysql和hive
     println(" variable load to hive ! 该批次总数" + batchCnt)
-    FS2Hive(variable,"fqz_score_variable")
+    FS2Hive(variable,"fqz_variable_result")
     println(" variable load to mysql ! 该批次总数" + batchCnt)
     FS2JDBC(model,variable,host,user,password,port,mysqlDB,mysqlTableNew)
     //logWarning(" load to hive success! 该批次总数" + batchCnt)
 
     //发送评分结果到redis
     println("start send scoreRsult to redis!!")
-    sendMsg2Redis(scoreDataFrame,channel,envType)
+    //flag = 1时，发送redis
+    if(flag == 1){
+      sendMsg2Redis(scoreDataFrame,channel,envType)
+    }
   }
 
   //send msg to redis
