@@ -172,6 +172,18 @@ object AntiFraudScoreForTest extends  Logging{
     //异常处理
   }
 
+  //load hive to mysql
+  def load2JDBC(): Unit ={
+    val host = "10.19.65.17"
+    val user = "antifraud"
+    val password = "Antifraud$123"
+    val port = "54321"
+    val db = "antifraud"
+    val table = "exception_orderno_tbl"
+    val url = s"jdbc:mysql://$host:$port/$db?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false"
+    hc.read.jdbc(url,table,new Properties()).write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.fqz_exception_orderno_tbl")
+  }
+
   //load to mysql
   def FS2JDBC(model:GradientBoostedTreesModel,dataInstance:DataFrame,host:String,user:String,password:String,
               port:String,mysqlDB:String,mysqlTable:String): Unit ={

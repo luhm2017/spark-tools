@@ -1,15 +1,14 @@
 scp spark-csv_2.10-1.5.0.jar graphdb@10.16.65.15:~
 ./spark-shell –master local[4]  --total-executor-cores 20 –jars /home/hadoop/spark-csv_2.10-1.5.0.jar
 
-
+######常用跑数据命令
 nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 8 --num-executors 2 --executor-memory 4g --class lakala.models.LogisticRegressionForLK /home/hadoop/spark-tools-1.0.jar lkl_card_score phone_variable_yfq_creditcardrepayments_train_result 20170523creditcardLogisticRegressionForLK > ~/log/20170523creditcardLogisticRegressionForLK.log  &
 ./spark-shell -- master spark://datacenter17:7077,datacenter18:7077 --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g --jars /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar --driver-class-path /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar
 ./spark-shell –master local[4]  --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g
-
 --files /home/hadoop/hadoop1/spark-1.6.3-bin-hadoop2.6/hive-site.xml
 
 
-##fqz跑数命 令
+##fqz跑数命令  17 18 19三台机器
 nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 \
 --conf spark.locality.wait=1 --conf spark.driver.memory=1g \
 --conf spark.executor.cores=4 --total-executor-cores 8 --num-executors 2 --executor-memory 4g \
@@ -18,18 +17,13 @@ nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 \
 --class lakala.models.antiFraud.AntiFraudScore \
 /home/hadoop/spark-tools-1.0.jar lkl_card_score overdue_result_all_new_woe_instant fqz0720 10.16.65.31 graphdb lkl_123 3306 anti_fraud fqz_score_result fqz_score_variable creditloan_order_score_result_channel prod  > ~/log/fqzscore20170727.log  &
 
-##新数据
 
---executor-memory 50g --num-executors 10 --executor-cores 14
-
-##fqz hdfs集群提交任务
---jars hdfs://ns1/user/luhuamin/fqz_script/jars/mysql-connector-java-5.1.37.jar
-
-##资源配置
+##新集群资源配置
 --driver-class-path hdfs://ns1/user/luhuamin/fqz_script/jars/mysql-connector-java-5.1.37.jar --queue szbigdata --executor-memory 120g --num-executors 10 --executor-cores 10 --driver-memory 2g --conf spark.yarn.executor.memoryOverhead=8192 --conf spark.shuffle.io --conf spark.executor.extraJavaOptions="-XX:PermSize=5120M -XX:MaxPermSize=10240M -XX:SurvivorRatio=4 -XX:NewRatio=4 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=15 -XX:CMSInitiatingOccupancyFraction=70 -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps" --conf spark.core.connection.ack.wait.timeout=120 --conf spark.storage.memoryFraction=0.3
 --queue szbigdata --driver-class-path hdfs://ns1/user/luhuamin/fqz_script/jars/mysql-connector-java-5.1.37.jar:hdfs://ns1/user/luhuamin/fqz_script/jars/jedis-2.9.0jedis-2.9.0.jar:hdfs://ns1/user/luhuamin/fqz_script/jars/fastjson-1.2.29.jar --jars hdfs://ns1/user/luhuamin/fqz_script/jars/mysql-connector-java-5.1.37.jar:hdfs://ns1/user/luhuamin/fqz_script/jars/jedis-2.9.0jedis-2.9.0.jar:hdfs://ns1/user/luhuamin/fqz_script/jars/fastjson-1.2.29.jar  --executor-memory 50g --num-executors 10 --executor-cores 14 --driver-memory 2g
 cup:150  内存：550G
 
+##新集群生产配置
 ######################################################
 ##fqz变量
 lkl_card_score
@@ -47,3 +41,8 @@ ${month}
 ${day}
 creditloan_order_score_result_channel
 prod
+
+
+##GBDT全量训练模型 本地运行
+###########################################################
+nohup ./spark-submit --master local[4]  --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g --class lakala.models.antiFraud.AntiFraudScoreModels /home/hadoop/spark-tools-1.0.jar  > ~/log/fqzscore20170815.log  &
