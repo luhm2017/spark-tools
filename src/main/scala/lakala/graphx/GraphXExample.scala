@@ -1,6 +1,8 @@
 package lakala.graphx
 
-import org.apache.spark.graphx.{Edge, Graph, VertexId, VertexRDD}
+import java.nio.charset.StandardCharsets
+import com.google.common.hash.Hashing
+import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -8,6 +10,8 @@ import org.apache.spark.{SparkConf, SparkContext}
   * Created by Administrator on 2017/4/9.
   */
 object GraphXExample {
+
+
   def main(args: Array[String]): Unit = {
     //
     val sparkConf = new SparkConf().setAppName("GraphXExample")
@@ -22,11 +26,6 @@ object GraphXExample {
       (5L, ("Ed", 55)),
       (6L, ("Fran", 50)))
     //边的数据类型ED:Int
-
-    val text = sc.textFile("file:///home/hadoop/exportdata/data.txt")
-    val mapResult = text.map(row => row.split("\\s+"))
-    val flatMapResult = text.flatMap(row => row.split("\\+"))
-
     val edgeArray = Array(
       Edge(2L, 1L, 7),
       Edge(2L, 4L, 2),
@@ -107,6 +106,8 @@ object GraphXExample {
     println("连接操作")
     println("**********************************************************")
     val inDegrees: VertexRDD[Int] = graph.inDegrees
+    //每个顶点的入度数VertexRDD[graphx.VertexId,Int]
+    inDegrees.collect().foreach(println(_))
     case class User(name: String, age: Int, inDeg: Int, outDeg: Int)
     //创建一个新图，顶点VD的数据类型为User，并从graph做类型转换
     val initialUserGraph: Graph[User, Int] = graph.mapVertices { case (id, (name, age)) => User(name, age, 0, 0)}
@@ -131,10 +132,18 @@ object GraphXExample {
     //***********************************************************************************
     //***************************  聚合操作    ****************************************
     //**********************************************************************************
+    userGraph.edges.collect().foreach(println(_))
+    graph.edges.collect().foreach(println(_))
+    userGraph.vertices.collect().foreach(println(_))
+    graph.vertices.collect().foreach(println(_))
+
+
     println("**********************************************************")
     println("聚合操作")
     println("**********************************************************")
     println("找出年纪最大的追求者：")
+    //顶点属性(name,age)
+    //aggregateMessages 返回VertexRDD，包含每个去往顶点的聚合消息
     val oldestFollower: VertexRDD[(String, Int)] = userGraph.aggregateMessages[(String, Int)](
       // 将源顶点的属性发送给目标顶点，map过程
       //以边为维度
@@ -142,7 +151,7 @@ object GraphXExample {
       // 得到最大追求者，reduce过程
       (a, b) => if (a._2 > b._2) a else b
     )
-
+    //oldestFollower.collect().foreach(println(_))
     userGraph.vertices.leftJoin(oldestFollower) { (id, user, optOldestFollower) =>
       optOldestFollower match {
         case None => s"${user.name} does not have any followers."
@@ -151,6 +160,10 @@ object GraphXExample {
     }.collect.foreach { case (id, str) => println(str)}
     println
 
+    //新操作
+    //==================================================================================
+    val firstFollower = graph.aggregateMessages[(String, Int)] (sendMsg,mergeMsg)
+    firstFollower.collect().foreach(println(_))
     //***********************************************************************************
     //***************************  实用操作    ****************************************
     //**********************************************************************************
@@ -174,4 +187,158 @@ object GraphXExample {
     println(sssp.vertices.collect.mkString("\n"))
   }
 
+  //定义发送消息，(vertex、edge、msg)讲源顶点的年龄发送给目标顶点
+  def sendMsg(ctx: EdgeContext[(String,Int), Int, (String,Int)]): Unit = {
+    println("-----------------vertexId:"+ctx.srcId+"name:"+ctx.srcAttr._1+",age:"+ctx.srcAttr._2)
+    //讲src顶点属性 发送给dst顶点
+    ctx.sendToDst(ctx.srcAttr)
+  }
+
+  //合并消息Msg
+  def mergeMsg = (msgA: (String,Int),msgB: (String,Int)) => {
+    (msgA._1+""+msgB._1,msgA._2 + msgB._2)
+  }
+
+  //apachecn spark graphx example
+  def graphxDemo(): Unit ={
+    val conf = new SparkConf().setAppName("graphxDemo")
+    val sc = new SparkContext(conf)
+    //顶点VD:(String,Int)、边
+    val vertexArray = Array(
+      (1L, ("Alice", 28)),
+      (2L, ("Bob", 27)),
+      (3L, ("Charlie", 65)),
+      (4L, ("David", 42)),
+      (5L, ("Ed", 55)),
+      (6L, ("Fran", 50)))
+    //边的数据类型ED:Int
+    val edgeArray = Array(
+      Edge(2L, 1L, 7),
+      Edge(2L, 4L, 2),
+      Edge(3L, 2L, 4),
+      Edge(3L, 6L, 3),
+      Edge(4L, 1L, 1),
+      Edge(5L, 2L, 2),
+      Edge(5L, 3L, 8),
+      Edge(5L, 6L, 3))
+
+    // Create an RDD for the vertices
+    val vertexs: RDD[(VertexId, (String, Int))] = sc.parallelize(vertexArray)
+    val edges: RDD[Edge[Int]] = sc.parallelize(edgeArray)
+    // Build the initial Graph
+    val graph = Graph(vertexs, edges)
+
+    //========================================================================
+    // Count all users which are postdocs
+    graph.vertices.filter { case (id, (name, age)) => age > 30 }.count
+    // Count all the edges where src > dst
+    graph.edges.filter(e => e.srcId > e.dstId).count
+
+    // Compute the number of older followers and their total age
+    val olderFollowers: VertexRDD[(Int, Int)] = graph.aggregateMessages[(Int, Int)](
+      triplet => { // Map Function
+        if (triplet.srcAttr._2 > triplet.dstAttr._2) {
+          // Send message to destination vertex containing counter and age
+          triplet.sendToDst(1, triplet.srcAttr._2)
+        }
+      },
+      // Add counter and age
+      (a, b) => (a._1 + b._1, a._2 + b._2) // Reduce Function
+    )
+    olderFollowers.collect().foreach(println(_))
+    // Divide total age by number of older followers to get average age of older followers
+    val avgAgeOfOlderFollowers: VertexRDD[Double] =
+    olderFollowers.mapValues( (id, value) =>
+      value match { case (count, totalAge) => totalAge / count } )
+    // Display the results
+    avgAgeOfOlderFollowers.collect.foreach(println(_))
+  }
+
+  //获取确定源点的子图
+  def subgraphDemo(): Unit ={
+    val conf = new SparkConf().setAppName("graphxDemo")
+    val sc = new SparkContext(conf)
+    //顶点VD:(String,Int)、边
+    val vertexArray = Array(
+      (1L, ("Alice", 28)),
+      (2L, ("Bob", 27)),
+      (3L, ("Charlie", 65)),
+      (4L, ("David", 42)),
+      (5L, ("Ed", 55)),
+      (6L, ("Fran", 50)))
+    //边的数据类型ED:Int
+    val edgeArray = Array(
+      Edge(2L, 1L, 7),
+      Edge(2L, 4L, 2),
+      Edge(3L, 2L, 4),
+      Edge(3L, 6L, 3),
+      Edge(4L, 1L, 1),
+      Edge(5L, 2L, 2),
+      Edge(5L, 3L, 8),
+      Edge(5L, 6L, 3))
+
+    // Create an RDD for the vertices
+    val vertexs: RDD[(VertexId, (String, Int))] = sc.parallelize(vertexArray)
+    val edges: RDD[Edge[Int]] = sc.parallelize(edgeArray)
+    // Build the initial Graph
+    val graph = Graph(vertexs, edges)
+    /*graph.triplets.collect().foreach(println(_))
+    graph.vertices.collect().foreach(println(_))
+    graph.edges.collect().foreach(println(_))*/
+
+    //源顶点
+    //val choosedVertex: RDD[VertexId] = sc.parallelize(Array((5L, ("Ed", 55))))
+    // aggregateMessages 运算符返回一个 VertexRDD[Msg] ，其中包含去往每个顶点的聚合消息（Msg类型）
+    val subGraph: VertexRDD[String] = graph.aggregateMessages[String](subSendMsg,subMergeMsg)
+    subGraph.collect().foreach(println(_))
+
+  }
+
+  //send msg
+  //它将源和目标属性以及 edge 属性和函数 (sendToSrc, 和 sendToDst) 一起发送到源和目标属性
+  def subSendMsg(ctx:EdgeContext[(String, Int),Int,String]): Unit ={
+      //
+      ctx.sendToDst(ctx.srcAttr._1+"||"+ctx.attr+"-->")
+  }
+
+  //mergMsg
+  //用户定义的 mergeMsg 函数需要两个发往同一顶点的消息，并产生一条消息
+  def subMergeMsg = (msgA: String,msgB: String) => {
+      msgA+msgB
+  }
+
+  def hashId(str: String) = {
+    Hashing.md5().hashString(str, StandardCharsets.UTF_8).asLong()
+  }
+
+  //定义边属性
+  case class EdgeArr(srcV: String, dstV: String, srcType: String, dstType: String)
+
+  //构造进件图，获取一度关联关系
+  def graphDemo1(): Unit ={
+    val conf = new SparkConf().setAppName("graphxDemo")
+    val sc = new SparkContext(conf)
+    //顶点对（cert_no--2,order_id）(email--3,order_id)(mobile--4,order_id)(device--5,order_id)
+    val edgeArray = Array(
+      Edge(hashId("421083"), hashId("YFQ001"), EdgeArr("421083","YFQ001","2","1")),
+      Edge(hashId("luhuamin@lakala.com"), hashId("YFQ001"), EdgeArr("luhuamin@lakala.com","YFQ001","3","1")),
+      Edge(hashId("18666956069"), hashId("YFQ001"), EdgeArr("18666956069","YFQ001","4","1")),
+      Edge(hashId("18666956069"), hashId("YFQ002"), EdgeArr("18666956069","YFQ002","4","1")),
+      Edge(hashId("421082"), hashId("YFQ002"), EdgeArr("421082","YFQ002","2","1")),
+      //Edge(hashId("devicexxx"), hashId("YFQ002"), EdgeArr("devicexxx","YFQ002","5","1")),
+      //Edge(hashId("devicexxx"), hashId("YFQ003"), EdgeArr("devicexxx","YFQ003","5","1")),
+      Edge(hashId("lhm@lakala.com"), hashId("YFQ003"), EdgeArr("lhm@lakala.com","YFQ003","3","1")),
+      Edge(hashId("lhm@lakala.com"), hashId("YFQ004"), EdgeArr("lhm@lakala.com","YFQ004","3","1")),
+      Edge(hashId("134666"), hashId("YFQ004"), EdgeArr("134666","YFQ004","4","1")),
+      Edge(hashId("134666"), hashId("YFQ005"), EdgeArr("134666","YFQ005","4","1")))
+    val edges: RDD[Edge[EdgeArr]] = sc.parallelize(edgeArray)
+    // Build the initial Graph
+    val graph = Graph.fromEdges(edges,"")
+    //print graph
+    graph.triplets.collect().foreach(println(_))
+
+    //标准图结构
+    var preG: Graph[String, EdgeArr] = null
+
+  }
 }
