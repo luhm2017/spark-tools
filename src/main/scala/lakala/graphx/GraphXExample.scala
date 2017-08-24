@@ -314,11 +314,30 @@ object GraphXExample {
   //定义边属性
   case class EdgeArr(srcV: String, dstV: String, srcType: String, dstType: String)
 
-  //构造进件图，获取一度关联关系
+  /**
+    * 获取关联子图
+    * 1、剪枝 subgraph  判断依据 degree 0,1，大于阀值100000等
+    * 2、根据顶点类型（关联属性），获取关联顶点对
+    * */
   def graphDemo1(): Unit ={
     val conf = new SparkConf().setAppName("graphxDemo")
     val sc = new SparkContext(conf)
-    //顶点对（cert_no--2,order_id）(email--3,order_id)(mobile--4,order_id)(device--5,order_id)
+    //type =1 表示orderId,0--关联属性实体,初始出度、入度都为0
+    val vertexArray = Array(
+      (hashId("YFQ001"), ("YFQ001",1)),
+      (hashId("YFQ002"), ("YFQ002",1)),
+      (hashId("YFQ003"), ("YFQ003",1)),
+      (hashId("YFQ004"), ("YFQ004",1)),
+      (hashId("YFQ005"), ("YFQ005",1)),
+      (hashId("421083"), ("421083",0)),
+      (hashId("luhuamin@lakala.com"), ("luhuamin@lakala.com",0)),
+      (hashId("18666956069"), ("18666956069",0)),
+      (hashId("421082"), ("421082",0)),
+      (hashId("lhm@lakala.com"), ("lhm@lakala.com",0)),
+      (hashId("134666"), ("134666",0)),
+      (hashId("YFQ006"), ("YFQ006",1))
+    )
+    //顶点对(order_id--1)（cert_no--2）(email--3)(mobile--4)(device--5)
     val edgeArray = Array(
       Edge(hashId("421083"), hashId("YFQ001"), EdgeArr("421083","YFQ001","2","1")),
       Edge(hashId("luhuamin@lakala.com"), hashId("YFQ001"), EdgeArr("luhuamin@lakala.com","YFQ001","3","1")),
@@ -330,15 +349,62 @@ object GraphXExample {
       Edge(hashId("lhm@lakala.com"), hashId("YFQ003"), EdgeArr("lhm@lakala.com","YFQ003","3","1")),
       Edge(hashId("lhm@lakala.com"), hashId("YFQ004"), EdgeArr("lhm@lakala.com","YFQ004","3","1")),
       Edge(hashId("134666"), hashId("YFQ004"), EdgeArr("134666","YFQ004","4","1")),
-      Edge(hashId("134666"), hashId("YFQ005"), EdgeArr("134666","YFQ005","4","1")))
+      Edge(hashId("134666"), hashId("YFQ005"), EdgeArr("134666","YFQ005","4","1")),
+      Edge(hashId("lhm@lakala.com"), hashId("YFQ006"), EdgeArr("lhm@lakala.com","YFQ006","3","1")))
     val edges: RDD[Edge[EdgeArr]] = sc.parallelize(edgeArray)
+    val vertexs:RDD[(VertexId, (String,Int))] = sc.parallelize(vertexArray)
     // Build the initial Graph
-    val graph = Graph.fromEdges(edges,"")
+    val graph =  Graph(vertexs,edges)
+    //计算每个顶点的入度、出度，然后赋值给顶点属性
+    //每个顶点添加入度、出度属性
+    val initGraph =  graph.mapVertices { case (id, (vertexValue, vertexType)) => (vertexValue, vertexType, 0, 0)}
+    //initGraph与inDegrees、outDegrees（RDD）进行连接，并更新initGraph中inDeg值、outDeg值
+    val newGraph = initGraph.outerJoinVertices(initGraph.inDegrees) {
+      case (id, u, inDegOpt) => (u._1, u._2, inDegOpt.getOrElse(0), u._4)
+    }.outerJoinVertices(initGraph.outDegrees) {
+      case (id, u, outDegOpt) => (u._1, u._2, u._3,outDegOpt.getOrElse(0))
+    }
+
+    //剪枝，保留条件：顶点type==1 或者 type==0&&outDegree >=2
+    val perGraph = newGraph.subgraph(
+        vpred =(id,attr) =>
+          //vertexType =1 表示进件顶点 、 vertexType = 0表示关联顶点 && vertex
+          attr._2 == 1 || (attr._2 == 0 && attr._4 >= 2)
+    )
+
+    //1、出度为>=2并且为关联属性的顶点，计算所有的一度关联关系
+    //返回一个 VertexRDD[Msg],msg格式与sendMsg[A]一致，(String,String)
+    val tempG = perGraph.aggregateMessages[(String,String)](sendMsgNew,mergeMsgNew)
+    //保存一度关联数据
+
+
+    //2、然后入度>=2并且为进件属性的顶点，计算所有的二度关系
+    //val tmpG = graph.aggregateMessages[String](sendMsg, merageMsg).cache()
+
     //print graph
     graph.triplets.collect().foreach(println(_))
-
-    //标准图结构
-    var preG: Graph[String, EdgeArr] = null
+    newGraph.triplets.collect().foreach(println(_))
+    perGraph.triplets.collect().foreach(println(_))
+    perGraph.vertices.collect().foreach(println(_))
+    tempG.collect().foreach(println(_))
 
   }
+
+  //发送消息，edge默认参数[VD, ED, A]，A--自定义msg格式
+  def sendMsgNew(ctx: EdgeContext[(String,Int,Int,Int), EdgeArr, (String,String)]): Unit ={
+    //户定义的 sendMsg 函数接受一个边缘三元组 EdgeContext
+    //它将源和目标属性以及 edge 属性和函数 (sendToSrc, 和 sendToDst) 一起发送到源和目标属性
+    if(ctx.srcAttr._4 >=2)
+      //关联实体dst 发送到 进件顶点src-->(YFQ003,email)
+      ctx.sendToSrc(ctx.attr.dstV,ctx.attr.srcType)
+  }
+
+  //合并消息，mergeMsg 函数需要两个发往同一顶点的消息，并产生一条消息
+  def mergeMsgNew = (msgA: (String,String),msgB: (String,String)) =>{
+    //合并消息
+    if(msgA._1.contains("||"))
+    (msgA._1+"||"+msgA._2,msgB._1+"||"+msgB._2)
+  }
+
+
 }

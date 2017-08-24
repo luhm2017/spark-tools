@@ -4,12 +4,10 @@ import java.nio.charset.StandardCharsets
 import java.security.InvalidParameterException
 
 import com.google.common.hash.Hashing
-import lakala.graphx.GraphXExample.EdgeArr
-import lakala.graphx.util.GraphNdegUtil.DegVertex
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
+import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
@@ -130,8 +128,9 @@ object GraphNdegUtil {
     }
     //初始化指定顶点
     val initVertex = choosedVertex.map(e => (e, true)).persist(StorageLevel.MEMORY_AND_DISK_SER)
-
-    var g: Graph[DegVertex[VD], Int] = graph.outerJoinVertices(graph.degrees)((_, old, deg) => (deg.getOrElse(0), old))
+    //
+    var g: Graph[DegVertex[VD], Int] = graph.outerJoinVertices(graph.degrees)(
+      (_, old, deg) => (deg.getOrElse(0), old))
       .subgraph(vpred = (_, a) => a._1 <= maxDegree)
       //去掉大节点
       .outerJoinVertices(initVertex)((id, old, hasReceivedMsg) => {
