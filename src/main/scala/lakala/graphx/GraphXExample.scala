@@ -1,10 +1,13 @@
 package lakala.graphx
 
 import java.nio.charset.StandardCharsets
+
 import com.google.common.hash.Hashing
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
+
+import scala.collection.mutable.ListBuffer
 
 /**
   * Created by Administrator on 2017/4/9.
@@ -374,7 +377,7 @@ object GraphXExample {
 
     //1、出度为>=2并且为关联属性的顶点，计算所有的一度关联关系
     //返回一个 VertexRDD[Msg],msg格式与sendMsg[A]一致，(String,String)
-    val tempG = perGraph.aggregateMessages[(String,String)](sendMsgNew,mergeMsgNew)
+    val tempG = perGraph.aggregateMessages[String](sendMsgNew,mergeMsgNew)
     //保存一度关联数据
 
 
@@ -391,20 +394,46 @@ object GraphXExample {
   }
 
   //发送消息，edge默认参数[VD, ED, A]，A--自定义msg格式
-  def sendMsgNew(ctx: EdgeContext[(String,Int,Int,Int), EdgeArr, (String,String)]): Unit ={
+  def sendMsgNew(ctx: EdgeContext[(String,Int,Int,Int), EdgeArr, (String)]): Unit ={
     //户定义的 sendMsg 函数接受一个边缘三元组 EdgeContext
     //它将源和目标属性以及 edge 属性和函数 (sendToSrc, 和 sendToDst) 一起发送到源和目标属性
     if(ctx.srcAttr._4 >=2)
-      //关联实体dst 发送到 进件顶点src-->(YFQ003,email)
-      ctx.sendToSrc(ctx.attr.dstV,ctx.attr.srcType)
+    //关联实体dst 发送到 进件顶点src-->(YFQ003,email)
+      ctx.sendToSrc(ctx.attr.dstV+"&"+ctx.attr.srcType)
   }
 
   //合并消息，mergeMsg 函数需要两个发往同一顶点的消息，并产生一条消息
-  def mergeMsgNew = (msgA: (String,String),msgB: (String,String)) =>{
+  def mergeMsgNew = (msgA: String,msgB: String) =>{
     //合并消息
-    if(msgA._1.contains("||"))
-    (msgA._1+"||"+msgA._2,msgB._1+"||"+msgB._2)
+    msgA+"||"+msgB
   }
 
+  //保存一度关联的数据
+  def saveOneDegree(tempG: RDD[(VertexId,String)]): Unit ={
+      //
+      val oneDegreeData = tempG.mapPartitions(
+          lines => lines.map{
+             row =>
+               //val oneDegreeList = ListBuffer[(String,String,String,String)]()
+               val list = row._2//.split("||")
+               "YFQ001&4||YFQ002&4".split("||").length
+               //YFQ002&4||YFQ001&4
+               //YFQ003&3||YFQ004&3||YFQ006&3
+               /*for(i <- 0 until list.length){
+                    for(j <- i+1 until list.length){
+                      val tempA = list(i)
+                      val tempB = list(j)
+                      println(tempA.split("&")(0)+""+tempA.split("&")(1)+""+tempB.split("&")(1)+""+tempB.split("&")(0))
+                      (tempA.split("&")(0),tempA.split("&")(1),tempB.split("&")(1),tempB.split("&")(0))
+                    }
+               }*/
+               list
+               //(list(0),list(1),list(2))
+          }
+      )
+      oneDegreeData.collect().foreach(println(_))
+
+
+  }
 
 }
