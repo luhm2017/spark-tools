@@ -378,27 +378,26 @@ object GraphXExample {
     //1、出度为>=2并且为关联属性的顶点，计算所有的一度关联关系
     //返回一个 VertexRDD[Msg],msg格式与sendMsg[A]一致，(String,String)
     val tempG = perGraph.aggregateMessages[String](sendMsgNew,mergeMsgNew)
-    //保存一度关联数据
 
+    //保存一度关联数据
+    saveOneDegree(tempG)
 
     //2、然后入度>=2并且为进件属性的顶点，计算所有的二度关系
-    //val tmpG = graph.aggregateMessages[String](sendMsg, merageMsg).cache()
 
     //print graph
-    graph.triplets.collect().foreach(println(_))
+    /*graph.triplets.collect().foreach(println(_))
     newGraph.triplets.collect().foreach(println(_))
     perGraph.triplets.collect().foreach(println(_))
     perGraph.vertices.collect().foreach(println(_))
-    tempG.collect().foreach(println(_))
-
+    tempG.collect().foreach(println(_))*/
   }
 
   //发送消息，edge默认参数[VD, ED, A]，A--自定义msg格式
   def sendMsgNew(ctx: EdgeContext[(String,Int,Int,Int), EdgeArr, (String)]): Unit ={
-    //户定义的 sendMsg 函数接受一个边缘三元组 EdgeContext
+    //用户定义的 sendMsg 函数接受一个边缘三元组 EdgeContext
     //它将源和目标属性以及 edge 属性和函数 (sendToSrc, 和 sendToDst) 一起发送到源和目标属性
     if(ctx.srcAttr._4 >=2)
-    //关联实体dst 发送到 进件顶点src-->(YFQ003,email)
+      //关联实体dst 发送到 进件顶点src-->(YFQ003,email)
       ctx.sendToSrc(ctx.attr.dstV+"&"+ctx.attr.srcType)
   }
 
@@ -410,30 +409,28 @@ object GraphXExample {
 
   //保存一度关联的数据
   def saveOneDegree(tempG: RDD[(VertexId,String)]): Unit ={
-      //
+      //数据解析
       val oneDegreeData = tempG.mapPartitions(
           lines => lines.map{
              row =>
-               //val oneDegreeList = ListBuffer[(String,String,String,String)]()
-               val list = row._2//.split("||")
-               "YFQ001&4||YFQ002&4".split("||").length
-               //YFQ002&4||YFQ001&4
-               //YFQ003&3||YFQ004&3||YFQ006&3
-               /*for(i <- 0 until list.length){
-                    for(j <- i+1 until list.length){
-                      val tempA = list(i)
-                      val tempB = list(j)
-                      println(tempA.split("&")(0)+""+tempA.split("&")(1)+""+tempB.split("&")(1)+""+tempB.split("&")(0))
-                      (tempA.split("&")(0),tempA.split("&")(1),tempB.split("&")(1),tempB.split("&")(0))
-                    }
-               }*/
-               list
-               //(list(0),list(1),list(2))
-          }
+               val oneDegreeList = ListBuffer[(String,String,String,String)]()
+               val list = row._2.split("\\|\\|")
+               for(i <- 0 until list.length){
+                  for(j <- i+1 until list.length){
+                    val tempA = list(i).split("&")
+                    val tempB = list(j).split("&")
+                    oneDegreeList.+= ((tempA(0),tempA(1),tempB(1),tempB(0)))
+                  }
+               }
+               oneDegreeList
+          }.flatten
       )
-      oneDegreeData.collect().foreach(println(_))
-
-
+      //load to hive
+      //先保存hdfs
+      oneDegreeData.saveAsTextFile("")
+      //oneDegreeData.collect().foreach(println(_))
   }
+
+  //保存二度关系
 
 }
