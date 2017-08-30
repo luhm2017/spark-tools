@@ -60,7 +60,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
     val channel = args(13)
     val envType = args(14)
     //flag 是否发送redis
-    val flag = args(15)
+    val flag = args(15).toInt
 
     //spark sql 加工变量
     processVariable(year,month,day)
@@ -117,7 +117,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
   //预测打分,并保存到mysql
   def predictScore(database:String,table:String,path:String,host:String,user:String,
          password:String, port:String,mysqlDB:String,mysqlTable:String,mysqlTableNew:String,
-         channel:String,envType:String,flag:String): Unit ={
+         channel:String,envType:String,flag:Int): Unit ={
     val variable = hc.sql(s"select * from $database.$table")
     //实时数据
     val dataInstance = hc.sql(s"select * from $database.$table").map {
@@ -159,15 +159,15 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
 
     //保存评分结果至mysql和hiv
     //logWarning(" load to mysql success! 该批次总数" + batchCnt)
-    println(" load to hive ! 该批次总数" + batchCnt)
+    println(" 保存评分结果 load to hive ! 该批次总数" + batchCnt+",对应数据库为：fqz_score_result")
     FS2Hive(scoreDataFrame,"fqz_score_result")
-    println(" load to mysql ! 该批次总数" + batchCnt)
+    println(" 保存评分结果 load to mysql ! 该批次总数" + batchCnt+",对应数据库为："+mysqlTable)
     FS2JDBC(model,scoreDataFrame,host,user,password,port,mysqlDB,mysqlTable)
 
     //保存SQL变量至mysql和hive
-    println(" variable load to hive ! 该批次总数" + batchCnt)
+    println(" 保存SQL变量 variable load to hive ! 该批次总数" + batchCnt+",对应数据库为：fqz_variable_result")
     FS2Hive(variable,"fqz_variable_result")
-    println(" variable load to mysql ! 该批次总数" + batchCnt)
+    println(" 保存SQL变量 variable load to mysql ! 该批次总数" + batchCnt+",对应数据库为："+mysqlTableNew)
     FS2JDBC(model,variable,host,user,password,port,mysqlDB,mysqlTableNew)
     //logWarning(" load to hive success! 该批次总数" + batchCnt)
 
@@ -175,6 +175,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
     println("start send scoreRsult to redis!!")
     //flag = 1时，发送redis
     if(flag == 1){
+      println("sending scoreRsult to redis!!")
       sendMsg2Redis(scoreDataFrame,channel,envType)
     }
   }
@@ -200,6 +201,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
      try{
         val url = s"jdbc:mysql://$host:$port/$mysqlDB?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false"
         dataInstance.write.mode(SaveMode.Append).jdbc(url,mysqlTable,new Properties())
+        println("FS2JDBC SUCCESS。。。")
         //考虑异常处理
      }catch{
        case ex: Exception => /*logError(ex.getMessage)*/ println(ex.getMessage)
@@ -212,6 +214,7 @@ object AntiFraudScoreBYSparkSQL /*extends Logging*/{
   def FS2Hive(dataInstance:DataFrame,hiveTable:String): Unit ={
     try{
       dataInstance.write.mode(SaveMode.Append).saveAsTable(s"lkl_card_score.$hiveTable")
+      println("FS2Hive SUCCESS")
     }catch{
       case ex: Exception => /*logError(ex.getMessage)*/ println(ex.getMessage)
         //logError("FS2Hive异常。。。")
