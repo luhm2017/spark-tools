@@ -1,12 +1,10 @@
 package lakala.graphx
 
 import java.nio.charset.StandardCharsets
-
 import com.google.common.hash.Hashing
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
-
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -374,26 +372,50 @@ object GraphXExample {
           //vertexType =1 表示进件顶点 、 vertexType = 0表示关联顶点 && vertex
           attr._2 == 1 || (attr._2 == 0 && attr._4 >= 2)
     )
+    //更新裁剪后的入度、出度
+    val afterGraph = perGraph.outerJoinVertices(perGraph.inDegrees) {
+      case (id, u, inDegOpt) => (u._1, u._2, inDegOpt.getOrElse(0), u._4)
+    }.outerJoinVertices(perGraph.outDegrees) {
+      case (id, u, outDegOpt) => (u._1, u._2, u._3,outDegOpt.getOrElse(0))
+    }
 
     //1、出度为>=2并且为关联属性的顶点，计算所有的一度关联关系
     //返回一个 VertexRDD[Msg],msg格式与sendMsg[A]一致，(String,String)
-    val tempG = perGraph.aggregateMessages[String](sendMsgNew,mergeMsgNew)
-
+    val oneDegreeG = afterGraph.aggregateMessages[String](sendMsgOneDegree,mergeMsgOneDegree)
     //保存一度关联数据
-    saveOneDegree(tempG)
+    saveOneDegree(oneDegreeG)
 
+    //--======================================================================================================
+    //更新，将一度关联属性上的关系对更新到二度关联进件顶点上
+    val  newGraphTwo = afterGraph.outerJoinVertices(oneDegreeG) {
+      case (id, u, attr) => (u._1, u._2, u._3,u._4,attr.getOrElse("null"))
+    }
+    //剪枝，保留条件：顶点type==1&&outDegree >=2
+    val perGraphTwo = newGraphTwo.subgraph(
+      epred = edge
+        // dstAttr默认表示为进件顶点
+        => edge.dstAttr._3 >= 2
+    )
     //2、然后入度>=2并且为进件属性的顶点，计算所有的二度关系
+    val twoDegreeG = perGraphTwo.aggregateMessages[String](sendMsgTwoDegree,mergeMsgTwoDegree)
+    //保存二度关联数据
+    saveTwoDegree(twoDegreeG)
 
     //print graph
     /*graph.triplets.collect().foreach(println(_))
-    newGraph.triplets.collect().foreach(println(_))
-    perGraph.triplets.collect().foreach(println(_))
+    oneDegreeG.triplets.collect().foreach(println(_))
+    afterGraph.triplets.collect().foreach(println(_))
     perGraph.vertices.collect().foreach(println(_))
-    tempG.collect().foreach(println(_))*/
+    oneDegreeG.collect().foreach(println(_))*/
+    newGraphTwo.vertices.collect().foreach(println(_))
+    perGraph.triplets.collect().foreach(println(_))
+    newGraphTwo.triplets.collect().foreach(println(_))
+    twoDegreeG.collect().foreach(println(_))
+
   }
 
   //发送消息，edge默认参数[VD, ED, A]，A--自定义msg格式
-  def sendMsgNew(ctx: EdgeContext[(String,Int,Int,Int), EdgeArr, (String)]): Unit ={
+  def sendMsgOneDegree(ctx: EdgeContext[(String,Int,Int,Int), EdgeArr, (String)]): Unit ={
     //用户定义的 sendMsg 函数接受一个边缘三元组 EdgeContext
     //它将源和目标属性以及 edge 属性和函数 (sendToSrc, 和 sendToDst) 一起发送到源和目标属性
     if(ctx.srcAttr._4 >=2)
@@ -402,9 +424,24 @@ object GraphXExample {
   }
 
   //合并消息，mergeMsg 函数需要两个发往同一顶点的消息，并产生一条消息
-  def mergeMsgNew = (msgA: String,msgB: String) =>{
+  def mergeMsgOneDegree = (msgA: String,msgB: String) =>{
     //合并消息
     msgA+"||"+msgB
+  }
+
+  //发送消息，edge默认参数
+  def sendMsgTwoDegree(ctx:EdgeContext[(String,Int,Int,Int,String),EdgeArr,(String)]): Unit ={
+    //用户定义的 sendMsg 函数接受一个边缘三元组 EdgeContext
+    //它将源和目标属性以及 edge 属性和函数 (sendToSrc, 和 sendToDst) 一起发送到源和目标属性
+    if(ctx.srcAttr._4 >=2)
+      //将源顶点属性发送目标顶点
+      ctx.sendToDst(ctx.srcAttr._5+"->"+ctx.attr.dstV+"&"+ctx.attr.srcType)
+  }
+
+  //合并消息，mergeMsg 函数需要两个发往同一顶点的消息，并产生一条消息
+  def mergeMsgTwoDegree = (msgA: String,msgB: String) =>{
+    //合并消息
+    msgA+"--"+msgB
   }
 
   //保存一度关联的数据
@@ -432,5 +469,36 @@ object GraphXExample {
   }
 
   //保存二度关系
+  //(5391617802928194995,YFQ003&3||YFQ004&3||YFQ006&3->YFQ004&3--YFQ004&4||YFQ005&4->YFQ004&4)
+  def saveTwoDegree(tempG: RDD[(VertexId,String)]): Unit ={
+      //数据解析
+      val twoDegreeData = tempG.mapPartitions(
+        lines => lines.map{
+          row =>
+            val oneDegreeList = ListBuffer[(String,String,String,String)]()
+            val twoDegreeList = ListBuffer[List[(String,String,String,String)]]
+            val list = row._2.split("--")
+            //Array(YFQ003&3||YFQ004&3||YFQ006&3->YFQ004&3, YFQ004&4||YFQ005&4->YFQ004&4)
+            for(i <- 0 until list.length){
+                //解析一度关联数据，数据格式如上，先放入list里面
+                val oneEdgeData = list(i).split("->")
+                //oneEdgeData(0) = YFQ003&3||YFQ004&3||YFQ006&3， oneEdgeData(1) = YFQ004&3
+                val subOne = oneEdgeData(0).split("\\|\\|")
+                for(j <- 0 until subOne.length){
+                  val tempB = oneEdgeData(1).split("&")
+                  if (!subOne(i).equals(oneEdgeData(1))){
+                      val tempA = subOne(i).split("&")
+                      oneDegreeList.+= ((tempA(0),tempA(1),tempB(1),tempB(0)))
+                  }
+                }
+                //将一度关联数据并入list
+                //twoDegreeList.+=((oneDegreeList))
+            }
+            oneDegreeList
+        }.flatten
+      )
+      //保存到hdfs
+      //twoDegreeData.saveAsTextFile("")
+  }
 
 }
