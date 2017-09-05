@@ -11,7 +11,6 @@ import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
 import org.apache.spark.{Logging, SparkConf, SparkContext}
-
 import scala.collection.mutable.ArrayBuffer
 import java.util.Properties
 
@@ -222,6 +221,98 @@ object AntiFraudScoreForTest extends  Logging{
     //将schema信息应用到rowRDD上
     val url = s"jdbc:mysql://$host:$port/$mysqlDB?user=$user&password=$password&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false"
     //dataInstance.write.mode(SaveMode.Append).jdbc(url,mysqlTable,new Properties())
+  }
+
+
+  //反跑数据分段打分
+  //3月 overdue_result_all_new_woe_1703_total  ---overdue_result_all_new_woe_1703_total_score
+  //4月 26853  overdue_result_all_new_woe_1704_total  ---overdue_result_all_new_woe_1704_total_score
+  //5月 overdue_result_all_new_woe_1705_total  ---overdue_result_all_new_woe_1705_total_score
+  def fqzScore(): Unit ={
+      val hc = new HiveContext(sc)
+      //实时数据
+      val dataInstance = hc.sql(s"select * from lkl_card_score.overdue_result_all_new_woe_1704_total").map {
+        row =>
+          val arr = new ArrayBuffer[Double]()
+          //剔除label、phone字段
+          for (i <- 3 until row.size) {
+            if (row.get(i).isInstanceOf[Double])
+              arr += row.getDouble(i)
+            else if (row.get(i).isInstanceOf[Long])
+              arr += row.getLong(i).toDouble
+            else arr += 0.0
+          }
+          (row(2),row(1), Vectors.dense(arr.toArray))
+      }
+      //每批次总数
+      val batchCnt = dataInstance.count()
+      println("the count of this batch is " + batchCnt)
+      //加载模型，目前只考虑gbdt
+      val model = GradientBoostedTreesModel.load(sc,s"hdfs://ns1/user/luhuamin/fqz0720/model/gbdt")
+      //打分数据
+      val preditDataGBDT = dataInstance.map { point =>
+        val prediction = model.predict(point._3)
+        //order_id,apply_time,score
+        (point._1,point._2, prediction)
+      }
+      //rdd转dataFrame
+      val rowRDD = preditDataGBDT.map(row => Row(row._1.toString,row._2.toString,row._3.toDouble))
+      val schema = StructType(
+        List(
+          StructField("order_id", StringType, true),
+          StructField("apply_time", StringType, true),
+          StructField("score", DoubleType, true)
+        )
+      )
+      //将RDD映射到rowRDD，schema信息应用到rowRDD上
+      val scoreDataFrame = hc.createDataFrame(rowRDD,schema)
+      scoreDataFrame.count()
+      scoreDataFrame.write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.overdue_result_all_new_woe_1704_total_score")
+  }
+
+  //全量数据打分
+  //全量样本 overdue_result_all_new_woe_20170629
+  def fqzScoreTotal(): Unit ={
+    val hc = new HiveContext(sc)
+    //实时数据
+    val dataInstance = hc.sql(s"select * from lkl_card_score.overdue_result_all_new_woe_20170629").map {
+      row =>
+        val arr = new ArrayBuffer[Double]()
+        //剔除label、phone字段
+        for (i <- 3 until row.size) {
+          if (row.get(i).isInstanceOf[Double])
+            arr += row.getDouble(i)
+          else if (row.get(i).isInstanceOf[Long])
+            arr += row.getLong(i).toDouble
+          else arr += 0.0
+        }
+        (row(2),row(1),row(0), Vectors.dense(arr.toArray))
+    }
+    //每批次总数
+    val batchCnt = dataInstance.count()
+    println("the count of this batch is " + batchCnt)
+    //加载模型，目前只考虑gbdt
+    val model = GradientBoostedTreesModel.load(sc,s"hdfs://ns1/user/luhuamin/fqz0720/model/gbdt")
+    //打分数据
+    val preditDataGBDT = dataInstance.map { point =>
+      val prediction = model.predict(point._4)
+      //order_id,apply_time,label,score
+      (point._1,point._2,point._3, prediction)
+    }
+    //rdd转dataFrame
+    val rowRDD = preditDataGBDT.map(row => Row(row._1.toString,row._2.toString,row._3.toString,row._4.toDouble))
+    val schema = StructType(
+      List(
+        StructField("order_id", StringType, true),
+        StructField("apply_time", StringType, true),
+        StructField("label", StringType, true),
+        StructField("score", DoubleType, true)
+      )
+    )
+    //将RDD映射到rowRDD，schema信息应用到rowRDD上
+    val scoreDataFrame = hc.createDataFrame(rowRDD,schema)
+    scoreDataFrame.count()
+    scoreDataFrame.write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.overdue_result_all_new_woe_20170629_score")
   }
 
 }

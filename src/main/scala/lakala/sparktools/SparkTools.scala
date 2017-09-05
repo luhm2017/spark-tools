@@ -81,13 +81,13 @@ object SparkTools {
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
     //多路径
-    val inputPath2 = "file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-11.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-12.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-13.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-14.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-15.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-16.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-1.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-2.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-3.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-4.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-5.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-6.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-7.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-8.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-9.csv"
-    //val inputPath1 = "file:///data/data2/exportblackorder02_to_now/level1/alllevel1.csv"
-    val csvDF = hc.read.format("com.databricks.spark.csv").option("header", "false").load(inputPath2)
+    //val inputPath2 = "file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-11.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-12.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-13.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-14.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-15.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-16.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-1.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-2.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-3.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-4.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-5.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-6.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-7.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-8.csv,file:///data/data2/exportblackorder02_to_now/level2/pool-1-thread-9.csv"
+    val inputPath1 = "file:///data/data2/exportblackorder02_to_now/level1/alllevel1.csv"
+    val csvDF = hc.read.format("com.databricks.spark.csv").option("header", "false").load(inputPath1)
     //val csvDF = hc.read.format("com.databricks.spark.csv").option("header", "false").load("file:///home/hadoop/Allrelationlevel1.csv")
     csvDF.show(10)
     csvDF.cache()
-    csvDF.write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.fqz_score_order_201703_20170810_data2")
+    csvDF.write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.fqz_score_order_201703_20170810_data1")
     hc.read.format("com.databricks.spark.csv").option("header", "false").load("file:///home/hadoop/alllevel2.csv").write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.fqz_score_order_all_data1")
   }
   //====================================================
@@ -99,6 +99,11 @@ object SparkTools {
   //201702以后数据反跑欺诈评分
   //fqz_score_order_201703_20170810_data1  --1811633
   //fqz_score_order_201703_20170810_data2
+  //数据反跑
+  //lkl_card_score.overdue_result_all_new_woe_1703_total
+  //overdue_result_all_new_woe_1703_total_score
+  //lkl_card_score.overdue_result_all_new_woe_1704_total
+  //overdue_result_all_new_woe_1704_total_score
 
   //黑名单关联边数据（针对实体属性标注）
   //fqz_black_related_data1
