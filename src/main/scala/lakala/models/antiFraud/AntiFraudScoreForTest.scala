@@ -225,13 +225,15 @@ object AntiFraudScoreForTest extends  Logging{
 
 
   //反跑数据分段打分
-  //3月 overdue_result_all_new_woe_1703_total  ---overdue_result_all_new_woe_1703_total_score
+  //3月 29670  overdue_result_all_new_woe_1703_total  ---overdue_result_all_new_woe_1703_total_score
   //4月 26853  overdue_result_all_new_woe_1704_total  ---overdue_result_all_new_woe_1704_total_score
-  //5月 overdue_result_all_new_woe_1705_total  ---overdue_result_all_new_woe_1705_total_score
+  //5月 35674  overdue_result_all_new_woe_1705_total  ---overdue_result_all_new_woe_1705_total_score
+  //6月 35815  overdue_result_all_new_woe_1706_total  ---overdue_result_all_new_woe_1706_total_score
+  //7月 27527  overdue_result_all_new_woe_1707_total  ---overdue_result_all_new_woe_1707_total_score
   def fqzScore(): Unit ={
       val hc = new HiveContext(sc)
       //实时数据
-      val dataInstance = hc.sql(s"select * from lkl_card_score.overdue_result_all_new_woe_1704_total").map {
+      val dataInstance = hc.sql(s"select * from lkl_card_score.overdue_result_all_new_woe_1707_total").map {
         row =>
           val arr = new ArrayBuffer[Double]()
           //剔除label、phone字段
@@ -267,11 +269,11 @@ object AntiFraudScoreForTest extends  Logging{
       //将RDD映射到rowRDD，schema信息应用到rowRDD上
       val scoreDataFrame = hc.createDataFrame(rowRDD,schema)
       scoreDataFrame.count()
-      scoreDataFrame.write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.overdue_result_all_new_woe_1704_total_score")
+      scoreDataFrame.write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.overdue_result_all_new_woe_1707_total_score")
   }
 
   //全量数据打分
-  //全量样本 overdue_result_all_new_woe_20170629
+  //全量样本 overdue_result_all_new_woe_20170629  overdue_result_all_new_woe_20170629_score
   def fqzScoreTotal(): Unit ={
     val hc = new HiveContext(sc)
     //实时数据

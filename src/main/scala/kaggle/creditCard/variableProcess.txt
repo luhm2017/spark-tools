@@ -1,0 +1,33 @@
+--变量加工
+
+1、数据加载hive库credit_card_client表
+2、数据预处理
+    1）、离散型变量 --单变量分析：统计每个类别占比和分布
+    select education,count(*) from credit_card_client group by education;
+    select marriage,count(*) from credit_card_client group by marriage;
+    2）、数字型变量
+      age -- 分布分析：均值、分位数、直方图
+      --分位数分布
+      select
+      round(percentile_approx(cast(age as int),0.10),0)   age1,
+      round(percentile_approx(cast(age as int),0.20),0)   age2,
+      round(percentile_approx(cast(age as int),0.30),0)   age3,
+      round(percentile_approx(cast(age as int),0.40),0)   age4,
+      round(percentile_approx(cast(age as int),0.50),0)   age5,
+      round(percentile_approx(cast(age as int),0.60),0)   age6,
+      round(percentile_approx(cast(age as int),0.70),0)   age7,
+      round(percentile_approx(cast(age as int),0.80),0)   age8,
+      round(percentile_approx(cast(age as int),0.90),0)   age9
+      from credit_card_client;
+      --分段分布
+	  select 
+		sum(case when age<20 then 1 else 0 end) as age20,
+		sum(case when age>=20 and age<25 then 1 else 0 end) as age25,
+		sum(case when age>=25 and age<30 then 1 else 0 end) as age30,
+		sum(case when age>=30 and age<35 then 1 else 0 end) as age35,
+		sum(case when age>=35 and age<40 then 1 else 0 end) as age40,
+		sum(case when age>=40 and age<45 then 1 else 0 end) as age45,
+		sum(case when age>=45 and age<50 then 1 else 0 end) as age50,
+		sum(case when age>=50 and age<55 then 1 else 0 end) as age60,
+		sum(case when age>=55 then 1 else 0 end) as other
+		from credit_card_client;

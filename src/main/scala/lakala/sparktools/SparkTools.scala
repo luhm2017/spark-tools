@@ -96,7 +96,7 @@ object SparkTools {
   //fqz_score_order_all_data2
   // /data/data2/exportblackorder02_to_now/level1
 
-  //201702以后数据反跑欺诈评分
+  //201702以后数据反跑欺诈评分（）
   //fqz_score_order_201703_20170810_data1  --1811633
   //fqz_score_order_201703_20170810_data2
   //数据反跑
