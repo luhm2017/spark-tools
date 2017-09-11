@@ -25,4 +25,8 @@ object CreditCardScore {
     //csvDF.write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.fqz_score_order_201703_20170810_data1")
     csvDF.write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.credit_card_client")
   }
+
+  //最优化分箱方法 使用决策树(最小熵)
+  //Bucketizer
+
 }

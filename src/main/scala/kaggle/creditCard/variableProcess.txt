@@ -19,15 +19,28 @@
       round(percentile_approx(cast(age as int),0.80),0)   age8,
       round(percentile_approx(cast(age as int),0.90),0)   age9
       from credit_card_client;
-      --分段分布
+      --分段分布 (频数直方图)
 	  select 
-		sum(case when age<20 then 1 else 0 end) as age20,
-		sum(case when age>=20 and age<25 then 1 else 0 end) as age25,
-		sum(case when age>=25 and age<30 then 1 else 0 end) as age30,
-		sum(case when age>=30 and age<35 then 1 else 0 end) as age35,
-		sum(case when age>=35 and age<40 then 1 else 0 end) as age40,
-		sum(case when age>=40 and age<45 then 1 else 0 end) as age45,
-		sum(case when age>=45 and age<50 then 1 else 0 end) as age50,
-		sum(case when age>=50 and age<55 then 1 else 0 end) as age60,
-		sum(case when age>=55 then 1 else 0 end) as other
-		from credit_card_client;
+      sum(case when age<20 then 1 else 0 end) as age20,
+      sum(case when age>=20 and age<25 then 1 else 0 end) as age25,
+      sum(case when age>=25 and age<30 then 1 else 0 end) as age30,
+      sum(case when age>=30 and age<35 then 1 else 0 end) as age35,
+      sum(case when age>=35 and age<40 then 1 else 0 end) as age40,
+      sum(case when age>=40 and age<45 then 1 else 0 end) as age45,
+      sum(case when age>=45 and age<50 then 1 else 0 end) as age50,
+      sum(case when age>=50 and age<55 then 1 else 0 end) as age60,
+      sum(case when age>=55 then 1 else 0 end) as other
+      from credit_card_client;
+      --无监督分箱 最优分箱方法：最小熵、信息值、皮尔森卡方、基尼方差
+      --郑明 数据挖掘 特征数据最优分箱
+      --同理：字符型变量的最优降低基数
+    3）、根据前两项数据观察，有监督分段，并且最优降低基
+    4）、异常值根据分位数处理（主要异常金额之类）
+    5）、缺失值处理（使用均值、中位数、众数替代）
+3、模型开发
+    1）、变量选择
+      --单因子分析 (每个特征变量分析WOE、IV值)
+      --WOE 各分段组别进行 粗分类
+      --信息值处理 （高相关性、趋势异常、不易解释、偏离者）
+    2）、模型变量选择
+      --顺序进入、反向排除法 --理解
