@@ -1,7 +1,7 @@
 package kaggle.creditCard
 
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.{DataFrame, SaveMode}
 import org.apache.spark.sql.hive.HiveContext
 
 /**
@@ -26,7 +26,16 @@ object CreditCardScore {
     csvDF.write.mode(SaveMode.Overwrite).saveAsTable("lkl_card_score.credit_card_client")
   }
 
-  //最优化分箱方法 使用决策树(最小熵)
-  //Bucketizer
+  //计算单变量的信息值
+  def woe_single_x(data:DataFrame): Unit ={
+
+  }
+
+  //最优化分箱方法
+  def binContVar(): Unit ={
+
+  }
+
+  //评分卡制作，单变量分数值处理
 
 }

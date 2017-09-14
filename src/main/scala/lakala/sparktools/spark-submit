@@ -46,3 +46,6 @@ prod
 ##GBDT全量训练模型 本地运行
 ###########################################################
 nohup ./spark-submit --master local[4]  --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g --class lakala.models.antiFraud.AntiFraudScoreModels /home/hadoop/spark-tools-1.0.jar  > ~/log/fqzscore20170815.log  &
+
+##20170911全量样本数据训练模型
+overdue_result_all_new_woe_911
