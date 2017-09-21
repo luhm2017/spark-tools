@@ -49,3 +49,36 @@ nohup ./spark-submit --master local[4]  --conf spark.locality.wait=1 --conf spar
 
 ##20170911全量样本数据训练模型
 overdue_result_all_new_woe_911
+
+##########################################################
+##neo4j初始化虚拟订单脚本
+hadoop@10.16.65.15
+cd /home/hadoop/grogram/analysis/graphx-analysis/neo4j/bin/
+./handleSendMsg.sh
+
+###########################################################
+##广州浩瀚科技金融输出
+##虚拟订单表
+lkl_card_score.r_haohan_shougong_order
+##评分数据结果表
+lkl_card_score.fqz_score_output_20170917
+###########################################################
+##1、数据建图准备
+##2、导数脚本
+##3、跑数评分
+create table fqz_score_output_haohan_20170921 as
+select * from fqz_score_result a
+join r_haohan_shougong_order b on a.order_id = b.orderno
+where substr(a.apply_time,1,10) = '2017-09-21'
+###########################################################
+
+
+###########################################################
+##马上金融
+##虚拟订单表
+lkl_card_score.r_mashang_finance_order
+##评分输出结果表
+create table fqz_score_output_mashang_20170921 as
+select * from fqz_score_result a
+join r_haohan_shougong_order b on a.order_id = b.orderno
+where substr(a.apply_time,1,10) = '2017-09-21'
