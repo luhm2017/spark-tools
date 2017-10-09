@@ -71,7 +71,11 @@ select * from fqz_score_result a
 join r_haohan_shougong_order b on a.order_id = b.orderno
 where substr(a.apply_time,1,10) = '2017-09-21'
 ###########################################################
-
+##1、数据测试验证
+ set mapreduce.job.queuename=szbigdata;
+select a.order_id,a.apply_time,a.score from fqz_score_result a
+join fqz_test_order100_20170925 b on a.order_id = b.order_id
+where substr(a.apply_time,1,10) = '2017-09-25'
 
 ###########################################################
 ##马上金融
@@ -82,3 +86,33 @@ create table fqz_score_output_mashang_20170921 as
 select * from fqz_score_result a
 join r_haohan_shougong_order b on a.order_id = b.orderno
 where substr(a.apply_time,1,10) = '2017-09-21'
+
+###########################################################
+##马上金融 、我来贷、重庆惠今科技 、海印金控 38157
+##虚拟订单表
+lkl_card_score.r_out_test_order
+##一二度关联关系表
+degree_1_tbl、degree_2_tbl
+
+########################################################
+##重新跑数--数据清理
+insert overwrite table one_degree_data partition(year=2017,month=09,day=28)
+select a.c0,a.c1,a.c2,a.c3,a.c4,a.c5,a.c6 from one_degree_data a
+where year = 2017 and month = 09 and day = 28
+and a.c0 not like 'JRCS2017%';
+
+insert overwrite table two_degree_data partition(year=2017,month=09,day=28)
+select a.c0,a.c1,a.c2,a.c3,a.c4,a.c5,a.c6,c7,c8,c9,c10 from two_degree_data a
+where year = 2017 and month = 09 and day = 28
+and a.c0 not like 'JRCS2017%' ;
+
+insert overwrite table graphx_tansported_ordernos partition(year=2017,month=09,day=28)
+select a.c0,a.c1 from graphx_tansported_ordernos a
+where a.year =2017 and a.month = 09 and a.day = 28
+and a.c0 not like 'JRCS2017%' ;
+
+insert overwrite table graphx_tansported_ordernos_history
+select * from graphx_tansported_ordernos_history a
+where a.c0 not like 'JRCS2017%' ;
+
+##########################################################
