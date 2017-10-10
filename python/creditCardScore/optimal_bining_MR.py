@@ -317,8 +317,8 @@ def _EqualWidthBinMap(x, Acc, adjust):
     varMax = x.max()
     varMin = x.min()
     # generate range by Acc
-    Mbins = int(1./Acc)
-    minMaxSize = (varMax - varMin)/Mbins
+    Mbins = int(1./Acc)  ##100个等宽分段
+    minMaxSize = (varMax - varMin)/Mbins  ##获取等宽的步长step
     # get upper_limit and loewe_limit
     ind = range(1, Mbins+1)
     Upper = pd.Series(index=ind, name='upper')
