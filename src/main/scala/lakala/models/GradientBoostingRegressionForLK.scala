@@ -66,6 +66,7 @@ object GradientBoostingRegressionForLK {
     //boostingStrategy.treeStrategy.setCategoricalFeaturesInfo( scala.collection.mutable.Map[Int, Int]())
     //boostingStrategy.treeStrategy.categoricalFeaturesInfo = Map[Int, Int]()
     val model = GradientBoostedTrees.train(trainingData, boostingStrategy)
+    println(model.toDebugString)
 
     // Evaluate model on test instances and compute test error
     val predictionAndLabels = testData.map { point =>
