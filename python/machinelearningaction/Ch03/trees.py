@@ -17,13 +17,20 @@ def createDataSet():
     return dataSet, labels
 
 def calcShannonEnt(dataSet):
+    ##获取实例总数
     numEntries = len(dataSet)
     labelCounts = {}
+    ##遍历dataSet数据集
     for featVec in dataSet: #the the number of unique elements and their occurance
+        ##获取末尾字段的为标签类别
         currentLabel = featVec[-1]
+        ##判断currentLabel是否存在labelCounts当中
         if currentLabel not in labelCounts.keys(): labelCounts[currentLabel] = 0
+        ##统计每个类别的总数
         labelCounts[currentLabel] += 1
+    ##初始香农熵为0
     shannonEnt = 0.0
+    ##计算当前数据集的香农熵
     for key in labelCounts:
         prob = float(labelCounts[key])/numEntries
         shannonEnt -= prob * log(prob,2) #log base 2

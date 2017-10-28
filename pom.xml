@@ -2,10 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>lakala</groupId>
   <artifactId>spark-tools</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <version>1.0</version>
+    <modules>
+        <module>sparkgraphx</module>
+    </modules>
 
-  <properties>
+    <properties>
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <encoding>UTF-8</encoding>

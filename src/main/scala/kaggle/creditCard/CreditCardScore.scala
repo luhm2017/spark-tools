@@ -5,7 +5,8 @@ import org.apache.spark.ml.feature.{StringIndexer, VectorIndexer}
 import org.apache.spark.mllib.classification.LogisticRegressionWithSGD
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
 import org.apache.spark.mllib.regression.LabeledPoint
-import org.apache.spark.mllib.tree.DecisionTree
+import org.apache.spark.mllib.tree.configuration.BoostingStrategy
+import org.apache.spark.mllib.tree.{DecisionTree, GradientBoostedTrees, RandomForest}
 import org.apache.spark.sql.{Row, SaveMode}
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
@@ -151,6 +152,7 @@ object CreditCardScore {
             arr += row.getDouble(i)
           else if(row.get(i).isInstanceOf[Integer])
             arr += row.getInt(i).toDouble
+          else arr += 0.0
         }
         LabeledPoint(row.getDouble(0), Vectors.dense(arr.toArray))
     }
@@ -164,7 +166,8 @@ object CreditCardScore {
     val stepSize = 1
     val miniBatchFraction = 1.0
     val model = LogisticRegressionWithSGD.train(trainingData, numIterations, stepSize, miniBatchFraction)
-
+    model.clearThreshold()
+    model.weights
     //训练模型
     //val model = lrLearn.run(trainingData)
 
@@ -193,21 +196,13 @@ object CreditCardScore {
     //gbdt ==========================================================================
     /*val boostingStrategy = BoostingStrategy.defaultParams("Regression")
     boostingStrategy.setNumIterations(30) // Note: Use more iterations in practice.
-    boostingStrategy.treeStrategy.setMaxDepth(6)
-    boostingStrategy.treeStrategy.setMinInstancesPerNode(50)
+    boostingStrategy.treeStrategy.setMaxDepth(4)
+    boostingStrategy.treeStrategy.setMinInstancesPerNode(50)*/
 
     // Empty categoricalFeaturesInfo indicates all features are continuous.
     //boostingStrategy.treeStrategy.setCategoricalFeaturesInfo( scala.collection.mutable.Map[Int, Int]())
     //boostingStrategy.treeStrategy.categoricalFeaturesInfo = Map[Int, Int]()
-    val model = GradientBoostedTrees.train(trainingData, boostingStrategy)*//*val boostingStrategy = BoostingStrategy.defaultParams("Regression")
-    boostingStrategy.setNumIterations(30) // Note: Use more iterations in practice.
-    boostingStrategy.treeStrategy.setMaxDepth(6)
-    boostingStrategy.treeStrategy.setMinInstancesPerNode(50)
-
-    // Empty categoricalFeaturesInfo indicates all features are continuous.
-    //boostingStrategy.treeStrategy.setCategoricalFeaturesInfo( scala.collection.mutable.Map[Int, Int]())
-    //boostingStrategy.treeStrategy.categoricalFeaturesInfo = Map[Int, Int]()
-    val model = GradientBoostedTrees.train(trainingData, boostingStrategy)*/
+    //val model = GradientBoostedTrees.train(trainingData, boostingStrategy)
 
 
     // Clear the prediction threshold so the model will return probabilities
