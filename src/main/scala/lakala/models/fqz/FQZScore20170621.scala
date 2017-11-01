@@ -1,4 +1,4 @@
-package lakala.models
+package lakala.models.fqz
 
 import org.apache.spark.mllib.classification.LogisticRegressionWithSGD
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics

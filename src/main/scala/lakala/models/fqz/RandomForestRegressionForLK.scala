@@ -1,23 +1,21 @@
-package lakala.models
+package lakala.models.fqz
 
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
-import org.apache.spark.mllib.tree.GradientBoostedTrees
-import org.apache.spark.mllib.tree.configuration.BoostingStrategy
+import org.apache.spark.mllib.tree.RandomForest
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ArrayBuffer
 
 /**
-  * Created by Administrator on 2017/3/30.
+  * Created by Administrator on 2017/3/29.
   */
-object GradientBoostingClassificationForLK {
+object RandomForestRegressionForLK {
   def main(args: Array[String]): Unit = {
-    val conf = new SparkConf().setAppName("GradientBoostingClassificationForLK")
-    val sc = new SparkContext(conf)
-
+    val sparkConf = new SparkConf().setAppName("RandomForestClassificationForLK")
+    val sc = new SparkContext(sparkConf)
     // sc is an existing SparkContext.
     val hc = new HiveContext(sc)
 
@@ -46,29 +44,32 @@ object GradientBoostingClassificationForLK {
         }
         LabeledPoint(row.getDouble(0), Vectors.dense(arr.toArray))
     }
+
     // Split the data into training and test sets (30% held out for testing)
     val splits = data.randomSplit(Array(0.7, 0.3))
     val (trainingData, testData) = (splits(0), splits(1))
 
-    // Train a GradientBoostedTrees model.
-    // The defaultParams for Classification use LogLoss by default.
-    val boostingStrategy = BoostingStrategy.defaultParams("Classification")
-    boostingStrategy.setNumIterations(3) // Note: Use more iterations in practice.
-    boostingStrategy.treeStrategy.setNumClasses(2)
-    boostingStrategy.treeStrategy.setMaxDepth(5)
+    // Train a RandomForest model.
     // Empty categoricalFeaturesInfo indicates all features are continuous.
-    boostingStrategy.treeStrategy.setCategoricalFeaturesInfo(Map[Int, Int]())
+    val numClasses = 2
+    val categoricalFeaturesInfo = Map[Int, Int]()
+    val numTrees = 6 // Use more in practice.
+    val featureSubsetStrategy = "auto" // Let the algorithm choose.
+    val impurity = "variance"
+    val maxDepth = 4
+    val maxBins = 32
 
-    val model = GradientBoostedTrees.train(trainingData, boostingStrategy)
+    val model = RandomForest.trainRegressor(trainingData, categoricalFeaturesInfo,
+      numTrees, featureSubsetStrategy, impurity, maxDepth, maxBins)
 
     // Evaluate model on test instances and compute test error
     val predictionAndLabels = testData.map { point =>
       val prediction = model.predict(point.features)
-      (point.label, prediction)
+      (prediction,point.label)
     }
 
     predictionAndLabels.map(x => {"predicts: "+x._1+"--> labels:"+x._2}).saveAsTextFile(s"hdfs://ns1/tmp/$date/predictionAndLabels")
-    //===================================================================
+    //=========================================================
     //使用BinaryClassificationMetrics评估模型
     val metrics = new BinaryClassificationMetrics(predictionAndLabels)
 
@@ -114,8 +115,9 @@ object GradientBoostingClassificationForLK {
     sc.makeRDD(Seq("Area under ROC = " + +auROC)).saveAsTextFile(s"hdfs://ns1/tmp/$date/auROC")
     println("Area under ROC = " + auROC)
 
-    val testErr = predictionAndLabels.filter(r => r._1 != r._2).count.toDouble / testData.count()
-    sc.makeRDD(Seq("Test Mean Squared Error = " + testErr)).saveAsTextFile(s"hdfs://ns1/tmp/$date/testErr")
-    sc.makeRDD(Seq("Learned regression tree model: " + model.toDebugString)).saveAsTextFile(s"hdfs://ns1/tmp/$date/GBDTclassification")
+    val testMSE = predictionAndLabels.map{ case(v, p) => math.pow((v - p), 2)}.mean()
+    sc.makeRDD(Seq("Test Error = " + testMSE)).saveAsTextFile(s"hdfs://ns1/tmp/$date/testErr")
+    sc.makeRDD(Seq("Learned classification forest model:" + model.toDebugString)).saveAsTextFile(s"hdfs://ns1/tmp/$date/classification")
+
   }
 }

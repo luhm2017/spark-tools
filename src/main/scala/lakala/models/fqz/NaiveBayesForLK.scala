@@ -1,29 +1,29 @@
-package lakala.models
+package lakala.models.fqz
 
+import org.apache.spark.mllib.classification.NaiveBayes
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
-import org.apache.spark.mllib.tree.DecisionTree
 import org.apache.spark.sql.hive.HiveContext
+import org.apache.spark.{SparkConf, SparkContext}
+
 import scala.collection.mutable.ArrayBuffer
 
 /**
   * Created by Administrator on 2017/3/29.
   */
-object DecisionTreeRegressionForLK {
+object NaiveBayesForLK {
   def main(args: Array[String]): Unit = {
-    val sparkConf = new SparkConf().setAppName("DecisionTreeRegressionForLK")
-    val sc = new SparkContext(sparkConf)
-    // sc is an existing SparkContext.
+    val conf = new SparkConf().setAppName("NaiveBayesForLK")
+    val sc = new SparkContext(conf)
     val hc = new HiveContext(sc)
 
     if(args.length!=3){
-      println("请输入参数：trainingData对应的库名、表名、模型运行时间")
+      println("请输入参数：data对应的库名、表名、模型运行时间")
       System.exit(0)
     }
 
-    //分别传入库名、表名、对比效果路径
+    //分别传入库名、表名、模型运行时间
     val database = args(0)
     val table = args(1)
     val date = args(2)
@@ -44,28 +44,18 @@ object DecisionTreeRegressionForLK {
         LabeledPoint(row.getDouble(0), Vectors.dense(arr.toArray))
     }
 
-    // Split the data into training and test sets (30% held out for testing)
-    val splits = data.randomSplit(Array(0.7, 0.3))
-    val (trainingData, testData) = (splits(0), splits(1))
+    // Split data into training (60%) and test (40%).
+    val Array(trainingData, testData) = data.randomSplit(Array(0.6, 0.4))
 
-    // Train a DecisionTree model.
-    //  Empty categoricalFeaturesInfo indicates all features are continuous.
-    val categoricalFeaturesInfo = Map[Int, Int]()
-    val impurity = "variance"
-    val maxDepth = 5
-    val maxBins = 32
-
-    val model = DecisionTree.trainRegressor(trainingData, categoricalFeaturesInfo, impurity,
-      maxDepth, maxBins)
-
-    // Evaluate model on test instances and compute test error
-    val predictionAndLabels = testData.map { point =>
-      val prediction = model.predict(point.features)
-      (prediction,point.label)
+    val model = NaiveBayes.train(trainingData, lambda = 1.0, modelType = "multinomial")
+    //val predictionAndLabel = testData.map(p => (model.predict(p.features), p.label))
+    val predictionAndLabels = testData.map { case LabeledPoint(label, features) =>
+      val prediction = model.predict(features)
+      (prediction, label)
     }
 
     predictionAndLabels.map(x => {"predicts: "+x._1+"--> labels:"+x._2}).saveAsTextFile(s"hdfs://ns1/tmp/$date/predictionAndLabels")
-    //--===============================================================================
+    //===================================================================
     //使用BinaryClassificationMetrics评估模型
     val metrics = new BinaryClassificationMetrics(predictionAndLabels)
 
@@ -111,9 +101,11 @@ object DecisionTreeRegressionForLK {
     sc.makeRDD(Seq("Area under ROC = " + +auROC)).saveAsTextFile(s"hdfs://ns1/tmp/$date/auROC")
     println("Area under ROC = " + auROC)
 
-    val testMSE = predictionAndLabels.map{ case (v, p) => math.pow(v - p, 2) }.mean()
+    val testMSE = predictionAndLabels.map{ case(v, p) => math.pow((v - p), 2)}.mean()
     sc.makeRDD(Seq("Test Mean Squared Error = " + testMSE)).saveAsTextFile(s"hdfs://ns1/tmp/$date/testMSE")
-    sc.makeRDD(Seq("Learned regression tree model: " + model.toDebugString)).saveAsTextFile(s"hdfs://ns1/tmp/$date/regressionTreeModel")
+    val accuracy = 1.0 * predictionAndLabels.filter(x => x._1 == x._2).count() / testData.count()
+    sc.makeRDD(Seq("accuracy = " + accuracy)).saveAsTextFile(s"hdfs://ns1/tmp/$date/accuracy")
 
   }
+
 }

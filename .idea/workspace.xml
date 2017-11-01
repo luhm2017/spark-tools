@@ -1,330 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b73d9b89-7590-43e3-802e-2a9c582ad39f" name="Default" comment="添加金融输出备注">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/degreeData/GraphNdegUtil$.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/degreeData/GraphNdegreeSubGraph$.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/degreeData/GraphXExample$.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/degreeData/GraphxCalculate$.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/antiFraud/AntiFraudScoreBYSparkSQLForTest.scala" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphNdegUtil.scala" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphNdegreeSubGraph.scala" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphXExample.scala" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphxCalculate.scala" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/.scala_dependencies" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes.-1679860962.timestamp" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/Test.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/TestExample$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/TestExample.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$anonfun$binarizer$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$anonfun$polynomialExpansion$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$anonfun$tokenizer$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$anonfun$tokenizer$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$typecreator1$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$typecreator2$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$typecreator3$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$typecreator4$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$typecreator5$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$$typecreator6$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/FeatureEngineering.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/TitanicModel$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/TitanicModel$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/TitanicModel$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/kaggle/TitanicModel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$10.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$11.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$12.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$13.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$7$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$8$$anonfun$apply$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$8.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$9.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$10.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$11.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$12.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$13.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$14.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$15.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$16.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$17.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$18.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$19.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$8.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$$anonfun$main$9.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$User$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample$User$4$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/GraphXExample.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/CollectionUtil$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/CollectionUtil$CollectionHelper$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/CollectionUtil$CollectionHelper$$anonfun$2$$anonfun$apply$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/CollectionUtil$CollectionHelper$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/CollectionUtil$CollectionHelper$$anonfun$reduceByKey$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/CollectionUtil$CollectionHelper$$anonfun$reduceByKey$2$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/CollectionUtil$CollectionHelper$$anonfun$reduceByKey$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/CollectionUtil$CollectionHelper.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/CollectionUtil.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$1$$anonfun$apply$3$$anonfun$apply$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$1$$anonfun$apply$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$10$$anonfun$apply$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$10.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$11.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$12.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$13.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$14.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$15.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$16.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$17.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$6$$anonfun$apply$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$6$$anonfun$apply$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$8$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$8.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$9.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$aggNdegreedVertices$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$aggNdegreedVertices$default$4$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$aggNdegreedVerticesWithAttr$default$4$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$lakala$graphx$util$GraphNdegUtil$$reduceVertexIds$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$lakala$graphx$util$GraphNdegUtil$$sortResult$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$$anonfun$lakala$graphx$util$GraphNdegUtil$$sortResult$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$DegVertex$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$DegVertex.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$Ver$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$Ver.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$VertexDegInfo$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil$VertexDegInfo.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/graphx/util/GraphNdegUtil.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeClassificationForLK.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/DecisionTreeRegressionForLK.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/ExplortApplyData$$anonfun$1$$anonfun$apply$1$$anonfun$apply$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/ExplortApplyData$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/ExplortApplyData$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/ExplortApplyData$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/ExplortApplyData$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/ExplortApplyData.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/FQZScore.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingClassificationForLK.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/GradientBoostingRegressionForLK.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LakalaCardScore$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LakalaCardScore$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LakalaCardScore$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LakalaCardScore$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LakalaCardScore$$anonfun$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LakalaCardScore$$anonfun$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LakalaCardScore$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LakalaCardScore.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$documentToVector$1$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$documentToVector$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegression.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/LogisticRegressionForLK.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/NaiveBayesForLK.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestClassificationForLK.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$main$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$main$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$main$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$$anonfun$main$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/models/RandomForestRegressionForLK.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/sparktools/SparkTools$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/sparktools/SparkTools.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/sparktools/udf/NumsAvg.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/sparktools/udf/UDAFArrAvg$$anonfun$evaluate$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/sparktools/udf/UDAFArrAvg$$anonfun$merge$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/sparktools/udf/UDAFArrAvg$$anonfun$update$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/sparktools/udf/UDAFArrAvg.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$4$$anonfun$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$4$$anonfun$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$4$$anonfun$apply$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$7$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$$anonfun$loadLibSVMFile$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/lakala/utils/MLUtils.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/spark-tools-1.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/specs2-reports/stats/samples.MySpecTest.stats" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes.-417049801.timestamp" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/lakala/sparktools/udf/NumAvgTest$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/lakala/sparktools/udf/NumAvgTest$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/lakala/sparktools/udf/NumAvgTest$$anonfun$main$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/lakala/sparktools/udf/NumAvgTest$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/lakala/sparktools/udf/NumAvgTest.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/lakala/sparktools/udf/UDAFArrAvgTest$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/lakala/sparktools/udf/UDAFArrAvgTest$$anonfun$testFunction$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/lakala/sparktools/udf/UDAFArrAvgTest$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/lakala/sparktools/udf/UDAFArrAvgTest.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/AppTest.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/ExampleSpec$$anonfun$4$$anonfun$apply$mcV$sp$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/ExampleSpec$$anonfun$4$$anonfun$apply$mcV$sp$2$$anonfun$apply$mcV$sp$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/ExampleSpec$$anonfun$4$$anonfun$apply$mcV$sp$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/ExampleSpec$$anonfun$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/ExampleSpec.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/ListSuite$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/ListSuite$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/ListSuite$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/ListSuite.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$1$$anonfun$apply$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$1$$anonfun$apply$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$4$$anonfun$apply$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$4$$anonfun$apply$6$$anonfun$apply$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$4$$anonfun$apply$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$8$$anonfun$apply$10$$anonfun$apply$11.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$8$$anonfun$apply$10.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$8$$anonfun$apply$9.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1$$anonfun$apply$8.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/MySpecTest.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/StackSuite$$anonfun$stackShouldThrowNoSuchElementExceptionIfAnEmptyStackIsPopped$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/StackSuite.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/samples/breeze.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/scala_compiler.xml" afterPath="$PROJECT_DIR$/.idea/scala_compiler.xml" />
+    <list default="true" id="b73d9b89-7590-43e3-802e-2a9c582ad39f" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spark-submit" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/HDFSLouvainRunner.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/LouvainCore.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/LouvainHarness.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/VertexData.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/VertexState.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/Analytics.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/CallHistoryPageRank.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/Driver.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/LPAAlgorithm.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/LPCoarseAlgorithm.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/LiveCommunityDetection.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/LouvainDGA.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/PICCallAlgorithm.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/PSCANAlgorithm.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/SemiSupervisedLabelPropagation.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/python/machinelearningaction/Ch03/trees.py" afterPath="$PROJECT_DIR$/python/machinelearningaction/Ch03/trees.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/python/machinelearningaction/Ch05/logRegres.py" afterPath="$PROJECT_DIR$/python/machinelearningaction/Ch05/logRegres.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spark-tools.iml" afterPath="$PROJECT_DIR$/spark-tools.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/kaggle/creditCard/CreditCardScore.scala" afterPath="$PROJECT_DIR$/src/main/scala/kaggle/creditCard/CreditCardScore.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/machinelearningaction/DecisionTree.scala" afterPath="$PROJECT_DIR$/src/main/scala/machinelearningaction/DecisionTree.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphNDegree.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/degreeData/GraphNDegree.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphxBSP.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/graphx/degreeData/GraphxBSP.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/DecisionTreeClassificationForLK.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/DecisionTreeClassificationForLK.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/DecisionTreeRegressionForLK.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/DecisionTreeRegressionForLK.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/ExplortApplyData.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/ExplortApplyData.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/FQZScore20170621.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/FQZScore20170621.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/FQZScore20170629.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/FQZScore20170629.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/GradientBoostingClassificationForLK.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/GradientBoostingClassificationForLK.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/GradientBoostingRegressionForLK.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/GradientBoostingRegressionForLK.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/LakalaCardScore.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/LakalaCardScore.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/LakalaCardScoreNew.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/LakalaCardScoreNew.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/LogisticRegression.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/LogisticRegression.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/LogisticRegressionForLK.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/LogisticRegressionForLK.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/NaiveBayesForLK.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/NaiveBayesForLK.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/RandomForestClassificationForLK.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/RandomForestClassificationForLK.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/lakala/models/RandomForestRegressionForLK.scala" afterPath="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/RandomForestRegressionForLK.scala" />
     </list>
     <ignored path="spark-tools.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -392,11 +100,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/scala/lakala/sparktools/SparkDataProcessing.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/lakala/models/AvgCalculate.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/lakala/models/LogisticRegression.scala" />
-        <option value="$PROJECT_DIR$/src/test/scala/samples/breeze.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/lakala/models/RandomForestClassificationForLK.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/lakala/models/GradientBoostingClassificationForLK.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/lakala/models/NaiveBayesForLK.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/lakala/models/DecisionTreeClassificationForLK.scala" />
@@ -412,7 +115,6 @@
         <option value="$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphNDegree.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphXExample.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/kaggle/readme.md" />
-        <option value="$PROJECT_DIR$/src/main/scala/lakala/models/LogisticRegressionForLK.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/lakala/models/RandomForestRegressionForLK.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/kaggle/PCA.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/lakala/models/LakalaCardScore.scala" />
@@ -443,6 +145,12 @@
         <option value="$PROJECT_DIR$/src/main/scala/kaggle/creditCard/variableProcess.txt" />
         <option value="$PROJECT_DIR$/src/main/scala/kaggle/creditCard/CreditCardScore.scala" />
         <option value="$PROJECT_DIR$/python/machinelearningaction/Ch05/logRegres.py" />
+        <option value="$PROJECT_DIR$/src/main/scala/lakala/models/LogisticRegressionForLK.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/HDFSLouvainRunner.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/VertexData.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/lakala/models/fqz/LogisticRegression.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/Driver.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/lakala/graphx/main/LouvainDGA.scala" />
       </list>
     </option>
   </component>
@@ -491,9 +199,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="AndroidView" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -501,15 +208,42 @@
               <item name="spark-tools" type="b2602c69:ProjectViewProjectNode" />
               <item name="spark-tools" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="spark-tools" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spark-tools" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="spark-tools" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spark-tools" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="spark-tools" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spark-tools" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="spark-tools" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spark-tools" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="lakala" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/scala/lakala/models/antiFraud/AntiFraudScoreBYSparkSQLForTest.scala" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../spark-distributed-louvain-modularity-master" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.15" />
@@ -518,24 +252,25 @@
     <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/src/main/scala/lakala/models/antiFraud/AntiFraudScoreBYSparkSQLForTest.scala" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\WORKSPACE\spark-tools\python\creditCardScore" />
-      <recent name="E:\workspace\spark-tools\src\main\data\titanic" />
-      <recent name="E:\workspace\fs-spark-tools\src\main\scala\kaggle" />
-      <recent name="E:\workspace\fs-spark-tools\src\main\scala\lakala\models" />
-      <recent name="E:\workspace\fs-spark-tools\src\main\data\forest-fires" />
-    </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="kaggle.creditCard" />
-      <recent name="lakala.models.antiFraud" />
-      <recent name="lakala.models" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\WORKSPACE\spark-tools\src\main\scala\lakala\graphx\degreeData" />
       <recent name="E:\workspace\spark-tools\src\main\scala\kaggle\titanic" />
       <recent name="E:\workspace\fs-spark-tools\src\main\data\email" />
       <recent name="E:\workspace\fs-spark-tools\src\main\data\iris" />
       <recent name="E:\workspace\fs-spark-tools\src\main\data\adult" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="lakala.graphx.main" />
+      <recent name="kaggle.creditCard" />
+      <recent name="lakala.models.antiFraud" />
+      <recent name="lakala.models" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\WORKSPACE\spark-tools\src\main\scala\lakala\graphx" />
+      <recent name="E:\WORKSPACE\spark-tools\src\main\scala\lakala\graphx\louvain" />
+      <recent name="E:\WORKSPACE\spark-tools\python\creditCardScore" />
+      <recent name="E:\workspace\spark-tools\src\main\data\titanic" />
+      <recent name="E:\workspace\fs-spark-tools\src\main\scala\kaggle" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -1144,7 +879,14 @@
       <option name="project" value="LOCAL" />
       <updated>1508981478655</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="添加金融输出备注">
+      <created>1509156347575</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1509156347575</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1176,7 +918,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3289689" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22049356" sideWeight="0.46153846" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34656653" sideWeight="0.46153846" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16899142" sideWeight="0.65302783" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24962178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1237,12 +979,12 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="添加金融输出备注" />
     <MESSAGE value="信用评分代码" />
     <MESSAGE value="信用评分卡模型 python" />
     <MESSAGE value="20171011" />
     <MESSAGE value="creditScore" />
-    <option name="LAST_COMMIT_MESSAGE" value="creditScore" />
+    <MESSAGE value="添加金融输出备注" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加金融输出备注" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1255,132 +997,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/util/modelSaveLoad.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="91" column="46" lean-forward="false" selection-start-line="91" selection-start-column="46" selection-end-line="91" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/tree/model/treeEnsembleModels.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="499">
-          <caret line="450" column="28" lean-forward="true" selection-start-line="450" selection-start-column="28" selection-end-line="450" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4-sources.jar!/scala/collection/TraversableOnce.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="278">
-          <caret line="260" column="11" lean-forward="false" selection-start-line="260" selection-start-column="6" selection-end-line="260" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4-sources.jar!/scala/collection/Iterator.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="377">
-          <caret line="66" column="32" lean-forward="true" selection-start-line="66" selection-start-column="32" selection-end-line="66" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/GradientBoostingRegressionForLK.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="68" column="32" lean-forward="false" selection-start-line="68" selection-start-column="32" selection-end-line="68" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/tree/model/Node.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5082">
-          <caret line="172" column="0" lean-forward="false" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/tree/configuration/Strategy.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1815">
-          <caret line="76" column="61" lean-forward="false" selection-start-line="76" selection-start-column="38" selection-end-line="76" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/tree/RandomForest.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3300">
-          <caret line="134" column="58" lean-forward="false" selection-start-line="134" selection-start-column="58" selection-end-line="134" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/tree/model/DecisionTreeModel.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2574">
-          <caret line="108" column="0" lean-forward="false" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/tree/impl/DecisionTreeMetadata.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4422">
-          <caret line="157" column="49" lean-forward="false" selection-start-line="157" selection-start-column="49" selection-end-line="157" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/tree/impl/TreePoint.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3960">
-          <caret line="137" column="58" lean-forward="false" selection-start-line="137" selection-start-column="58" selection-end-line="137" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/DecisionTreeClassificationForLK.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1914">
-          <caret line="65" column="131" lean-forward="false" selection-start-line="65" selection-start-column="88" selection-end-line="65" selection-end-column="131" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4-sources.jar!/scala/collection/generic/GenericCompanion.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1188">
-          <caret line="43" column="6" lean-forward="false" selection-start-line="43" selection-start-column="6" selection-end-line="43" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-catalyst_2.10/1.6.3/spark-catalyst_2.10-1.6.3.jar!/org/apache/spark/sql/Row.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1320">
-          <caret line="40" column="6" lean-forward="false" selection-start-line="40" selection-start-column="6" selection-end-line="40" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-catalyst_2.10/1.6.3/spark-catalyst_2.10-1.6.3-sources.jar!/org/apache/spark/sql/Row.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="34" column="21" lean-forward="false" selection-start-line="34" selection-start-column="21" selection-end-line="34" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-catalyst_2.10/1.6.3/spark-catalyst_2.10-1.6.3-sources.jar!/org/apache/spark/sql/types/StructField.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="541">
-          <caret line="37" column="41" lean-forward="true" selection-start-line="37" selection-start-column="41" selection-end-line="37" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/ml/feature/VectorIndexer.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10494">
-          <caret line="350" column="72" lean-forward="false" selection-start-line="350" selection-start-column="72" selection-end-line="350" selection-end-column="72" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/linalg/Vectors.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="33">
-          <caret line="45" column="13" lean-forward="false" selection-start-line="45" selection-start-column="13" selection-end-line="45" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/ml/feature/StringIndexer.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="33">
@@ -1413,27 +1029,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="174">
           <caret line="79" column="55" lean-forward="false" selection-start-line="79" selection-start-column="16" selection-end-line="79" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/LogisticRegression.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="594">
-          <caret line="48" column="49" lean-forward="false" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/DecisionTreeRegressionForLK.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="68" column="35" lean-forward="false" selection-start-line="68" selection-start-column="35" selection-end-line="68" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/LogisticRegressionForLK.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="603">
-          <caret line="69" column="68" lean-forward="false" selection-start-line="69" selection-start-column="63" selection-end-line="69" selection-end-column="68" />
         </state>
       </provider>
     </entry>
@@ -1481,14 +1076,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphxCalculate.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/GraphXExample.scala" />
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spark-graphx/pom.xml" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/degreeData/GraphNDegree.scala">
       <provider selected="true" editor-type-id="text-editor">
@@ -1532,26 +1119,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/FQZScore20170629.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="17" column="57" lean-forward="false" selection-start-line="17" selection-start-column="57" selection-end-line="17" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/sparktools/spark-submit">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="5" column="28" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-mllib_2.10/1.6.3/spark-mllib_2.10-1.6.3-sources.jar!/org/apache/spark/mllib/classification/LogisticRegression.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="9933">
           <caret line="325" column="41" lean-forward="false" selection-start-line="325" selection-start-column="41" selection-end-line="325" selection-end-column="41" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1559,9 +1130,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4686">
           <caret line="154" column="25" lean-forward="false" selection-start-line="154" selection-start-column="25" selection-end-line="154" selection-end-column="25" />
-          <folding>
-            <element signature="e#27#105#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1583,22 +1151,215 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="528">
           <caret line="49" column="68" lean-forward="false" selection-start-line="49" selection-start-column="68" selection-end-line="49" selection-end-column="68" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/degreeData/GraphNdegreeSubGraph$.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1637">
-          <caret line="13" column="29" lean-forward="true" selection-start-line="13" selection-start-column="29" selection-end-line="13" selection-end-column="29" />
+        <state relative-caret-position="429">
+          <caret line="13" column="29" lean-forward="false" selection-start-line="13" selection-start-column="29" selection-end-line="13" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/LogisticRegressionForLK.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="537">
+          <caret line="67" column="4" lean-forward="true" selection-start-line="67" selection-start-column="4" selection-end-line="67" selection-end-column="4" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/degreeData/GraphxBSP.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-924">
-          <caret line="106" column="25" lean-forward="true" selection-start-line="106" selection-start-column="25" selection-end-line="106" selection-end-column="25" />
+        <state relative-caret-position="739">
+          <caret line="85" column="6" lean-forward="false" selection-start-line="85" selection-start-column="6" selection-end-line="85" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/VertexState.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/lklCardScore/DecisionTreeClassificationForLK.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="14" column="7" lean-forward="false" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/DecisionTreeClassificationForLK.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="268">
+          <caret line="14" column="7" lean-forward="false" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/DecisionTreeRegressionForLK.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="14" column="7" lean-forward="false" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/ExplortApplyData.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="12" column="7" lean-forward="false" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/FQZScore20170621.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="15" column="7" lean-forward="false" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/FQZScore20170629.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="15" column="7" lean-forward="false" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/GradientBoostingClassificationForLK.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="268">
+          <caret line="15" column="7" lean-forward="false" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/GradientBoostingRegressionForLK.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="16" column="7" lean-forward="false" selection-start-line="16" selection-start-column="7" selection-end-line="16" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/LakalaCardScore.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="15" column="7" lean-forward="false" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/LakalaCardScoreNew.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="14" column="7" lean-forward="false" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/models/fqz/LogisticRegression.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="13" column="7" lean-forward="false" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="462">
+          <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/sparktools/spark-submit">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3078">
+          <caret line="5" column="28" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spark-submit">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/main/Driver.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="15" column="41" lean-forward="true" selection-start-line="15" selection-start-column="41" selection-end-line="15" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/main/LiveCommunityDetection.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="5" column="7" lean-forward="false" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/main/LouvainDGA.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="660">
+          <caret line="65" column="1" lean-forward="false" selection-start-line="65" selection-start-column="1" selection-end-line="65" selection-end-column="1" />
+          <folding>
+            <element signature="e#82#143#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/LouvainCore.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="278">
+          <caret line="15" column="7" lean-forward="false" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/HDFSLouvainRunner.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="18" column="6" lean-forward="false" selection-start-line="18" selection-start-column="6" selection-end-line="18" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/VertexData.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="7" column="6" lean-forward="false" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/lakala/graphx/louvain/LouvainHarness.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1169">
+          <caret line="39" column="6" lean-forward="false" selection-start-line="39" selection-start-column="6" selection-end-line="39" selection-end-column="6" />
           <folding />
         </state>
       </provider>

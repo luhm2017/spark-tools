@@ -1,10 +1,10 @@
-package lakala.models
+package lakala.models.fqz
 
-import org.apache.spark.{SparkConf, SparkContext}
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.Statement
+import java.sql.{Connection, DriverManager, Statement}
+
 import org.apache.log4j.{Level, Logger}
+import org.apache.spark.{SparkConf, SparkContext}
+
 import scala.collection.mutable.ArrayBuffer
 
 /**

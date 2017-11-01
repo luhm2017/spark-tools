@@ -1,11 +1,10 @@
-package lakala.models
+package lakala.models.fqz
 
-import org.apache.spark.mllib.classification.LogisticRegressionModel
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.mllib.tree.configuration.BoostingStrategy
 import org.apache.spark.mllib.tree.model.{GradientBoostedTreesModel, RandomForestModel}
-import org.apache.spark.mllib.tree.{DecisionTree, GradientBoostedTrees, RandomForest}
+import org.apache.spark.mllib.tree.{GradientBoostedTrees, RandomForest}
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkConf, SparkContext}
 

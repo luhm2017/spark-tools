@@ -1,21 +1,20 @@
-package lakala.models
+package lakala.models.fqz
 
-import org.apache.spark.mllib.classification.{LogisticRegressionModel, LogisticRegressionWithSGD}
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.mllib.tree.DecisionTree
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ArrayBuffer
 
 /**
-  * Created by luhuamin on 2017/2/28.
+  * Created by Administrator on 2017/3/29.
   */
-object LogisticRegressionForLK {
-
+object DecisionTreeClassificationForLK {
   def main(args: Array[String]): Unit = {
-    val sparkConf = new SparkConf().setAppName("LogisticRegressionForLK")
+    val sparkConf = new SparkConf().setAppName("DecisionTreeClassificationForLK")
     val sc = new SparkContext(sparkConf)
     // sc is an existing SparkContext.
     val hc = new HiveContext(sc)
@@ -48,37 +47,23 @@ object LogisticRegressionForLK {
 
     // Split data into training (60%) and test (40%)
     val Array(trainingData, testData) = data.randomSplit(Array(0.6, 0.4), seed = 11L)
-    // 逻辑回归是迭代算法，所以缓存训练数据的RDD
-    trainingData.cache()
-    //使用SGD算法运行逻辑回归
-    val lrLearner = new LogisticRegressionWithSGD
-    //训练模型
-    val model = lrLearner.run(trainingData)
 
+    val numClasses = 2
+    val categoricalFeaturesInfo = Map[Int, Int]()
+    val impurity = "gini"
+    val maxDepth = 5
+    val maxBins = 32
 
-    //参数调试，迭代1
-    /*val numIterations = 100
-    val stepSize = 1
-    val miniBatchFraction = 1
-    val model = LogisticRegressionWithSGD.train(trainingData, numIterations, stepSize, miniBatchFraction)*/
-
-    // Clear the prediction threshold so the model will return probabilities
-    //默认 threshold = 0.5
-    model.clearThreshold
+    val model = DecisionTree.trainClassifier(trainingData, numClasses, categoricalFeaturesInfo,
+      impurity, maxDepth, maxBins)
 
     // Compute raw scores on the testData set
     val predictionAndLabels = testData.map { case LabeledPoint(label, features) =>
       val prediction = model.predict(features)
       (prediction, label)
     }
-    //预测值与实际值
-    //inPath:hdfs://ns1/tmp/predictionAndLabel
+
     predictionAndLabels.map(x => {"predicts: "+x._1+"--> labels:"+x._2}).saveAsTextFile(s"hdfs://ns1/tmp/$date/predictionAndLabels")
-
-    //模型的存储和读取
-    model.save(sc,s"hdfs://ns1/tmp/$date/models")
-    //LogisticRegressionModel.load(sc,"hdfs://ns1/tmp/20170314/models");
-
     //--===============================================================================
     //使用BinaryClassificationMetrics评估模型
     val metrics = new BinaryClassificationMetrics(predictionAndLabels)
@@ -124,7 +109,10 @@ object LogisticRegressionForLK {
     val auROC = metrics.areaUnderROC
     sc.makeRDD(Seq("Area under ROC = " + +auROC)).saveAsTextFile(s"hdfs://ns1/tmp/$date/auROC")
     println("Area under ROC = " + auROC)
-    //val accuracy = 1.0 * predictionAndLabels.filter(x => x._1 == x._2).count() / testData.count()
+
+    val testErr = predictionAndLabels.filter(r => r._1 != r._2).count().toDouble / testData.count()
+    sc.makeRDD(Seq("Test Mean Squared Error = " + testErr)).saveAsTextFile(s"hdfs://ns1/tmp/$date/testErr")
+    sc.makeRDD(Seq("Learned classification tree model: " + model.toDebugString)).saveAsTextFile(s"hdfs://ns1/tmp/$date/classificationTreeModel")
 
   }
 }
