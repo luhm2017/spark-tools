@@ -1,6 +1,5 @@
 package lakala.graphx.main
 
-import ml.sparkling.graph.api.operators.measures.VertexMeasureConfiguration
 import ml.sparkling.graph.operators.OperatorsDSL._
 import ml.sparkling.graph.operators.algorithms.community.pscan.PSCAN
 import org.apache.log4j.{Level, Logger}

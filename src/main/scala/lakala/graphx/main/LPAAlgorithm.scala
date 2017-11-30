@@ -1,8 +1,8 @@
 package lakala.graphx.main
 
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.graphx.{Edge, Graph}
 import org.apache.spark.graphx.lib.LabelPropagation
+import org.apache.spark.graphx.{Edge, Graph}
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.{SparkConf, SparkContext}
 import ml.sparkling.graph.operators.OperatorsDSL._

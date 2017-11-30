@@ -7,6 +7,7 @@ package lakala.graphx.main
 
 object Driver extends App {
   override def main(args: Array[String]) = {
-
+    val enD = new ExportNDegreeData()
+    enD.main(args)
   }
 }
