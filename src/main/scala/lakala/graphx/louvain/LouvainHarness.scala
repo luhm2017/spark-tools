@@ -39,25 +39,30 @@ import scala.reflect.ClassTag
   */
 class LouvainHarness(minProgress: Int, progressCounter: Int) {
 
-
   def run[VD: ClassTag](sc: SparkContext, graph: Graph[VD, Double]) = {
 
     //构造初始的louvain图
     var louvainGraph = LouvainCore.createLouvainGraph(graph)
-
-    var level = -1 // number of times the graph has been compressed 统计图按社区压缩的次数
-    var q = -1.0 // current modularity value  // 当前模块度的值
+    //打印初始构造的图
+    println(louvainGraph.toString)
+    //统计图按社区压缩的次数
+    var level = -1 // number of times the graph has been compressed
+    // 当前模块度的值
+    var q = -1.0 // current modularity value
+    //迭代计算停止条件
     var halt = false
+    //迭代计算
     do {
       level += 1
       println(s"\nStarting Louvain level $level")
 
-      // 调用louvain算法计算每个节点所属的当前最佳社区 label each vertex with its best community choice at this level of compression
+      // 调用louvain算法计算每个节点所属的当前最佳社区
+      // label each vertex with its best community choice at this level of compression
       val (currentQ, currentGraph, passes) = LouvainCore.louvain(sc, louvainGraph, minProgress, progressCounter)
       louvainGraph.unpersistVertices(blocking = false)
       louvainGraph = currentGraph
-
-//      saveLevel(sc,level,currentQ,louvainGraph)
+      //保存每次迭代的数据
+      saveLevel(sc,level,currentQ,louvainGraph)
 
       // 如果模块度增加量超过0.001，说明当前划分比前一次好，继续迭代 If modularity was increased by at least 0.001 compress the graph and repeat
       // 如果计算当前社区的迭代次数少于3次，就停止循环 halt immediately if the community labeling took less than 3 passes

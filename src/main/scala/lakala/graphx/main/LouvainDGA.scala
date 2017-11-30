@@ -2,64 +2,63 @@ package lakala.graphx.main
 
 /**
   * Created by linyanshi on 2017/9/14 0014.
+  * updated by luhuamin 20171129
   */
 
 import lakala.graphx.louvain.{HDFSLouvainRunner, VertexState}
-import org.apache.log4j.{Level, Logger}
-import org.apache.spark.graphx.{Edge, Graph}
 import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.graphx.{Edge, Graph}
 
-//totalEdgeWeight: 1.56262281191699E15
-//# vertices moved: 61,897,309
-//# vertices moved: 13,746,461
-//# vertices moved: 5,352,635
-//# vertices moved: 130,270
-//# vertices moved: 82,426
-//# vertices moved: 71,584
-//# vertices moved: 71,105
-//# vertices moved: 70,030
-//# vertices moved: 69,937
-//
-//Completed in 18 cycles
-//
-//Starting Louvain level 1
-//totalEdgeWeight: 2.237895102976331E15
-//# vertices moved: 664,919
-//# vertices moved: 191,039
-//# vertices moved: 12,426
-//# vertices moved: 393
-//# vertices moved: 7
-//# vertices moved: 0
-//
-//Completed in 12 cycles
-//qValue: 0.9182326588364285
-// 总的用户数1232060 总的call_phone yong用户数 101825071
-//总的社区 275141 大于两个人的总的社区id 77442  关联黑名单 总的社区 1784
 
+
+/**
+  * Execute the louvain distributed community detection.
+  * Requires an edge file and output directory in hdfs (local files for local mode only)
+  * */
 object LouvainDGA {
-  def main(args: Array[String]) {
-    //传入参数
-    //args(0) = "filePath" 构图源数据 /user/guozhijie/explortoutput/${output} 200 1
-    //args(1) = "outputFile" result输出路径
-    //args(1) = "minProgress"
-    //args(2) = "progressCounter"
-    Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
-    Logger.getLogger("org.eclipse.jetty.server").setLevel(Level.OFF)
-    val conf = new SparkConf().setAppName("LouvainDGA")
-    conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-    conf.registerKryoClasses(Array(classOf[VertexState]))
 
-   // intputpath  iterator 1 outputpath
-    val sc = new SparkContext(conf)
+  // specify command line options and their defaults
+  case class Config(
+                     input:String = "",
+                     output: String = "",
+                     master:String="local",
+                     appName:String="graphX analytic",
+                     jars:String="",
+                     sparkHome:String="",
+                     parallelism:Int = -1,
+                     edgedelimiter:String = ",", //分隔符
+                     minProgress:Int = 2000,//Number of vertices that must change communites for the algorithm to consider progress. default=2000
+                     progressCounter:Int = 1,//Number of times the algorithm can fail to make progress before exiting. default=1
+                     ipaddress: Boolean = false,
+                     properties:Seq[(String,String)]= Seq.empty[(String,String)] )
+
+  def main(args: Array[String]) {
+
+    if(args.length!=4){
+      println("请输入参数：edgeFilePath、outPutDir、minProgress、progressCounter")
+      System.exit(0)
+    }
+    //输入参数
+    val edgeFilePath = args(0)
+    val outPutDir = args(1)
+    val minProgress = args(2).toInt
+    val progressCounter = args(3).toInt
+
+    val sparkConf = new SparkConf().setAppName("LouvainDGA")
+    sparkConf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+    sparkConf.registerKryoClasses(Array(classOf[VertexState]))
+    val sc = new SparkContext(sparkConf)
     //数据源构造
-    val data = sc.textFile(args(0))
+    //1、demo数据测试 2、测试空手道网络数据
+    val data = sc.textFile(edgeFilePath)
     val edges = data.map(line => {
       val items = line.split(",")
-      Edge(items(1).toLong, items(2).toLong, items(3).toDouble)
+      //权重默认设置为1
+      Edge(items(1).toLong, items(2).toLong, 1.toDouble)
     })
-    //构造初始图
+    //构造初始图，顶点默认属性为1
     val graph = Graph.fromEdges(edges, 1)
-    val runner = new HDFSLouvainRunner(args(2).toInt, args(3).toInt, args(1))
+    val runner = new HDFSLouvainRunner(minProgress, progressCounter, outPutDir)
     runner.run(sc, graph)
     sc.stop()
   }

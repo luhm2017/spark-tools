@@ -21,6 +21,7 @@ class HDFSLouvainRunner(minProgress: Int, progressCounter: Int, outputdir: Strin
   var qValues = Array[(Int, Double)]()
 
   override def saveLevel(sc: SparkContext, level: Int, q: Double, graph: Graph[VertexState, Double]) = {
+    //保存图的顶点和边
     graph.vertices.saveAsTextFile(outputdir + "/level_" + level + "_vertices")
     graph.edges.saveAsTextFile(outputdir + "/level_" + level + "_edges")
     qValues = qValues :+ ((level, q))

@@ -2,6 +2,7 @@ package lakala.sparktools
 
 import java.util.Properties
 
+import lakala.models.antiFraud.AntiFraudScoreBYSparkSQL.{hc, sc}
 import org.apache.spark.sql.{SQLContext, SaveMode}
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkConf, SparkContext}
@@ -127,7 +128,17 @@ object SparkTools {
 
   //scala 画图工具
   def draw(): Unit ={
+    val hc = new HiveContext(sc)
 
+  }
+
+  //hql跑数
+  def hqlBySpark(): Unit ={
+    val hc = new HiveContext(sc)
+    hc.sql("use lkl_card_score")
+    hc.sql("select \n" +
+      "a.phone,a.loginname,a.name,a.deviceid,a.devicemodel,a.platform,a.osversion\n" +
+      "from datacenter.s_data_bigdatacenter_lakalaapp_contactlist a\n limit 10")
   }
 
   def main(args: Array[String]): Unit = {

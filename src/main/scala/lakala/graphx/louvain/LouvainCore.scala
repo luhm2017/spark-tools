@@ -27,41 +27,49 @@ object LouvainCore {
     */
   def createLouvainGraph[VD: ClassTag](graph: Graph[VD, Double]): Graph[VertexState, Double] = {
     // Create the initial Louvain graph.  
-    //    val nodeWeightMapFunc = (e:EdgeTriplet[VD,Double]) => Iterator((e.srcId,e.attr), (e.dstId,e.attr))
-    //    val nodeWeightReduceFunc = (e1:Long,e2:Double) => e1+e2
+    // val nodeWeightMapFunc = (e:EdgeTriplet[VD,Double]) => Iterator((e.srcId,e.attr), (e.dstId,e.attr))
+    // val nodeWeightReduceFunc = (e1:Long,e2:Double) => e1+e2
     //计算每个目的节点的入度,作为权值(原算法是把出入度都相加)
     //(Double,Double)表示这个节点的(入度,出度)
     val nodeWeights: VertexRDD[Double] = graph.aggregateMessages(
       trip => {
-        //trip.attr 属性表示权重
+        //trip.attr 属性表示权重，默认权重为1
         trip.sendToSrc(trip.attr)
         trip.sendToDst(trip.attr)
       },
-      //对一个节点的边信息做聚合,入度相加或者出度相加
+      //对每个节点的边信息做聚合,入度相加或者出度相加
       (a, b) => a + b
     )
+    //遍历每个顶点，取顶点id
+    nodeWeights.foreach{
+      row =>
+        row._1
+    }
 
     //更新louvainGraph的每个顶点的权重，并构造LouvainVertex
-    val louvainGraph = graph.outerJoinVertices(nodeWeights)((vid, data, weightOption) => {
+    val louvainGraph = graph.outerJoinVertices(nodeWeights)((vid, oldData, weightOption) => {
+      //将nodeWeights的权重更新到原图顶点上，vid,weightOption分别表示nodeWeights的顶点和属性
       val weight = weightOption.getOrElse(0D)
+      //每个louvain vertex的状态
       val state = new VertexState()
       state.community = vid //将每个节点的社区ID初始化为自身ID
-      state.changed = false
-      state.communitySigmaTot = weight //入度
+      state.changed = false //状态标识位
+      state.communitySigmaTot = weight //当前社区的入度
       state.internalWeight = 0D
-      state.nodeWeight = weight //出度
+      state.nodeWeight = weight //
       state.q = 0D //模块度
       state
-    })/*.partitionBy(PartitionStrategy.EdgePartition2D).groupEdges(_ + _)*/
-//    4 {community:4,communitySigmaTot:3.0,internalWeight:0.0,nodeWeight:3.0}
-//    1 {community:1,communitySigmaTot:9.0,internalWeight:0.0,nodeWeight:9.0}
-//    6 {community:6,communitySigmaTot:3.0,internalWeight:0.0,nodeWeight:3.0}
-//    3 {community:3,communitySigmaTot:7.0,internalWeight:0.0,nodeWeight:7.0}
-//    7 {community:7,communitySigmaTot:5.0,internalWeight:0.0,nodeWeight:5.0}
-//    9 {community:9,communitySigmaTot:2.0,internalWeight:0.0,nodeWeight:2.0}
-//    8 {community:8,communitySigmaTot:2.0,internalWeight:0.0,nodeWeight:2.0}
-//    5 {community:5,communitySigmaTot:3.0,internalWeight:0.0,nodeWeight:3.0}
-//    2 {community:2,communitySigmaTot:8.0,internalWeight:0.0,nodeWeight:8.0}
+      //图的切分策略
+    }).partitionBy(PartitionStrategy.EdgePartition2D).groupEdges(_ + _)
+    //    4 {community:4,communitySigmaTot:3.0,internalWeight:0.0,nodeWeight:3.0}
+    //    1 {community:1,communitySigmaTot:9.0,internalWeight:0.0,nodeWeight:9.0}
+    //    6 {community:6,communitySigmaTot:3.0,internalWeight:0.0,nodeWeight:3.0}
+    //    3 {community:3,communitySigmaTot:7.0,internalWeight:0.0,nodeWeight:7.0}
+    //    7 {community:7,communitySigmaTot:5.0,internalWeight:0.0,nodeWeight:5.0}
+    //    9 {community:9,communitySigmaTot:2.0,internalWeight:0.0,nodeWeight:2.0}
+    //    8 {community:8,communitySigmaTot:2.0,internalWeight:0.0,nodeWeight:2.0}
+    //    5 {community:5,communitySigmaTot:3.0,internalWeight:0.0,nodeWeight:3.0}
+    //    2 {community:2,communitySigmaTot:8.0,internalWeight:0.0,nodeWeight:8.0}
     return louvainGraph
   }
 

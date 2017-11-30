@@ -11,7 +11,6 @@ import org.apache.spark.sql.{Row, SaveMode}
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.spark.{SparkConf, SparkContext}
-
 import scala.collection.mutable.ArrayBuffer
 
 /**
@@ -162,11 +161,11 @@ object CreditCardScore {
     // 逻辑回归是迭代算法，所以缓存训练数据的RDD
     trainingData.cache()
     //使用SGD算法运行逻辑回归
-    val numIterations = 1000
+    val numIterations = 100
     val stepSize = 1
     val miniBatchFraction = 1.0
     val model = LogisticRegressionWithSGD.train(trainingData, numIterations, stepSize, miniBatchFraction)
-    model.clearThreshold()
+    model.clearThreshold
     model.weights
     //训练模型
     //val model = lrLearn.run(trainingData)

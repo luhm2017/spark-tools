@@ -5,9 +5,8 @@
   */
 object TestExample {
   def main(args: Array[String]): Unit = {
-    var myArray : Array[String] = new Array[String](10);
-    for(i <- 0 until myArray.length){
-      myArray(i) = "value is: " + i;
-    }
+    var myArray : Array[List[String]] =   Array(List("11","12"),List("1111"))
+    println(myArray(1))
+
   }
 }

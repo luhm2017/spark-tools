@@ -14,10 +14,9 @@ class VertexState extends Serializable {
   var q = 0D //模块度的值
 
   override def toString(): String = {
-    //        "{community:"+community+",communitySigmaTot:"+communitySigmaTot+
-    //          ",internalWeight:"+internalWeight+",nodeWeight:"+nodeWeight+"}"
-//    s"community:$community,communitySigmaTot:$communitySigmaTot,internalWeight:$internalWeight,nodeWeight:$nodeWeight"
-    s"community:$community,q:$q"
-//        community.toString
+    "{community:"+community+",communitySigmaTot:"+communitySigmaTot+ ",internalWeight:"+internalWeight+ ",nodeWeight:"+nodeWeight+"}"
+     //s"community:$community,communitySigmaTot:$communitySigmaTot,internalWeight:$internalWeight,nodeWeight:$nodeWeight"
+     //s"community:$community,q:$q"
+    community.toString
   }
 }

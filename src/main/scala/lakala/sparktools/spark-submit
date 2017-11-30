@@ -3,7 +3,7 @@ scp spark-csv_2.10-1.5.0.jar graphdb@10.16.65.15:~
 
 ######常用跑数据命令
 nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 8 --num-executors 2 --executor-memory 4g --class lakala.models.LogisticRegressionForLK /home/hadoop/spark-tools-1.0.jar lkl_card_score phone_variable_yfq_creditcardrepayments_train_result 20170523creditcardLogisticRegressionForLK > ~/log/20170523creditcardLogisticRegressionForLK.log  &
-./spark-shell -- master spark://datacenter17:7077,datacenter18:7077 --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g --jars /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar --driver-class-path /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar:/home/hadoop/taskJar/guava-14.0.1.jar
+./spark-shell -- master spark://datacenter17:7077,datacenter18:7077 --conf spark.locality.wait=1 --conf spark.driver.memory=2g  --conf spark.executor.cores=4 --total-executor-cores 20 --num-executors 4 --executor-memory 30g --jars /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar --driver-class-path /home/hadoop/taskJar/mysql-connector-java-5.1.37.jar:/home/hadoop/taskJar/guava-14.0.1.jar
 ./spark-shell –master local[4]  --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g
 --files /home/hadoop/hadoop1/spark-1.6.3-bin-hadoop2.6/hive-site.xml
 

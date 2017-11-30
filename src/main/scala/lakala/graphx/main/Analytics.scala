@@ -1,12 +1,10 @@
 package lakala.graphx.main
 
-import com.lakala.datacenter.louvain.LouvainCore
-import org.apache.spark.graphx.lib.{LabelPropagation, PageRank}
+import lakala.graphx.louvain.LouvainCore
 import org.apache.spark.graphx._
+import org.apache.spark.graphx.lib.{LabelPropagation, PageRank}
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.{Logging, SparkConf, SparkContext}
-import ml.sparkling.graph.operators.OperatorsDSL._
-import ml.sparkling.graph.operators.algorithms.community.pscan.PSCAN
 
 import scala.collection.mutable
 
@@ -124,8 +122,8 @@ object Analytics extends Logging {
         val lpaGraph = (numIterOpt match {
           case Some(numIter) => LabelPropagation.run(graph, numIter)
         }).cache()
-        val modularity = lpaGraph.modularity()
-        println(s"GRAPHX: modularity:   ${modularity}")
+        //val modularity = lpaGraph.modularity()
+        //println(s"GRAPHX: modularity:   ${modularity}")
 
         if (!outFname.isEmpty) {
           logWarning("Saving LabelPropagation graph with vertex attributes containing the label of community affiliation " + outFname)
@@ -165,14 +163,14 @@ object Analytics extends Logging {
         val pscanGraph = (numIterOpt match {
           case Some(numIter) => PSCAN.computeConnectedComponents(graph, 0.000001)
         }).cache()
-        val modularity = pscanGraph.modularity()
-        println(s"GRAPHX: modularity:   ${modularity}")
+        //val modularity = pscanGraph.modularity()
+        //println(s"GRAPHX: modularity:   ${modularity}")
 
-        if (!outFname.isEmpty) {
+        /*if (!outFname.isEmpty) {
           logWarning("Saving PSCAN graph with vertex " + outFname)
           pscanGraph.vertices.filter(k => k._1 != k._2).sortBy(x => x._2)
             .mapPartitions(ls => ls.map(k => s"${k._1},${k._2}")).repartition(numRepartition.getOrElse(10)).saveAsTextFile(outFname)
-        }
+        }*/
         sc.stop()
 
       case "louvain" =>
