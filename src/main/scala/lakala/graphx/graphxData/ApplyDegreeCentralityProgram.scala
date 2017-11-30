@@ -1,5 +1,6 @@
 package lakala.graphx.graphxData
 
+import lakala.graphx.util.UtilsToos.hashId
 import org.apache.spark.graphx.{EdgeDirection, EdgeTriplet, Graph, VertexId}
 
 /**

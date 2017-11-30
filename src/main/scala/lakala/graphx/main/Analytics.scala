@@ -1,9 +1,12 @@
 package lakala.graphx.main
 
-import org.apache.spark.graphx._
+import lakala.graphx.louvain.LouvainCore
 import org.apache.spark.graphx.lib.{LabelPropagation, PageRank}
+import org.apache.spark.graphx._
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.{Logging, SparkConf, SparkContext}
+import ml.sparkling.graph.operators.OperatorsDSL._
+import ml.sparkling.graph.operators.algorithms.community.pscan.PSCAN
 
 import scala.collection.mutable
 

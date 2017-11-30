@@ -5,6 +5,7 @@ import java.io.File
 import lakala.neo4j.exportData.Neo4jDataGenerator
 import lakala.neo4j.utils.Config
 import org.joda.time.DateTime
+import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.io.fs.FileUtils
 import org.slf4j.LoggerFactory

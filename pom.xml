@@ -249,6 +249,20 @@
       <scope>${scope.type}</scope>
     </dependency>-->
 
+    <!--kafka-->
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-kafka_2.10</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
+      <!--<exclusions>
+          <exclusion>
+              <artifactId>kafka_2.10</artifactId>
+              <groupId>org.apache.kafka</groupId>
+          </exclusion>
+      </exclusions>-->
+    </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
@@ -405,5 +419,5 @@
       <url>http://dl.bintray.com/spark-packages/maven/</url>
     </repository>
   </repositories>
-  
+
 </project>

@@ -3,7 +3,14 @@ package lakala.neo4j.main
 import java.util.Properties
 import java.util.concurrent.{ExecutorService, Executors, TimeUnit}
 
+import kafka.consumer.{ConsumerConfig, ConsumerConnector, KafkaStream}
+import kafka.serializer.StringDecoder
+import kafka.utils.VerifiableProperties
+import lakala.neo4j.exportData.StreamingConstant
+import lakala.neo4j.utils.RedisUtils
+import lakala.neo4j.utils.UtilsTools.properties
 import org.apache.commons.lang3.StringUtils.trim
+import org.neo4j.driver.v1.{AuthTokens, Driver, GraphDatabase}
 import redis.clients.jedis.JedisCluster
 
 import scala.collection.Map

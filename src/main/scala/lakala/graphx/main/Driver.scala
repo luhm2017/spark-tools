@@ -1,5 +1,7 @@
 package lakala.graphx.main
 
+import lakala.graphx.graphxData.ExportNDegreeData
+
 /**
   * Created by Administrator on 2017/5/4 0004.
   */

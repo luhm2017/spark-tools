@@ -6,12 +6,27 @@ package lakala.neo4j.realTimeBuildGraphx
 
 import com.alibaba.fastjson.{JSON, TypeReference}
 import com.google.gson.Gson
+import kafka.api.{OffsetRequest, PartitionOffsetRequestInfo, TopicMetadataRequest}
+import kafka.common.TopicAndPartition
+import kafka.consumer.SimpleConsumer
+import kafka.message.MessageAndMetadata
+import kafka.serializer.StringDecoder
+import kafka.utils.{ZKGroupTopicDirs, ZkUtils}
+import lakala.graphx.util.DateTimeUtils
+import lakala.neo4j.exportData.StreamingConstant
+import lakala.neo4j.utils.UtilsTools.properties
+import lakala.neo4j.utils.{ArgsCommon, Config, RedisUtils}
+import org.I0Itec.zkclient.ZkClient
+import org.I0Itec.zkclient.exception.ZkMarshallingError
+import org.I0Itec.zkclient.serialize.ZkSerializer
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.trim
 import org.apache.spark.streaming.dstream.InputDStream
+import org.apache.spark.streaming.kafka.{HasOffsetRanges, KafkaUtils, OffsetRange}
 import org.apache.spark.streaming.{Milliseconds, StreamingContext}
 import org.apache.spark.{Logging, SparkConf}
 import org.joda.time.DateTime
+import org.neo4j.driver.v1.{Driver, _}
 import redis.clients.jedis.JedisCluster
 
 import scala.collection.mutable
