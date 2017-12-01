@@ -3,11 +3,11 @@ package lakala.neo4j.exportData
 import java.io.File
 
 import com.google.common.base.Splitter
-import lakala.neo4j.utils.{Config, Labels, RelationshipTypes}
+import lakala.neo4j.utils.{ Labels, RelationshipTypes}
 import org.apache.commons.lang3.StringUtils
 import org.neo4j.graphdb._
 import org.slf4j.LoggerFactory
-
+import lakala.neo4j.utils.Config
 import scala.collection.mutable
 import scala.io.Source
 
