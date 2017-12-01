@@ -5,8 +5,8 @@ package lakala.graphx.util
   */
 import java.util.Calendar
 
-import org.joda.time.format.{DateTimeFormat, ISODateTimeFormat}
-import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.{DateTime, DateTimeZone, _}
+import org.joda.time.format.{DateTimeFormat, ISODateTimeFormat, _}
 
 object DateTimeUtils {
 
