@@ -3,16 +3,20 @@ package lakala.graphx.graphxData
 import lakala.graphx.util.DateTimeUtils
 import lakala.graphx.util.UtilsToos.{hashId, isMobileOrPhone}
 import org.apache.commons.lang.StringUtils
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.hive.HiveContext
+//import org.apache.spark.sql.{SaveMode, SparkSession}
+
 import org.apache.spark.storage.StorageLevel
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 /**
   * Created by linyanshi on 2017/11/13 0013.
+  * updated by luhuamin， 兼容spark1.6和spark2.2的运行环境
   */
 object ExportGraphDataDay extends Serializable {
   def main(args: Array[String]): Unit = {
@@ -31,7 +35,7 @@ object ExportGraphDataDay extends Serializable {
 
 class ExportGraphDataDay(args: Array[String]) extends Serializable {
   val maxOutDegree = 10000
-  @transient
+  //@transient
   val conf = new SparkConf().setAppName("ExportGraphData")
   conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
   conf.set("spark.task.maxFailures", "8")
@@ -44,14 +48,18 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
   conf.set("hive.exec.max.dynamic.partitions", "10000")
   conf.registerKryoClasses(Array(classOf[NewEdgeArrDT]))
   GraphXUtils.registerKryoClasses(conf)
-  @transient
-  val spark = SparkSession.builder().config(conf)
+  //add by luhuamin
+  val sc = new SparkContext(conf)
+  //val hc = new HiveContext(sc)
+  val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+  //@transient
+  /*val spark = SparkSession.builder().config(conf)
     .config("spark.sql.warehouse.dir", "hdfs:///user/hive/warehouse")
     .enableHiveSupport()
     .getOrCreate()
-
-  spark.sql("set hive.exec.dynamic.partition.mode=nonstrict")
-
+    spark.sql("set hive.exec.dynamic.partition.mode=nonstrict")
+    */
+  sqlContext.sql("set hive.exec.dynamic.partition.mode=nonstrict")
 
   def runDegreeResult(): Unit = {
     var g: Graph[ArrayBuffer[String], NewEdgeArrDT] = Graph.fromEdges(loadApplyHive, ArrayBuffer[String](), edgeStorageLevel = StorageLevel.MEMORY_AND_DISK_SER, vertexStorageLevel = StorageLevel.MEMORY_AND_DISK_SER)
@@ -93,8 +101,10 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
           }))
 
     val (cols, parquetTable) = colsAndParquetTable(degree)
-    import spark.implicits._
-    spark.sql("use lkl_card_score_dev")
+    /*import spark.implicits._
+    spark.sql("use lkl_card_score_dev")*/
+    import sqlContext.implicits._
+    sqlContext.sql("use lkl_card_score_dev")
     result.toDF(cols: _*).write.mode(SaveMode.Append).format("hive")
       .partitionBy(cols(cols.length - 1)).saveAsTable(parquetTable)
     println(s"${DateTimeUtils.formatter.print(System.currentTimeMillis())} end load ${degree - 1} to hive")
@@ -112,8 +122,10 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
           }))
 
     val (cols, parquetTable) = colsAndParquetTable(degree)
-    import spark.implicits._
-    spark.sql("use lkl_card_score_dev")
+    /*import spark.implicits._
+    spark.sql("use lkl_card_score_dev")*/
+    import sqlContext.implicits._
+    sqlContext.sql("use lkl_card_score_dev")
     result.toDF(cols: _*).write.mode(SaveMode.Append).format("hive")
       .partitionBy(cols(cols.length - 1)).saveAsTable(parquetTable)
     println(s"${DateTimeUtils.formatter.print(System.currentTimeMillis())} end load ${degree - 2} to hive")
@@ -184,7 +196,8 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
     val month = date(1)
     val day = date(2)
     println(s"year:${year} month:${month} day${day}")
-    spark.sql("use creditloan")
+    /*spark.sql("use creditloan")*/
+    sqlContext.sql("use lkl_card_score_dev")
     val sql =
       s"""select aa.order_id,aa.contract_no,aa.term_id,aa.loan_pan,aa.return_pan,aa.insert_time,aa.recommend,aa.user_id,bb.cert_no,bb.email,bb.company,bb.mobile,bb.comp_addr,bb.comp_phone,bb.emergency_contact_mobile,bb.contact_mobile,bb.ipv4,bb.msgphone,bb.telecode,cc.device_id
          |from (select a.order_id,a.contract_no,a.term_id,a.loan_pan,a.return_pan,a.insert_time,a.recommend,a.id as user_id
@@ -199,7 +212,8 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
          |                  where b.year="${year}" and b.month="${month}" and b.day="${day}") bb
          | on aa.user_id =bb.user_id   """.stripMargin
     println(s"sql@@@@@:${sql}")
-    val df = spark.sql(sql)
+    //val df = spark.sql(sql)
+    val df = sqlContext.sql(sql)
     val lineRDD = df.rdd.mapPartitions { rows =>
       rows.flatMap { row =>
         val orderno = row.getAs[String]("order_id")
