@@ -7,7 +7,38 @@ nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 --conf
 ./spark-shell –master local[4]  --conf spark.locality.wait=1 --conf spark.driver.memory=1g  --conf spark.executor.cores=4 --total-executor-cores 12 --num-executors 3 --executor-memory 4g
 --files /home/hadoop/hadoop1/spark-1.6.3-bin-hadoop2.6/hive-site.xml
 
+##########################spark-shell on yarn
+1、graphx图计算 25 /home/szdsjkf/yanshi.lin/bin
+sh /home/szdsjkf/spark2-submit \
+ --master yarn \
+ --deploy-mode client \
+ --class ExportGraphData \
+ --queue szbigdata \
+ --driver-memory 2G \
+ --executor-memory 50G \
+ --num-executors 10 \
+ --executor-cores 6 \
+ --conf spark.shuffle.compress=true \
+ --conf spark.executor.extraJavaOptions="-XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=15 -XX:CMSInitiatingOcc
+upancyFraction=70" \
+ --conf spark.core.connection.ack.wait.timeout=120 \
+ --conf spark.shuffle.file.buffer=64 \
+ --conf spark.storage.memoryFraction=0.3 \
+ --conf spark.shuffle.memoryFraction=0.5 \
+ --driver-class-path $PROJECT_HOME/dependency/mysql-connector-java-5.1.36.jar \
+ --jars $PROJECT_HOME/target/original-graphx-analysis-core-1.0.0-SNAPSHOT.jar,$PROJECT_HOME/target/original-graphx-analysis-common-1.0.0-SNAPSHOT.jar,$PROJECT_HOME/depende
+ncy/guava-14.0.1.jar \
+ $PROJECT_HOME/target/original-graphx-analysis-apply.jar \
+ $inputdir $loop $outputdir $stdate $enddate
 
+echo "$(date +"%Y-%m-%d %H:%M:%S")   end run graph data *******  "
+
+
+2、spark-shell
+./spark --master yarn-client  --queue szbigdata --driver-memory 2G --executor-memory 50G --num-executors 10 --executor-cores 6
+############################################################################
+
+####standalone模式
 ##fqz跑数命令  17 18 19三台机器
 nohup ./spark-submit --master spark://datacenter17:7077,datacenter18:7077 \
 --conf spark.locality.wait=1 --conf spark.driver.memory=1g \

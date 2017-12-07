@@ -128,18 +128,28 @@ object SparkTools {
 
   //scala 画图工具
   def draw(): Unit ={
-    val hc = new HiveContext(sc)
 
   }
 
-  //hql跑数
+  //repartition
   def hqlBySpark(): Unit ={
     val hc = new HiveContext(sc)
-    hc.sql("use lkl_card_score")
-    hc.sql("select \n" +
-      "a.phone,a.loginname,a.name,a.deviceid,a.devicemodel,a.platform,a.osversion\n" +
-      "from datacenter.s_data_bigdatacenter_lakalaapp_contactlist a\n limit 10")
+    val df = hc.sql(s"select * from lkl_card_score.fqz_community_black_data_gz")
+    df.coalesce(1).write.mode(SaveMode.Overwrite).save("hdfs://ns1/user/fraudscore/dataForModel/fqz_community_black_data_gz")
+    //df.write.mode(SaveMode.Overwrite).save("hdfs://ns1/user/fraudScore/dataForModel/fqz_community_contactlist_temp_gz")
+    //路径格式1：hdfs://ns1/user/antiFraud/dataForModel
+    //路径格式2: hdfs://ns1/user/fraudScore/dataForModel
+    //最新路径格式3:hdfs://ns1/user/fraudscore/dataForModel
+    //fqz_apply_contract_data_gz 申请进件  --10
+    //fqz_apply_lbs_data_gz lbs   --1
+    //fqz_community_contactlist_temp_gz 通讯录 --30
+    //tmp_r_callhistory_data_gz 通话记录 --120
+    //fqz_community_black_data_gz 黑名单 --1
+
+
   }
+
+  //读取hive表，然后保存hdfs里面，多partition设置
 
   def main(args: Array[String]): Unit = {
     args(0) match {
