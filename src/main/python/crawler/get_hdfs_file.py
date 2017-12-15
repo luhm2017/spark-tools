@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import getopt
 import json
 import requests
@@ -5,6 +8,7 @@ import sys
 import importlib
 importlib.reload(sys)
 import datetime
+
 
 class HueOperate:
 
@@ -55,13 +59,18 @@ class HueOperate:
         try:
             url = 'http://%s:8000/filebrowser/download=' % self.ip + filepath
             response = self._HueOperate__session.get(url, headers = self.headers,stream=True)
+            # 内容体总大小
+            content_size = int(response.headers['content-length'])
+            print('=====当前文件内容体总大小:'+str(content_size)+'KB')
             # 本地保存路径
             localpath = localdir + '/' + filepath.split('/')[-1]
             # print("localdir:"+localdir+" ,localpath:"+localpath)
             # 文本流的形式保存文件
             with open(localpath, 'wb') as f:
-                for chunk in response.iter_content(1024):
+                for chunk in response.iter_content(1024*50):
                     f.write(chunk)
+                    # 显示下载量
+                    print('当前分块chunk大小'+str(len(chunk))+'KB')
                 f.close()
             return True
         except Exception as e:
@@ -106,6 +115,7 @@ def get_batch_files(filedir, localDir, username, password):
 
 if __name__ == '__main__':
     localdir = 'E:/pythonCrawler'
+    #localdir = '/home/hadoop/modelData'
     filepath = ''
     filedir = ''
     # getopt模块，用来处理命令行参数，sys.argv命令行输入参数，
