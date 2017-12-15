@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.twitter:parquet-column:1.5.0-cdh5.7.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/parquet-column/1.5.0-cdh5.7.0-SNAPSHOT/parquet-column-1.5.0-cdh5.7.0-20160213.002557-333.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/parquet-column/1.5.0-cdh5.7.0-SNAPSHOT/parquet-column-1.5.0-cdh5.7.0-20160213.002557-333-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/parquet-column/1.5.0-cdh5.7.0-SNAPSHOT/parquet-column-1.5.0-cdh5.7.0-20160213.002557-333-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

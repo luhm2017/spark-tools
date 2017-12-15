@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.hive:hive-metastore:1.1.0-cdh5.7.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-metastore/1.1.0-cdh5.7.0-SNAPSHOT/hive-metastore-1.1.0-cdh5.7.0-20160213.003944-450.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-metastore/1.1.0-cdh5.7.0-SNAPSHOT/hive-metastore-1.1.0-cdh5.7.0-20160213.003944-450-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-metastore/1.1.0-cdh5.7.0-SNAPSHOT/hive-metastore-1.1.0-cdh5.7.0-20160213.003944-450-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -125,9 +125,9 @@ object CreditCardScore {
     val impurity = "entropy"
     val maxDepth = 3
     val maxBins = 100
-    val model = DecisionTree.trainClassifier(trainingData, numClasses, categoricalFeaturesInfo,impurity, maxDepth, maxBins)
+    //val model = DecisionTree.trainClassifier(trainingData, numClasses, categoricalFeaturesInfo,impurity, maxDepth, maxBins)
     //val model = DecisionTree.trainRegressor(trainingData, categoricalFeaturesInfo, impurity,maxDepth, maxBins)
-    println(model.toDebugString)
+    //println(model.toDebugString)
 
   }
 

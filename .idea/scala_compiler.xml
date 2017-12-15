@@ -8,12 +8,5 @@
         <parameter value="E:\WORKSPACE\spark-tools\target/.scala_dependencies" />
       </parameters>
     </profile>
-    <profile name="Maven 2" modules="sparkgraphx">
-      <parameters>
-        <parameter value="-make:transitive" />
-        <parameter value="-dependencyfile" />
-        <parameter value="E:\WORKSPACE\spark-tools\sparkgraphx\target/.scala_dependencies" />
-      </parameters>
-    </profile>
   </component>
 </project>

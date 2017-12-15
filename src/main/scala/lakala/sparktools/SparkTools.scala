@@ -134,9 +134,9 @@ object SparkTools {
   //repartition
   def hqlBySpark(): Unit ={
     val hc = new HiveContext(sc)
-    val df = hc.sql(s"select * from lkl_card_score.fqz_community_black_data_gz")
-    df.coalesce(1).write.mode(SaveMode.Overwrite).save("hdfs://ns1/user/fraudscore/dataForModel/fqz_community_black_data_gz")
-    //df.write.mode(SaveMode.Overwrite).save("hdfs://ns1/user/fraudScore/dataForModel/fqz_community_contactlist_temp_gz")
+    val df = hc.sql(s"select * from lkl_card_score.fqz_trade_data")
+    df.coalesce(160).write.mode(SaveMode.Overwrite).save("hdfs://ns1/user/fraudscore/dataForModel/fqz_trade_data")
+    //df.write.mode(SaveMode.Overwrite).save("hdfs://ns1/user/fraudScore/dataForModel/fqz_trade_data")
     //路径格式1：hdfs://ns1/user/antiFraud/dataForModel
     //路径格式2: hdfs://ns1/user/fraudScore/dataForModel
     //最新路径格式3:hdfs://ns1/user/fraudscore/dataForModel
@@ -145,6 +145,7 @@ object SparkTools {
     //fqz_community_contactlist_temp_gz 通讯录 --30
     //tmp_r_callhistory_data_gz 通话记录 --120
     //fqz_community_black_data_gz 黑名单 --1
+    //fqz_trade_data --
 
 
   }

@@ -1,0 +1,2 @@
+1、每天增量跑数
+0 8 * * * sh /home/szdsjkf/yanshi.lin/bin/history_graph.sh >>/home/szdsjkf/yanshi.lin/bin/log/graph_$(date +\%Y\%m\%d).log 2>&1 &

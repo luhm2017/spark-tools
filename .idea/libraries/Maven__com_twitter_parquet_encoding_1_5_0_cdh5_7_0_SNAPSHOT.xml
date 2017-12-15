@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.twitter:parquet-encoding:1.5.0-cdh5.7.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/parquet-encoding/1.5.0-cdh5.7.0-SNAPSHOT/parquet-encoding-1.5.0-cdh5.7.0-20160213.002539-334.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/parquet-encoding/1.5.0-cdh5.7.0-SNAPSHOT/parquet-encoding-1.5.0-cdh5.7.0-20160213.002539-334-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/parquet-encoding/1.5.0-cdh5.7.0-SNAPSHOT/parquet-encoding-1.5.0-cdh5.7.0-20160213.002539-334-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

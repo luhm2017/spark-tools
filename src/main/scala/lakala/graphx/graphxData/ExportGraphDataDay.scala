@@ -60,17 +60,24 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
     spark.sql("set hive.exec.dynamic.partition.mode=nonstrict")
     */
   sqlContext.sql("set hive.exec.dynamic.partition.mode=nonstrict")
-
+  //加载全量图数据，然后全量跑数
   def runDegreeResult(): Unit = {
+    //根据hive加载的进件数据，构图
     var g: Graph[ArrayBuffer[String], NewEdgeArrDT] = Graph.fromEdges(loadApplyHive, ArrayBuffer[String](), edgeStorageLevel = StorageLevel.MEMORY_AND_DISK_SER, vertexStorageLevel = StorageLevel.MEMORY_AND_DISK_SER)
+    //1.过滤有出度的顶点，即所有非进件实体的顶点
+    //2.outerJoinVertices为顶点操作（类似左关联，old是g的属性，deg是g.outDegrees属性）
+    //3.subgraph获取子图，过滤出度>10000的顶点
     g = g.outerJoinVertices(g.outDegrees)((_, old, deg) => (old, deg.getOrElse(0)))
       .subgraph(vpred = (_, a) => a._2 < maxOutDegree).mapVertices((_, vdeg) => vdeg._1)
 
+    //loop默认为4
     var preG: Graph[ArrayBuffer[String], NewEdgeArrDT] = null
     var iterCount: Int = 0
     while (iterCount < args(1).toInt) {
       println(s"iteration $iterCount start .....")
+      //缓存图
       preG = g
+      //aggregateMessages消息聚合
       var tmpG = g.aggregateMessages[ArrayBuffer[String]](sendMsg, merageMsg).persist(StorageLevel.MEMORY_AND_DISK_SER_2)
       g = g.outerJoinVertices(tmpG) { (_, _, updateAtt) => updateAtt.getOrElse(ArrayBuffer[String]()) }
       g.persist(StorageLevel.MEMORY_AND_DISK_SER)
@@ -190,6 +197,7 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
   //orderId,contractNo,termId,loanPan,returnPan,insertTime,recommend,userId,
   // deviceId
   //certNo,email,company,mobile,compAddr,compPhone,emergencyContactMobile,contactMobile,ipv4,msgphone,telecode
+  //从hive加载数据
   def loadApplyHive(): RDD[Edge[NewEdgeArrDT]] = {
     val date = args(2).substring(0, 10).split("-")
     val year = date(0)
@@ -197,7 +205,7 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
     val day = date(2)
     println(s"year:${year} month:${month} day${day}")
     /*spark.sql("use creditloan")*/
-    sqlContext.sql("use lkl_card_score_dev")
+    sqlContext.sql("use creditloan")
     val sql =
       s"""select aa.order_id,aa.contract_no,aa.term_id,aa.loan_pan,aa.return_pan,aa.insert_time,aa.recommend,aa.user_id,bb.cert_no,bb.email,bb.company,bb.mobile,bb.comp_addr,bb.comp_phone,bb.emergency_contact_mobile,bb.contact_mobile,bb.ipv4,bb.msgphone,bb.telecode,cc.device_id
          |from (select a.order_id,a.contract_no,a.term_id,a.loan_pan,a.return_pan,a.insert_time,a.recommend,a.id as user_id
