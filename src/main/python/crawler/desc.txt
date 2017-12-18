@@ -1,0 +1,12 @@
+"""
+python E:\WORKSPACE\spark-tools\src\main\python\crawler\test.py
+python E:\WORKSPACE\spark-tools\src\main\python\crawler\get_hdfs_file.py --filedir=/user/luhuamin/test -uluhuamin -p123456
+python E:\WORKSPACE\spark-tools\src\main\python\crawler\get_hdfs_file.py --filedir=/user/fraudscore/dataForModel/fqz_apply_contract_data_gz -uluhuamin -p123456
+
+python /home/hadoop/modelData/operateFile.py --filedir=/user/luhuamin/test -uwenweikun -pwwk>20170|801
+python E:\WORKSPACE\spark-tools\src\main\python\crawler\get_hdfs_file.py --filedir=/user/fraudscore/dataForModel/fqz_community_black_data_gz -uluhuamin -p123456
+"""
+
+
+
+python E:\WORKSPACE\spark-tools\src\main\python\crawler\get_hdfs_file.py --filedir=/user/fraudscore/dataForModel/fqz_apply_contract_data_gz -uluhuamin -p123456

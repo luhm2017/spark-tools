@@ -70,7 +70,7 @@ class HueOperate:
                 for chunk in response.iter_content(1024*50):
                     f.write(chunk)
                     # 显示下载量
-                    print('当前分块chunk大小'+str(len(chunk))+'KB')
+                    #print('当前分块chunk大小'+str(len(chunk))+'KB')
                 f.close()
             return True
         except Exception as e:
