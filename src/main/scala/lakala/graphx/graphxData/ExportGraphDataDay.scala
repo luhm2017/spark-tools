@@ -79,6 +79,7 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
       preG = g
       //aggregateMessages消息聚合
       var tmpG = g.aggregateMessages[ArrayBuffer[String]](sendMsg, merageMsg).persist(StorageLevel.MEMORY_AND_DISK_SER_2)
+
       g = g.outerJoinVertices(tmpG) { (_, _, updateAtt) => updateAtt.getOrElse(ArrayBuffer[String]()) }
       g.persist(StorageLevel.MEMORY_AND_DISK_SER)
       iterCount match {
@@ -145,6 +146,7 @@ class ExportGraphDataDay(args: Array[String]) extends Serializable {
     }
   }
 
+  //消息发送函数
   def sendMsg(ctx: EdgeContext[ArrayBuffer[String], NewEdgeArrDT, ArrayBuffer[String]]): Unit = {
     if (ctx.srcAttr.isEmpty && ctx.dstAttr.isEmpty && ctx.attr.init) {
       ctx.sendToSrc(ArrayBuffer[String](s"${ctx.attr.timeStr}#${ctx.attr.dstV},${ctx.attr.srcV}&${ctx.attr.srcType}"))
