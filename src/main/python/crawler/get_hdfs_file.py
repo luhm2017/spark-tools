@@ -61,13 +61,13 @@ class HueOperate:
             response = self._HueOperate__session.get(url, headers = self.headers,stream=True)
             # 内容体总大小
             content_size = int(response.headers['content-length'])
-            print('=====当前文件内容体总大小:'+str(content_size)+'KB')
+            print('=====当前文件内容体总大小:'+str(content_size/1024)+'KB')
             # 本地保存路径
             localpath = localdir + '/' + filepath.split('/')[-1]
             # print("localdir:"+localdir+" ,localpath:"+localpath)
             # 文本流的形式保存文件
             with open(localpath, 'wb') as f:
-                for chunk in response.iter_content(1024*50):
+                for chunk in response.iter_content(1024*100):
                     f.write(chunk)
                     # 显示下载量
                     #print('当前分块chunk大小'+str(len(chunk))+'KB')
@@ -93,7 +93,9 @@ class HueOperate:
                 filepath = i['stats']['path']
                 # print('get hdfs file:' + filepath)
                 # 单文件下载
-                if self.get_file_data_chunk(filepath,localdir):
+                # filepath != '/user/fraudscore/dataForModel/fqz_order_performance_gz/part-00000-e8821ead-f8c2-4216-9acb-6fb9ea8d467b-c000.snappy.parquet'
+                # 过滤掉已经下载的文件
+                if self.get_file_data_chunk(filepath,localdir) :
                     endtime = datetime.datetime.now()
                     print('get hdfs file:' + filepath + ' succeeded at '+ datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'cost time '+str((endtime-starttime).seconds) + ' seconds')
             except Exception as e:
@@ -114,7 +116,7 @@ def get_batch_files(filedir, localDir, username, password):
     q.get_batch_files(filedir, localDir)
 
 if __name__ == '__main__':
-    localdir = 'E:/pythonCrawler'
+    localdir = 'E:/pythonCrawler/fqz_order_performance_gz/'
     #localdir = '/home/hadoop/modelData'
     filepath = ''
     filedir = ''
