@@ -134,8 +134,8 @@ object SparkTools {
   //repartition
   def hqlBySpark(): Unit ={
     val hc = new HiveContext(sc)
-    val df = hc.sql(s"select * from lkl_card_score.fqz_order_performance_data_new where year = 2017 and month = 12 and day = 18")
-    df.coalesce(10).write.mode(SaveMode.Overwrite).save("hdfs://ns1/user/fraudscore/dataForModel/fqz_order_performance_data_new")
+    val df = hc.sql(s"select * from lkl_card_score.tmp_r_callhistory_data_gz")
+    df/*coalesce(3)*/.write.mode(SaveMode.Overwrite).save("hdfs://ns1/user/luhuamin/fqz_data/callhistory/tmp_r_callhistory_data_gz")
     //df.write.mode(SaveMode.Overwrite).save("hdfs://ns1/user/fraudScore/dataForModel/fqz_trade_data")
     //路径格式1：hdfs://ns1/user/antiFraud/dataForModel
     //路径格式2: hdfs://ns1/user/fraudScore/dataForModel
