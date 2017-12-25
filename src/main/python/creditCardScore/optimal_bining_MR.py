@@ -419,7 +419,7 @@ def _getNewBins(sub, i):
     df.columns = ['bin', 'lower', 'upper', 'total']
     return df
 
-
+# 连续型变量的最优分箱
 def binContVar(x, y, method, mmax=5, Acc=0.01, target=1, adjust=0.0001):
     """
     Optimal binings for contiouns var x by (y & method)

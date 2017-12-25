@@ -10,8 +10,9 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import matplotlib as mpl
 import numpy as np
+import pandas as pd
 
-
+# 画图，饼状图
 def drawPie(s, labels=None, dropna=True):
     """
     Pie Plot for s
@@ -33,7 +34,7 @@ def drawPie(s, labels=None, dropna=True):
 
     plt.show()
 
-
+# 画图，条形图
 def drawBar(s, x_ticks=None, pct=False, dropna=False, horizontal=False):
     """
     bar plot for s
@@ -54,7 +55,7 @@ def drawBar(s, x_ticks=None, pct=False, dropna=False, horizontal=False):
     ind = np.arange(counts.shape[0])
     if x_ticks is None:
         x_ticks = counts.index
-    
+
     if horizontal == False:
         p = plt.bar(ind, counts)
         plt.ylabel('frequecy')
@@ -64,10 +65,10 @@ def drawBar(s, x_ticks=None, pct=False, dropna=False, horizontal=False):
         plt.xlabel('frequecy')
         plt.yticks(ind, tuple(counts.index))
     plt.title('Bar plot for %s' % s.name)
-    
+
     plt.show()
 
-
+# 画图，直方图
 def drawHistogram(s, num_bins=20, save=False, filename='myHist'):
     """
     plot histogram for s
@@ -75,7 +76,7 @@ def drawHistogram(s, num_bins=20, save=False, filename='myHist'):
     Params
     s: pandas series
     num_bins: number of bins
-    save: bool, is save? 
+    save: bool, is save?
     filename��png name
     ---------------------------------------------
     Return
@@ -99,7 +100,15 @@ def drawHistogram(s, num_bins=20, save=False, filename='myHist'):
     if save:
         plt.savefig(filename+'.png')
     plt.show()
-    
+
+# 数据，频数统计
+def valueCounts(x):
+    counts = x.value_counts(sort=False)
+    pct = counts/len(x)
+    res = pd.concat([counts, pct], axis=1)
+    res.columns = ['counts', 'percent']
+    return res
+
 
 
     

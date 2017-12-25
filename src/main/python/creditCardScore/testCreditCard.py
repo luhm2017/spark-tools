@@ -10,14 +10,14 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import statsmodels.api as sm
 
-#read and copy data
-path = ".../default-of-credit-card-clients-dataset"
-os.chdir(path)
-data = pd.read_csv("creditCard_UCI.csv")
+# load data
+path = "E:/WORKSPACE/spark-tools/src/main/data/credit-card/default of credit card clients.xls"
+# os.chdir(path)
+data = pd.read_excel(path,sheet_name=None)
 df = data.copy()
-
+# target
 y = df['default payment next month']
-#y = df['target']
+df = df.drop('ID',axis=1)
 
 """
 数据转换

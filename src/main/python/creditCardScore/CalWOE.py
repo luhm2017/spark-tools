@@ -12,7 +12,7 @@ from sklearn.utils.multiclass import type_of_target
 import pandas as pd
 
 
-
+# 计算单变量的woe值和信息值
 def woe_single_x(x, y, event=1, EPS=1e-7):
     """
     calculate woe and information for a single feature
@@ -52,7 +52,7 @@ def woe_single_x(x, y, event=1, EPS=1e-7):
         iv += (rate_event - rate_non_event) * woe1#
     return woe_dict, iv
     
-      
+# 统计分类结果值
 def _count_binary(a, event=1):
     """
     calculate the cross table of a
@@ -69,6 +69,8 @@ def _count_binary(a, event=1):
     non_event_count = a.shape[-1] - event_count
     return event_count, non_event_count
 
+
+# 检验分类值
 def _check_target_binary(y):
     """
     check if the target variable is binary
@@ -83,7 +85,7 @@ def _check_target_binary(y):
     if y_type not in ['binary']:
         raise ValueError('目标变量必须是二元的！')
         
-
+# 数据woe转换
 def _single_woe_trans(x, y):
     """
     single var's woe trans
