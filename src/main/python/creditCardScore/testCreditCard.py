@@ -9,6 +9,16 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import statsmodels.api as sm
+from optimal_bining_MR import reduceCats
+from optimal_bining_MR import binContVar
+from optimal_bining_MR import _applyBinMap
+from optimal_bining_MR import applyMapCats
+from creditScores import bin_maps
+from CalWOE import woe_trans
+from logistic_reg import logistic_reg
+from logistic_reg import logit_output
+
+
 
 #read and copy data
 path = ".../default-of-credit-card-clients-dataset"
@@ -138,16 +148,16 @@ desc, params, evaluate, quality = logit_output(logit_instance,
 prob_y_train = logit_result.predict()
 X_test_metric = sm.add_constant(X_test[params.index[1:]])
 prob_y_test = logit_result.predict(X_test_metric)
-label_pred_test = np.where(prob_y_test>0.5, 1, 0)
+label_pred_test = pd.np.where(prob_y_test > 0.5, 1, 0)
 
 #ROC 曲线
-plot_roc_curve(prob_y_test, y_test)
-#KS表&KS曲线
-ks_stattable, _ = ks_stats(prob_y_test, y_test)
-#提升图&lorenz曲线
-lift_lorenz(prob_y_test, y_test)
-
-plot_confusion_matrix(y_test, label_pred_test, labels=[0,1])
+# plot_roc_curve(prob_y_test, y_test)
+# #KS表&KS曲线
+# ks_stattable, _ = ks_stats(prob_y_test, y_test)
+# #提升图&lorenz曲线
+# lift_lorenz(prob_y_test, y_test)
+#
+# plot_confusion_matrix(y_test, label_pred_test, labels=[0,1])
 
 
 """
