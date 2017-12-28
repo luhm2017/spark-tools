@@ -9,53 +9,53 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import statsmodels.api as sm
-from optimal_bining_MR import reduceCats
-from optimal_bining_MR import binContVar
-from optimal_bining_MR import _applyBinMap
-from optimal_bining_MR import applyMapCats
-from creditScores import bin_maps
-from CalWOE import woe_trans
-from logistic_reg import logistic_reg
-from logistic_reg import logit_output
+from .optimal_bining_MR import reduceCats
+from .optimal_bining_MR import binContVar
+from .optimal_bining_MR import _applyBinMap
+from .optimal_bining_MR import applyMapCats
+from .creditScores import bin_maps
+from .CalWOE import woe_trans
+from .logistic_reg import logistic_reg
+from .logistic_reg import logit_output
+from .CalWOE import _single_woe_trans
 
 
 
 #read and copy data
-path = ".../default-of-credit-card-clients-dataset"
+path = "E:/WORKSPACE/spark-tools/src/main/data/credit-card/"
 os.chdir(path)
-data = pd.read_csv("creditCard_UCI.csv")
+data = pd.read_csv("default of credit card clients.csv")
 df = data.copy()
 
 y = df['default payment next month']
 #y = df['target']
 
 """
-数据转换
+数据勘探
 """
 #data transform
 df.EDUCATION.unique()
 df.MARRIAGE.unique()
 
 """
-df.MARRIAGE = df.MARRIAGE.map({0:'unkown', 1:1, 2:0, 3:'unkown'})
-df["EDUCATION"] = df["EDUCATION"].map({0: 'unkown', 1:1, 2:2, 3:3, 4:'unkown', 
-    								    5:'unkown', 6: 'unkown'})
+数据转换
 """
+df.MARRIAGE = df.MARRIAGE.map({0:'unkown', 1:1, 2:0, 3:'unkown'})
+df["EDUCATION"] = df["EDUCATION"].map({0: 'unkown',1:1,2:2,3:3,4:'unkown',5:'unkown',6: 'unkown'})
+
 
 """
 单个变量woe转换后建立logistic模型
-"""
 """
 x_woe, woe_map, iv = _single_woe_trans(df.EDUCATION, y)
 
 logit_instance, logit_model, logit_result, logit_result_0 = logistic_reg(x_woe, 
                                                                          y)
-
 desc, params, evaluate, quality = logit_output(logit_instance, 
                                                logit_model, 
                                                logit_result, 
                                                logit_result_0)
-"""
+
 """
 对所有变量进行woe转换
 """ 
@@ -70,7 +70,7 @@ continnues = ['LIMIT_BAL', 'AGE',
 dc = df[continnues]
 
 
-
+##分箱
 def _tempFunc_1(dc, y, method):
     """
     temp function for data bining
