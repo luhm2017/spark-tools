@@ -100,8 +100,11 @@ def _single_woe_trans(x, y):
     info_value: infor value of x
     """
     #cal_woe = WOE()
+    # woe_map 对应每个段的woe值
     woe_map, info_value = woe_single_x(x, y)
+    # map函数返回新的list
     x_woe_trans = x.map(woe_map)
+    # 每个分段添加 别名
     x_woe_trans.name = x.name + "_WOE"
     return x_woe_trans, woe_map, info_value
 
