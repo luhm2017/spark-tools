@@ -14,11 +14,12 @@ import pandas as pd
 import numpy as np
 
 class Logistic(object):
-    
+    # 分别表示 x因变量，y自变量
     def __init__(self, exog, endog):
         self.exog = exog
         self.endog = endog
-        
+
+    # 模型训练
     def modelFit(self, constant=True):
         """
         model fit
@@ -28,21 +29,23 @@ class Logistic(object):
         -------------------------------
         Return
         model: sm model obj
-        results: fit result with x and intercept 
+        results: fit result with x and intercept  截距
         results_0: fit result with only with intercept 
         """
         X = self.exog
         y = self.endog
+        # 添加constant常量对比
         if constant:        
             X = sm.add_constant(X)
-             
+
+        # 使用 statmodels  统计相关指标
         model = sm.Logit(y, X, missing='drop')
         model_0 = sm.Logit(y, X.const, missing='drop')
         results = model.fit()
         results_0 = model_0.fit()
         return model, results, results_0
 
-   
+    # 模型描述信息
     def modelDescript(self, model, results):#通用方法
         """
         return information of model
@@ -69,7 +72,7 @@ class Logistic(object):
         return Series(rlt)
 
 
-
+# 返回模型评估的参数
 def ParamEST(results):
     """
     return params estimate from model fit results
@@ -181,7 +184,7 @@ def standardResidual(results):
 def devResidual(results):
     return results.resid_response
 
-
+# 前向选择特征变量
 def _forward_selected_logit(X, y):
     """
     Linear model designed by forward selection.
@@ -220,8 +223,9 @@ def _forward_selected_logit(X, y):
             selected.append(best_candidate)
             current_score = best_new_score
     return selected
-	
-    
+
+
+# 后向选择特征变量
 def _backward_selected_logit(X, y, sls=0.05):
     """
     Linear model designed by backward selection.
@@ -262,6 +266,7 @@ def logistic_reg(X, y, constant=True, stepwise=None, sls=0.05):
     -----------------------------------------
     Params
     X: pandas dataframe, endogenous variable
+    woe处理后，转换成其x所处的woe分段值
     y: pandas series, endogenous variable
     constant：bool, True means add constant
     stepwise: str, variable select,"BS" is backward, "FS" is forward

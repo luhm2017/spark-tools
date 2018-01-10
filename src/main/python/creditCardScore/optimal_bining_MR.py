@@ -136,7 +136,7 @@ def _Gvalue(binDS, method):
             
     return M_value
 
-
+# 根据选定的方法计算当前分箱
 def _calCMerit(temp, ix, method):
     """
     Calculation of the merit function for the current table temp
@@ -298,7 +298,7 @@ def _candSplit(binDS, method):
     newBins = temp_main[binNum].drop('split', axis=1)
     return newBins.sort_values(by=['bin', 'pdv1']) 
 
-
+# 变量等宽处理
 def _EqualWidthBinMap(x, Acc, adjust):
     """
     Data bining function, 
@@ -323,6 +323,7 @@ def _EqualWidthBinMap(x, Acc, adjust):
     ind = range(1, Mbins+1)
     Upper = pd.Series(index=ind, name='upper')
     Lower = pd.Series(index=ind, name='lower')
+    #
     for i in ind:
         Upper[i] = varMin + i*minMaxSize
         Lower[i] = varMin + (i-1)*minMaxSize
@@ -330,11 +331,12 @@ def _EqualWidthBinMap(x, Acc, adjust):
     # adjust the min_bin's lower and max_bin's upper     
     Upper[Mbins] = Upper[Mbins]+adjust
     Lower[1] = Lower[1]-adjust
+    # 根据固定步长step，等宽处理后，获取每个分段
     bin_map = pd.concat([Lower, Upper], axis=1)
     bin_map.index.name = 'bin'
     return bin_map    
 
-
+# 将X变量转换成分箱
 def _applyBinMap(x, bin_map):
     """
     Generate result of bining by bin_map
@@ -346,11 +348,13 @@ def _applyBinMap(x, bin_map):
     Return
     bin_res: pandas Series, result of bining
     """
+    # 初始化数组
     bin_res = np.array([0] * x.shape[-1], dtype=int)
     
     for i in bin_map.index:
         upper = bin_map['upper'][i]
         lower = bin_map['lower'][i]
+        # 映射对应的分段
         x1 = x[np.where((x >= lower) & (x <= upper))[0]]
         mask = np.in1d(x, x1)
         bin_res[mask] = i
@@ -360,6 +364,7 @@ def _applyBinMap(x, bin_map):
     
     return bin_res
 
+# 分箱的bin，进行合并
 def _combineBins(temp_cont, target):
     """
     merge all bins that either 0 or 1 or total =0
@@ -440,25 +445,38 @@ def binContVar(x, y, method, mmax=5, Acc=0.01, target=1, adjust=0.0001):
     """
     # if y is not 0-1 binary variable, then raise a error
     _check_target_binary(y)
+
     # data bining by Acc, method: width equal
+    # 连续型变量先等宽处理，按acc=0.01等宽100等分处理
+    # 返回X变量对应的分箱分段
     bin_map = _EqualWidthBinMap(x, Acc, adjust=adjust)
+
     # mapping x to bin number and combine with x&y
+    # 将分箱后的X变量作转换映射
     bin_res = _applyBinMap(x, bin_map)
+
+    # 组合x,y以及映射后的分箱
     temp_df = pd.concat([x, y, bin_res], axis=1)
     # calculate freq of 0, 1 in y group by bin_res
+    # 统计每个分段关于y分别为0和1的总数
     t1 = pd.crosstab(index=temp_df[bin_res.name], columns=y)
     # calculate freq of bin, and combine with t1
+    # 统计每个分段y的总数
     t2 = temp_df.groupby(bin_res.name).count().ix[:,0]
     t2 = pd.DataFrame(t2)
     t2.columns = ['total'] 
+    # 合并t1和t2统计，即统计每个分段里面0、1以及0+1的情况
     t = pd.concat([t1, t2], axis=1)
     # merge t & bin_map by t,
     # if all(0,1,total) == 1, so corresponding row will not appear in temp_cont
     temp_cont = pd.merge(t, bin_map, 
                          left_index=True, right_index=True, 
                          how='left')
+    # 最终合并结果，分箱后各分段的统计
     temp_cont['pdv1'] = temp_cont.index
+
     # if any(0,1,total)==0, then combine it with per bin or next bin
+    # 合并bins
     temp_cont = _combineBins(temp_cont, target)
     # calculate other temp vars      
     temp_cont['bin'] = 1

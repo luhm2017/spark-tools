@@ -60,13 +60,13 @@ desc, params, evaluate, quality = logit_output(logit_instance,
 对所有变量进行woe转换
 """ 
 
-#bining continnues var 
+# bining continnues var
 continnues = ['LIMIT_BAL', 'AGE', 
               'BILL_AMT1', 'BILL_AMT2', 'BILL_AMT3', 
               'BILL_AMT4', 'BILL_AMT5', 'BILL_AMT6', 
               'PAY_AMT1', 'PAY_AMT2', 'PAY_AMT3', 
               'PAY_AMT4', 'PAY_AMT5', 'PAY_AMT6',]
-
+# 取所有连续型变量
 dc = df[continnues]
 
 
@@ -76,15 +76,18 @@ def _tempFunc_1(dc, y, method):
     temp function for data bining
     """
     new_ds = pd.DataFrame()
+    # 变量每一列
     for v in dc.columns:
         x = dc[v]
+        # 连续型变量最优分箱
         bin_map = binContVar(x, y, method)
+        # 组装
         new_x = _applyBinMap(x, bin_map)
         new_x.name = v + "_BIN"
         new_ds = pd.concat([new_ds, new_x], axis=1)
     return new_ds
 
-
+# 数据分箱
 new_dc = _tempFunc_1(dc, y, method=4)
 
 #charachter var reduce catagory
