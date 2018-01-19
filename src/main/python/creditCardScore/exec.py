@@ -62,7 +62,7 @@ if __name__ == '__main__':
     # 取所有连续型变量
     dc = df[continnues]
 
-    ##分箱
+    ## 根据选定的方法，对X变量作分箱处理
     def _tempFunc_1(dc, y, method):
         """
         temp function for data bining

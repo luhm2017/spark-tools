@@ -153,6 +153,7 @@ def _calCMerit(temp, ix, method):
     temp_L = temp[temp['i'] <= ix]
     temp_U = temp[temp['i'] > ix]
     # calculate sum of 0, 1, total for each splited data
+    # 计算每个bin分组0、1和total数
     n_11 = float(sum(temp_L[0]))
     n_12 = float(sum(temp_L[1]))
     n_21 = float(sum(temp_U[0]))
@@ -203,7 +204,7 @@ def _calCMerit(temp, ix, method):
             M_value = np.nan
     return M_value
     
-
+# 最优分箱
 def _bestSplit(binDS, method, BinNo):
     """
     find the best split for one bin dataset
@@ -219,10 +220,12 @@ def _bestSplit(binDS, method, BinNo):
     newbinDS: pandas dataframe
     """
     binDS = binDS.sort_values(by=['bin','pdv1'])  
+    # 计算当前bin的分组数
     mb = len(binDS[binDS['bin']==BinNo])
        
     bestValue = 0
     bestI = 1
+    # 遍历bin，
     for i in range(1, mb):
         # split data by i
         # metric: Gini,Entropy,pearson chisq,Info value 
@@ -243,7 +246,7 @@ def _bestSplit(binDS, method, BinNo):
     newbinDS = pd.concat([newbinDS_0, newbinDS_1], axis=0)
     return newbinDS#.sort_values(by=['split','pdv1'])
 
-
+# 根据选定的最优分箱方法
 def _candSplit(binDS, method):
     """
     Generate all candidate splits from current Bins 
@@ -261,9 +264,11 @@ def _candSplit(binDS, method):
     # sorted data by bin&pdv1
     binDS = binDS.sort_values(by=['bin','pdv1'])    
     # get the maximum of bin
+    # 当前已划分的bin数
     Bmax = max(binDS['bin'])
     # screen data and cal nrows by diffrence bin
     # and save the results in dict
+    # 保存不同bin的相关信息
     temp_binC = dict()
     m = dict()
     for i in range(1, Bmax+1):
@@ -276,6 +281,7 @@ def _candSplit(binDS, method):
     temp_trysplit = dict()
     temp_main = dict()
     bin_i_value = []
+    # 遍历每个分箱bin
     for i in range(1, Bmax+1):
         if m[i] > 1: # if nrows of bin > 1
             # split data by best i        
@@ -328,7 +334,8 @@ def _EqualWidthBinMap(x, Acc, adjust):
         Upper[i] = varMin + i*minMaxSize
         Lower[i] = varMin + (i-1)*minMaxSize
     
-    # adjust the min_bin's lower and max_bin's upper     
+    # adjust the min_bin's lower and max_bin's upper
+    # 根据adjust调整上下限值
     Upper[Mbins] = Upper[Mbins]+adjust
     Lower[1] = Lower[1]-adjust
     # 根据固定步长step，等宽处理后，获取每个分段
@@ -448,7 +455,7 @@ def binContVar(x, y, method, mmax=5, Acc=0.01, target=1, adjust=0.0001):
 
     # data bining by Acc, method: width equal
     # 连续型变量先等宽处理，按acc=0.01等宽100等分处理
-    # 返回X变量对应的分箱分段
+    # 返回X变量对应的等距分箱分段
     bin_map = _EqualWidthBinMap(x, Acc, adjust=adjust)
 
     # mapping x to bin number and combine with x&y
@@ -458,7 +465,7 @@ def binContVar(x, y, method, mmax=5, Acc=0.01, target=1, adjust=0.0001):
     # 组合x,y以及映射后的分箱
     temp_df = pd.concat([x, y, bin_res], axis=1)
     # calculate freq of 0, 1 in y group by bin_res
-    # 统计每个分段关于y分别为0和1的总数
+    # 按指定列y统计分组0和1的频数
     t1 = pd.crosstab(index=temp_df[bin_res.name], columns=y)
     # calculate freq of bin, and combine with t1
     # 统计每个分段y的总数
@@ -484,6 +491,7 @@ def binContVar(x, y, method, mmax=5, Acc=0.01, target=1, adjust=0.0001):
     temp_cont['var'] = temp_cont.index
     nbins = 1
     # exe candSplit mmax times
+    # 递进分箱处理
     while(nbins < mmax):
         temp_cont = _candSplit(temp_cont, method=method)
         nbins += 1
