@@ -502,6 +502,7 @@ def binContVar(x, y, method, mmax=5, Acc=0.01, target=1, adjust=0.0001):
     # get new lower, upper, bin, total for sub
     data = pd.DataFrame()
     s = set()
+    # 最终分箱
     for i in temp_Map1['bin']:
         if i in s:
             pass
@@ -543,7 +544,7 @@ def _groupCal(x, y, badlabel=1):
     m = temp_cont.shape[0]
     return temp_cont, m
 
-
+# 类别变量的降基处理
 def reduceCats(x, y,  method=1, mmax=5, badlabel=1):
     """
     Reduce category for x by y & method

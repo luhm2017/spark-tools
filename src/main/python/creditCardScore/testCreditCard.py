@@ -110,7 +110,7 @@ new_PAY_6 = applyMapCats(df.PAY_6, bin_maps_str['PAY_6'])
 new_PAY_2 = applyMapCats(df.PAY_2, bin_maps_str['PAY_2'])
 
 #data combine
-new_df = pd.concat([new_ds,
+new_df = pd.concat([new_dc,
                     new_PAY_0,
                     new_PAY_2,
                     new_PAY_3,
