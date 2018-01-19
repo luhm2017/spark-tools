@@ -108,7 +108,7 @@ def _single_woe_trans(x, y):
     x_woe_trans.name = x.name + "_WOE"
     return x_woe_trans, woe_map, info_value
 
-
+# woe转换
 def woe_trans(varnames, y, df):
     """
     WOE translate for multiple vars

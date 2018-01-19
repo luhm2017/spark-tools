@@ -103,15 +103,15 @@ bin_maps_str = dict()
 for var in ds.columns:
     x = ds[var]
     single_map = reduceCats(x, y, method=4)
-    bin_maps[x.name] = single_map
+    bin_maps_str[x.name] = single_map
 
 # 降基处理
 new_PAY_0 = applyMapCats(df.PAY_0, bin_maps_str['PAY_0'])
-new_PAY_2 = applyMapCats(df.PAY_2, bin_maps_str['PAY_2'])
 new_PAY_3 = applyMapCats(df.PAY_3, bin_maps_str['PAY_3'])
 new_PAY_4 = applyMapCats(df.PAY_4, bin_maps_str['PAY_4'])
 new_PAY_5 = applyMapCats(df.PAY_5, bin_maps_str['PAY_5'])
 new_PAY_6 = applyMapCats(df.PAY_6, bin_maps_str['PAY_6'])
+new_PAY_2 = applyMapCats(df.PAY_2, bin_maps_str['PAY_2'])
 
 # data combine
 # 合并前面两步的处理数据
@@ -172,20 +172,6 @@ label_pred_test = pd.np.where(prob_y_test > 0.5, 1, 0)
 method = 4
 var_list = list(params.index)
 est = params['参数估计']
-
-
-for v in dc.columns:
-    x = dc[v]
-    bin_map = binContVar(x, y, method)
-    bin_maps[v] = bin_map
-
-LIMIT_BAL_BIN_MAP = binContVar(df['LIMIT_BAL'], y, method=4)
-AGE_BIN_MAP = binContVar(df['AGE'], y, method=4)
-bill_amt6_bin_map = binContVar(df['BILL_AMT6'], y, method=4)
-
-PAY_AMT1_bin_map = binContVar(df['PAY_AMT1'], y, method=4)
-PAY_AMT2_bin_map = binContVar(df['PAY_AMT2'], y, method=4)
-PAY_AMT5_bin_map = binContVar(df['PAY_AMT5'], y, method=4)
 
 
 
