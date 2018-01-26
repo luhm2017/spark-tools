@@ -184,6 +184,37 @@ PAY_AMT1_bin_map = binContVar(df['PAY_AMT1'], y, method=4)
 PAY_AMT2_bin_map = binContVar(df['PAY_AMT2'], y, method=4)
 PAY_AMT5_bin_map = binContVar(df['PAY_AMT5'], y, method=4)
 
+#生成评分卡
+method = 4
+#删除参数索引名称中的 BIN 和 WOE
+params.index = [k.replace("_BIN", "") for k in params.index]
+params.index = [k.replace("_WOE", "") for k in params.index]
+paramsEst = params['参数估计']
+var_list = list(paramsEst.index)[1:]
+
+#手动选择模型变量,woe_maps 参数
+woe_maps = {k.replace("_BIN", ""):v for k,v in woe_maps.items()}
+woe_maps_params = {k:v for k,v in woe_maps.items() if k in var_list}
+
+#bining_maps
+numericVars = ['LIMIT_BAL', 'AGE', 'PAY_AMT1',
+               'PAY_AMT2', 'PAY_AMT3', 'PAY_AMT5']
+bin_maps = dict()
+for v in numericVars:
+    x = df[v]
+bin_map = binContVar(x, y, method)
+bin_maps[v] = bin_map
+#reduce maps
+classifyVars = ['PAY_0', 'PAY_3', 'PAY_4',
+                'PAY_5', 'PAY_6']
+red_maps = dict()
+for v in classifyVars:
+    x = df[v]
+red_map = reduceCats(x, y, method)
+red_maps[v] = red_map
+#创建评分卡， 并输出生成 Excel 表格形式
+cc = creditCards(paramsEst, woe_maps_params, bin_maps, red_maps)
+cc.to_excel("creditCard.xlsx")
 
 
 

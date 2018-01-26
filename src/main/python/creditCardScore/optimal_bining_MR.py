@@ -272,7 +272,7 @@ def _candSplit(binDS, method):
     temp_binC = dict()
     m = dict()
     for i in range(1, Bmax+1):
-        temp_binC[i] = binDS[binDS['bin']==i]
+        temp_binC[i] = binDS[binDS['bin'] == i]
         m[i] = len(temp_binC[i])
     """
     CC
@@ -297,9 +297,9 @@ def _candSplit(binDS, method):
             value = _Gvalue(temp_main[i], method)
             newdata = [i, value]
             bin_i_value.append(newdata)
-    #find maxinum of value bintoSplit
+    # find maxinum of value bintoSplit
     bin_i_value.sort(key=lambda x:x[1], reverse=True)
-    #binNum = temp_all_Vals['BinToSplit']
+    # binNum = temp_all_Vals['BinToSplit']
     binNum = bin_i_value[0][0]
     newBins = temp_main[binNum].drop('split', axis=1)
     return newBins.sort_values(by=['bin', 'pdv1']) 

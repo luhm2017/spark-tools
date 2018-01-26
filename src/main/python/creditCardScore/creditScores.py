@@ -70,7 +70,7 @@ def creditCards(paramsEst,
         d = d.drop(k, axis=1)
         points = pd.concat([points, d], axis=0)
         
-    #输出评分卡
+    # 输出评分卡
     points_0 = pd.DataFrame([[points_0, '-']], 
                             index=[['basePoints'], ['-']], 
                             columns=['points', 'range'])

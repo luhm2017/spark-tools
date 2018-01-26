@@ -40,9 +40,11 @@ class Logistic(object):
 
         # 使用 statmodels  统计相关指标
         model = sm.Logit(y, X, missing='drop')
+        # 添加常量截距 intercept
         model_0 = sm.Logit(y, X.const, missing='drop')
         results = model.fit()
         results_0 = model_0.fit()
+        print(results.summary())
         return model, results, results_0
 
     # 模型描述信息
@@ -240,20 +242,21 @@ def _backward_selected_logit(X, y, sls=0.05):
     --------
     var_list
     """
-    import statsmodels.formula.api as smf#导入相应模块
-    data = pd.concat([X, y], axis=1)#合并数据
-    #提取X，y变量名
+    import statsmodels.formula.api as smf # 导入相应模块
+    data = pd.concat([X, y], axis=1) # 合并数据
+    # 提取X，y变量名
     var_list = X.columns
     response = y.name
-    #首先对所有变量进行模型拟合
+    # 逐步循环，对所有变量进行模型拟合
     while True:
         formula = "{} ~ {} + 1".format(response, ' + '.join(var_list))
         mod = smf.logit(formula, data).fit()
         p_list = mod.pvalues.sort_values()
+        # 模型参数估计值
         if p_list[-1] > sls:
-            #提取p_list中最后一个index
+            # 提取p_list中最后一个index
             var = p_list.index[-1]
-            #var_list中删除
+            # var_list中删除
             var_list = var_list.drop(var)           
         else:
             break
@@ -288,6 +291,7 @@ def logistic_reg(X, y, constant=True, stepwise=None, sls=0.05):
     logit_model, logit_result, logit_result_0 = logit_instance.modelFit(constant=constant)
     return logit_instance, logit_model, logit_result, logit_result_0
 
+# 输出模型参数估计值（均误差、Z值、P值）
 def logit_output(logit_instance, logit_model, logit_result, logit_result_0):
     """
     generate logistic model output
