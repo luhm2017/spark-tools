@@ -44,7 +44,8 @@ class Logistic(object):
         model_0 = sm.Logit(y, X.const, missing='drop')
         results = model.fit()
         results_0 = model_0.fit()
-        print(results.summary())
+        # print(results.summary())
+        # print("=====result0" + results_0.summary())
         return model, results, results_0
 
     # 模型描述信息
@@ -251,6 +252,7 @@ def _backward_selected_logit(X, y, sls=0.05):
     while True:
         formula = "{} ~ {} + 1".format(response, ' + '.join(var_list))
         mod = smf.logit(formula, data).fit()
+        print(mod.summary())
         p_list = mod.pvalues.sort_values()
         # 模型参数估计值
         if p_list[-1] > sls:
@@ -281,6 +283,7 @@ def logistic_reg(X, y, constant=True, stepwise=None, sls=0.05):
     logit_result: fit results of logit model
     logit_result_0: fit results of logit model(only with constant)
     """
+    # 根据统计量筛选特征变量
     if stepwise == "FS" and X.shape[1] > 1:
         varlist = _forward_selected_logit(X, y)
         X = X.ix[:,varlist]
@@ -288,6 +291,7 @@ def logistic_reg(X, y, constant=True, stepwise=None, sls=0.05):
         varlist = _backward_selected_logit(X, y, sls=sls)
         X = X.ix[:,varlist]
     logit_instance = Logistic(X, y)
+    # 模型训练
     logit_model, logit_result, logit_result_0 = logit_instance.modelFit(constant=constant)
     return logit_instance, logit_model, logit_result, logit_result_0
 

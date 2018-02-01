@@ -3,7 +3,6 @@
 2017.12.25 luhm
 """
 import os
-
 import pandas as pd
 import statsmodels.api as sm
 from CalWOE import woe_trans
@@ -17,6 +16,9 @@ from optimal_bining_MR import applyMapCats
 from optimal_bining_MR import binContVar
 from optimal_bining_MR import reduceCats
 from creditScores import creditCards
+from graph_analysis import drawPie
+from graph_analysis import drawBar
+from graph_analysis import drawHistogram
 
 # if __name__ == '__main__':
 # print(sys.path)
@@ -134,7 +136,7 @@ X_train, X_test, y_train, y_test = train_test_split(woe_df, y, test_size=0.33)
 """
 logit_instance, logit_model, logit_result, logit_result_0 = logistic_reg(X_train,
                                                                          y_train,
-                                                                         stepwise='BS')
+                                                                         stepwise='BS') # BS
 
 desc, params, evaluate, quality = logit_output(logit_instance,
                                                logit_model,
@@ -150,14 +152,14 @@ X_test_metric = sm.add_constant(X_test[params.index[1:]])
 prob_y_test = logit_result.predict(X_test_metric)
 label_pred_test = pd.np.where(prob_y_test > 0.5, 1, 0)
 
-#ROC 曲线
-#plot_roc_curve(prob_y_test, y_test)
-# #KS表&KS曲线
-#ks_stattable, _ = ks_stats(prob_y_test, y_test)
-# 提升图&lorenz曲线
-# lift_lorenz(prob_y_test, y_test)
-# 构造混淆矩阵
-#plot_confusion_matrix(y_test, label_pred_test, labels=[0,1])
+# ROC 曲线
+# plot_roc_curve(prob_y_test, y_test)
+# # KS表&KS曲线
+# ks_stattable, _ = ks_stats(prob_y_test, y_test)
+# # 提升图&lorenz曲线
+# # lift_lorenz(prob_y_test, y_test)
+# # 构造混淆矩阵
+# plot_confusion_matrix(y_test, label_pred_test, labels=[0,1])
 
 
 """
@@ -169,37 +171,36 @@ est = params['参数估计']
 
 
 # 生成评分卡
-method = 4
-# 删除参数索引名称中的 BIN 和 WOE
-params.index = [k.replace("_BIN", "") for k in params.index]
-params.index = [k.replace("_WOE", "") for k in params.index]
-paramsEst = params['参数估计']
-var_list = list(paramsEst.index)[1:]
-
-# 手动选择模型变量
-# woe_maps 参数
-woe_maps = {k.replace("_BIN", ""):v for k,v in woe_maps.items()}
-# 获取模型参数woe参数值
-woe_maps_params = {k:v for k,v in woe_maps.items() if k in var_list}
-
-# bining_maps
-numericVars = ['LIMIT_BAL', 'AGE', 'PAY_AMT1',
-               'PAY_AMT2', 'PAY_AMT3', 'PAY_AMT5']
-bin_maps = dict()
-for v in numericVars:
-    x = df[v]
-bin_map = binContVar(x, y, method)
-bin_maps[v] = bin_map
-
-# reduce maps
-classifyVars = ['PAY_0', 'PAY_3', 'PAY_4',
-                'PAY_5', 'PAY_6']
-red_maps = dict()
-for v in classifyVars:
-    x = df[v]
-red_map = reduceCats(x, y, method)
-red_maps[v] = red_map
-
-#创建评分卡， 并输出生成 Excel 表格形式
-cc = creditCards(paramsEst, woe_maps_params, bin_maps, red_maps)
-cc.to_excel("creditCard.xlsx")
+# method = 4
+# # 删除参数索引名称中的 BIN 和 WOE
+# params.index = [k.replace("_BIN", "") for k in params.index]
+# params.index = [k.replace("_WOE", "") for k in params.index]
+# paramsEst = params['参数估计']
+# var_list = list(paramsEst.index)[1:]
+#
+# # 手动选择模型变量
+# # woe_maps 参数
+# woe_maps = {k.replace("_BIN", ""):v for k,v in woe_maps.items()}
+# # 获取模型参数woe参数值
+# woe_maps_params = {k:v for k,v in woe_maps.items() if k in var_list}
+#
+# # bining_maps
+# numericVars = ['LIMIT_BAL', 'AGE', 'PAY_AMT1',
+#                'PAY_AMT2', 'PAY_AMT3', 'PAY_AMT5']
+# bin_maps = dict()
+# for v in numericVars:
+#     x = df[v]
+# bin_map = binContVar(x, y, method)
+# bin_maps[v] = bin_map
+#
+# # reduce maps
+# classifyVars = ['PAY_0', 'PAY_3', 'PAY_4', 'PAY_5', 'PAY_6']
+# red_maps = dict()
+# for v in classifyVars:
+#     x = df[v]
+# red_map = reduceCats(x, y, method)
+# red_maps[v] = red_map
+#
+# # 创建评分卡， 并输出生成 Excel 表格形式
+# cc = creditCards(paramsEst, woe_maps_params, bin_maps, red_maps)
+# # cc.to_excel("creditCard.xlsx")
