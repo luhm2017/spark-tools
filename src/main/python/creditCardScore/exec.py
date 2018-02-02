@@ -11,6 +11,7 @@ from logistic_reg import logit_output
 from model_metrics import ks_stats
 from model_metrics import plot_confusion_matrix
 from model_metrics import plot_roc_curve
+from model_metrics import lift_lorenz
 from optimal_bining_MR import _applyBinMap
 from optimal_bining_MR import applyMapCats
 from optimal_bining_MR import binContVar
@@ -19,6 +20,7 @@ from creditScores import creditCards
 from graph_analysis import drawPie
 from graph_analysis import drawBar
 from graph_analysis import drawHistogram
+
 
 # if __name__ == '__main__':
 # print(sys.path)
@@ -36,7 +38,7 @@ y = df['label']
 """
 数据勘探
 """
-# drawPie(df.EDUCATION)
+#drawPie(df.EDUCATION)
 # drawBar(df.EDUCATION)
 # drawHistogram(df.AGE)
 
@@ -146,20 +148,22 @@ desc, params, evaluate, quality = logit_output(logit_instance,
 """
 模型评价
 """
-#生成模型评价数据
-prob_y_train = logit_result.predict()
+# prob_y_train = logit_result.predict()
+# 测试数据集
 X_test_metric = sm.add_constant(X_test[params.index[1:]])
+# 测试数据结果
 prob_y_test = logit_result.predict(X_test_metric)
+# 结果集按
 label_pred_test = pd.np.where(prob_y_test > 0.5, 1, 0)
 
 # ROC 曲线
-# plot_roc_curve(prob_y_test, y_test)
-# # KS表&KS曲线
-# ks_stattable, _ = ks_stats(prob_y_test, y_test)
-# # 提升图&lorenz曲线
-# # lift_lorenz(prob_y_test, y_test)
-# # 构造混淆矩阵
-# plot_confusion_matrix(y_test, label_pred_test, labels=[0,1])
+plot_roc_curve(prob_y_test, y_test)
+# KS表&KS曲线
+ks_stattable, _ = ks_stats(prob_y_test, y_test)
+# 提升图&lorenz曲线
+# lift_lorenz(prob_y_test, y_test)
+# 构造混淆矩阵
+plot_confusion_matrix(y_test, label_pred_test, labels=[0,1])
 
 
 """

@@ -44,8 +44,10 @@ class Logistic(object):
         model_0 = sm.Logit(y, X.const, missing='drop')
         results = model.fit()
         results_0 = model_0.fit()
-        # print(results.summary())
-        # print("=====result0" + results_0.summary())
+        print("results =====================================================")
+        print(results.summary())
+        print("results_0 =====================================================")
+        print(results_0.summary())
         return model, results, results_0
 
     # 模型描述信息

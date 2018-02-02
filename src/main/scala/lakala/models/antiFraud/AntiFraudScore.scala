@@ -1,7 +1,5 @@
 package lakala.models.antiFraud
 
-import java.util.Properties
-
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.mllib.tree.configuration.BoostingStrategy
@@ -13,6 +11,7 @@ import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.apache.spark.{Logging, SparkConf, SparkContext}
 import org.apache.spark.storage.StorageLevel
+import org.neo4j.test.rule.SuppressOutput.System
 import tachyon.util.CommonUtils
 
 import scala.collection.mutable.ArrayBuffer
