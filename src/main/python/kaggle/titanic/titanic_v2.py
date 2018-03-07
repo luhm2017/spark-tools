@@ -22,8 +22,8 @@ data_cleaner = [data1,data_val]
 # data prospecting
 # print(data_raw.sample(10))
 print("####原始数据####")
-data_raw.info()
-data_val.info()
+# data_raw.info()
+# data_val.info()
 # print(data_raw.describe(include="all"))
 
 # data processing
@@ -81,8 +81,8 @@ for dataset in data_cleaner:
     dataset["AgeBin_Code"] = label.fit_transform(dataset["AgeBin"])
 
 # preview data again
-print(data1.info())
-print(data1.sample(10))
+# print(data1.info())
+# print(data1.sample(10))
 Target = ["Survived"]
 
 # define x variables for original features
@@ -221,7 +221,7 @@ def correlation_heatmap(df):
     plt.title('Pearson Correlation of Features', y=1.05, size=15)
     # plt.show()
 
-correlation_heatmap(data1)
+# correlation_heatmap(data1)
 
 # split train and test data
 # split train and test data with function defaults
@@ -302,15 +302,15 @@ for alg in MLA:
     row_index+=1
 
 MLA_compare.sort_values(by = ['MLA Test Accuracy Mean'], ascending = False, inplace = True)
-MLA_compare
+print(MLA_compare)
 #MLA_predict
 
 # split
-X_train,X_test,Y_train,Y_test = train_test_split(data1[data1_x_bin], data1[Target],test_size=0.33,random_state=3)
+X_train,X_test,Y_train,Y_test = train_test_split(data1[data1_x_bin], data1[Target],test_size=0.1,random_state=0)
 
 # 使用随机森林
 random_forest = ensemble.RandomForestClassifier(n_estimators=100)
 random_forest.fit(X_train, Y_train)
 Y_pred = random_forest.predict(X_test)
 rf_score = random_forest.score(X_test, Y_test)
-print("----------"+rf_score)
+print(rf_score)

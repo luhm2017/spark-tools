@@ -18,10 +18,10 @@ from sklearn.model_selection import train_test_split
 titanic_df = pd.read_csv("D:/workspace/spark-tools/src/main/data/titanic/train_titanic.csv")
 test_df = pd.read_csv("D:/workspace/spark-tools/src/main/data/titanic/test_titanic.csv")
 # preview the data
-print(titanic_df.head())
-titanic_df.sample(5)
-titanic_df.info()
-test_df.info()
+# print(titanic_df.head())
+# titanic_df.sample(5)
+# titanic_df.info()
+# test_df.info()
 # Data preprocessing
 titanic_df = titanic_df.drop(["PassengerId","Name","Ticket"],axis=1)
 test_df  = test_df.drop(['Name','Ticket'], axis=1)
@@ -224,7 +224,7 @@ Y_train_original = titanic_df["Survived"]
 X_test_original  = test_df.drop("PassengerId",axis=1).copy()
 
 # split
-X_train,X_test,Y_train,Y_test = train_test_split(X_train_original,Y_train_original,test_size=0.33,random_state=3)
+X_train,X_test,Y_train,Y_test = train_test_split(X_train_original,Y_train_original,test_size=0.1,random_state=3)
 
 # logistic regression
 logreg = LogisticRegression()
@@ -241,9 +241,9 @@ rf_score = random_forest.score(X_test, Y_test)
 print(rf_score)
 
 # get Correlation Coefficient for each feature using Logistic Regression
-coeff_df = DataFrame(titanic_df.columns.delete(0))
-coeff_df.columns = ['Features']
-coeff_df["Coefficient Estimate"] = pd.Series(logreg.coef_[0])
-
-# preview
-coeff_df
+# coeff_df = DataFrame(titanic_df.columns.delete(0))
+# coeff_df.columns = ['Features']
+# coeff_df["Coefficient Estimate"] = pd.Series(logreg.coef_[0])
+#
+# # preview
+# coeff_df
