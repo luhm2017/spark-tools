@@ -38,9 +38,9 @@ y = df['label']
 """
 数据勘探
 """
-#drawPie(df.EDUCATION)
-# drawBar(df.EDUCATION)
-# drawHistogram(df.AGE)
+drawPie(df.EDUCATION)
+drawBar(df.EDUCATION)
+drawHistogram(df.AGE)
 
 """
 数据转换
