@@ -4,10 +4,9 @@ import pandas as pd
 import seaborn as sns
 # Common Model Helpers
 from sklearn import model_selection
-from sklearn.preprocessing import LabelEncoder
 # Common Model Algorithms
 from sklearn import svm, tree, linear_model, neighbors, naive_bayes, ensemble, discriminant_analysis, gaussian_process
-from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 sns.set_style('white')
 
@@ -306,7 +305,7 @@ print(MLA_compare)
 #MLA_predict
 
 # split
-X_train,X_test,Y_train,Y_test = train_test_split(data1[data1_x_bin], data1[Target],test_size=0.1,random_state=0)
+X_train,X_test,Y_train,Y_test = model_selection.train_test_split(data1[data1_x_bin], data1[Target],test_size=0.1,random_state=0)
 
 # 使用随机森林
 random_forest = ensemble.RandomForestClassifier(n_estimators=100)
