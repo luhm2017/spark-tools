@@ -43,6 +43,7 @@ missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
 missing_data.head(20)
 
 # dealing with missing data
+col = (missing_data[missing_data['Total'] > 1]).index
 df_train = df_train.drop((missing_data[missing_data['Total'] > 1]).index,1)
 df_train = df_train.drop(df_train.loc[df_train['Electrical'].isnull()].index)
 # f_train.isnull().sum().max()
