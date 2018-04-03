@@ -94,11 +94,7 @@ new_dc = data_bining(dc, y, method=4)
 """
 类别变量做降基处理
 """
-# charachter var reduce catagory
-characters = ['PAY_0', 'PAY_2', 'PAY_3', 'PAY_4', 'PAY_5', 'PAY_6']
-ds = df[characters]
-
-bin_maps_str = dict()
+# charachter var reduce catagorybin_maps_str = dict()
 for var in ds.columns:
     x = ds[var]
     single_map = reduceCats(x, y, method=4)
@@ -111,6 +107,10 @@ new_PAY_4 = applyMapCats(df.PAY_4, bin_maps_str['PAY_4'])
 new_PAY_5 = applyMapCats(df.PAY_5, bin_maps_str['PAY_5'])
 new_PAY_6 = applyMapCats(df.PAY_6, bin_maps_str['PAY_6'])
 new_PAY_2 = applyMapCats(df.PAY_2, bin_maps_str['PAY_2'])
+characters = ['PAY_0', 'PAY_2', 'PAY_3', 'PAY_4', 'PAY_5', 'PAY_6']
+ds = df[characters]
+
+
 
 # data combine
 # 合并前面两步的处理数据

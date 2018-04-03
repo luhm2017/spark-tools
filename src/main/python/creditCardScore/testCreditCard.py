@@ -184,9 +184,9 @@ PAY_AMT1_bin_map = binContVar(df['PAY_AMT1'], y, method=4)
 PAY_AMT2_bin_map = binContVar(df['PAY_AMT2'], y, method=4)
 PAY_AMT5_bin_map = binContVar(df['PAY_AMT5'], y, method=4)
 
-#生成评分卡
+# 生成评分卡
 method = 4
-#删除参数索引名称中的 BIN 和 WOE
+# 删除参数索引名称中的 BIN 和 WOE
 params.index = [k.replace("_BIN", "") for k in params.index]
 params.index = [k.replace("_WOE", "") for k in params.index]
 paramsEst = params['参数估计']
